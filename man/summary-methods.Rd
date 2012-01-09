@@ -25,5 +25,5 @@
 summary(fm1)
 
 #will give the summary of lme4 package
-summary(fm1, "lme4")
+summary(fm1, ddf="lme4")
 }

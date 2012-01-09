@@ -12,7 +12,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
     stop()
   } 
   
-  data <- model.frame(model)#summary(model,"lme4")@frame 
+  data <- model.frame(model) #summary(model,"lme4")@frame 
   
   
   #update contrasts
@@ -58,21 +58,22 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
   #options(contrasts=c(unordered="contr.SAS", ordered="contr.poly"))
   
   #model<-update(model, REML=TRUE)
-  if( isRand || isTotal || (ddf=="Kenward-Roger" && (isTotal || isAnova)) )
-  {
-    
-	model<-
-    if (getREML(model) == 1)
-    {
-      model
-    }
-    else
-    {
-      warning("\n model has been refitted with REML=TRUE \n")
-      updateModel(model, .~., reml=TRUE, l)
-    }
-  }
-  
+  ## deleted because use ML for anova(m1, m2) for random effects
+#   if( isRand || isTotal || (ddf=="Kenward-Roger" && (isTotal || isAnova)) )
+#   {
+#     
+#       model<-
+#       if (getREML(model) == 1)
+#       {
+#         model
+#       }
+#       else
+#       {
+#         warning("\n model has been refitted with REML=TRUE \n")
+#         updateModel(model, .~., reml=TRUE, l)
+#       }
+#   }
+#   
   mf.final <- update.formula(formula(model),formula(model)) 
   
   
@@ -194,11 +195,22 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
     # calculate asymptotic covariance matrix A
     h  <-  hessian(function(x) Dev(rho,x), rho$param$vec.matr)
     #h  <-  myhess(function(x) Dev(rho,x), rho$param$vec.matr)
-    rho$A  <-  2*solve(h)
+    ch <- try(chol(h), silent=TRUE)
+    if(inherits(ch, "try-error")) {
+      message("Model is not identifiable...")
+    }
+    rho$A <- 2*chol2inv(ch)
+    
+    eigval <- eigen(h, symmetric=TRUE, only.values=TRUE)$values
+    isposA <- TRUE
+    if(min(eigval) < sqrt(.Machine$double.eps)) ## tol ~ sqrt(.Machine$double.eps)
+      isposA <- FALSE
+    
+    #rho$A  <-  2*solve(h)
 
     
     #Check if A is positive-definite
-    isposA <- all(eigen(rho$A)$values>0)      
+    #isposA <- all(eigen(rho$A)$values>0)      
     if(!isposA)
     {
       print("Asymptotic covariance matrix A is not positive!")
@@ -216,8 +228,10 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
     #calculate ttest and p-values for summary
     if(isTtest)
     {
-      tsummary <- calculateTtest(rho, diag(rep(1,length(rho$fixEffs))), length(rho$fixEffs), method.grad)
-      result$ttest <- list(df=tsummary[,"df"], tvalue=tsummary[,"t value"], tpvalue=tsummary[,"p-value"])
+      tsummary <- calculateTtest(rho, diag(rep(1,length(rho$fixEffs))), 
+                                 length(rho$fixEffs), method.grad)
+      result$ttest <- list(df=tsummary[, "df"], tvalue=tsummary[, "t value"], 
+                           tpvalue=tsummary[, "p-value"])
       return(result)
     }
     
@@ -270,7 +284,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
     #initialize anova table
     if(is.first.anova)
     {
-      anova.table <- initAnovaTable(model, reduce.fixed)
+      anova.table <- initAnovaTable(model, test.terms, reduce.fixed)
       is.first.anova <- FALSE
       elim.num <- 1
     }
@@ -314,8 +328,9 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type = 3, alpha.ra
         model <- resNSelim$model
         mf.final <- update.formula(formula(model),formula(model))
         model <- updateModel(model, mf.final, getREML(model), l)        
-        anova.table <- resNSelim$anova.table
+        anova.table <- updateAnovaTable(resNSelim)
         elim.num <- elim.num+1
+       
       }        
     }      
     
@@ -515,20 +530,19 @@ setMethod("anova", signature(object="merModLmerTest"),
                   an.table <- tryCatch({totalAnovaRandLsmeans(model=object, ddf=ddf, type=type, isAnova=TRUE, reduce.random=FALSE, reduce.fixed=FALSE, method.grad=method.grad)$anova.table}, error = function(e) { NULL })
                   if(!is.null(an.table))
                   {
+                    table <- an.table
+#                     rnames <- rownames(table)
+#                     if(nrow(an.table)>0)
+#                     {
+#                       
+#                       table <- as.data.frame(cbind(table$Df, table$"Sum Sq", table$"Mean Sq", an.table[,"F.value"], an.table[,"DenDF"], an.table[,"Pr(>F)"]))
+#                       colnames(table) <- c("Df", "Sum Sq", "Mean Sq", "F value", "Denom", "Pr(>F)")
+#                       dimnames(table) <- list(rnames,
+#                                               c("Df", "Sum Sq", "Mean Sq", "F value", "Denom", "Pr(>F)"))
+#                     }
+#                     else                    
+#                       table <- an.table
                     
-                    rnames <- rownames(table)
-                    if(nrow(an.table)>0)
-                    {
-                      
-                      table <- as.data.frame(cbind(table$Df, table$"Sum Sq", table$"Mean Sq", an.table[,"F.value"], an.table[,"DenDF"], an.table[,"Pr(>F)"]))
-                      colnames(table) <- c("Df", "Sum Sq", "Mean Sq", "F value", "Denom", "Pr(>F)")
-                      dimnames(table) <- list(rnames,
-                                              c("Df", "Sum Sq", "Mean Sq", "F value", "Denom", "Pr(>F)"))
-                    }
-                    else
-                      
-                      
-                      table <- an.table
                     attr(table, "heading") <- paste("Analysis of Variance Table of type", type ," with ", ddf, "\napproximation for degrees of freedom")
                   }
                   
@@ -551,7 +565,7 @@ setMethod("summary", signature(object = "merModLmerTest"),
             else
             {
               tsum <- tryCatch( {totalAnovaRandLsmeans(model=object, ddf="Satterthwaite", isTtest=TRUE)$ttest}, error = function(e) { NULL })
-              coefs.satt <- cbind(cl$coefficients[,1:2], tsum$df, tsum$tvalue, tsum$tpvalue)
+              coefs.satt <- cbind(cl$coefficients[,1:2, drop=FALSE], tsum$df, tsum$tvalue, tsum$tpvalue)
                # t.pval <- tryCatch( {totalAnovaRandLsmeans(model=object, ddf="Satterthwaite", isTtest=TRUE)$ttest$tpvalue}, error = function(e) { NULL })
                # coefs.satt <- cbind(cl$coefficients, t.pval) 
                 cl$coefficients <- coefs.satt

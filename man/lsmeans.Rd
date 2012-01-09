@@ -35,14 +35,14 @@ lsmeans(model, test.effs=NULL, method.grad="simple",...)
  Produces Least Squares Means (population means) table with p-values and Confidence intervals. 
  }
 \references{
- doBy package, gplots package
+ \pkg{doBy} package, \pkg{gplots} package
  }
 \author{
 Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 }
 
 \note{
-  For construction of the contrast matrix popMatrix function from doBy package was used. 
+  For construction of the contrast matrix popMatrix function from \pkg{doBy} package was used. 
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
