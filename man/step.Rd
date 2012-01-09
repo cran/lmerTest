@@ -107,7 +107,8 @@ library(lmerTest)
 data(ham)
 
 
-m <- lmer(Informed.liking ~ Product + Information + Gender+ (1|Consumer) + (1|Product:Consumer), data=ham)
+m <- lmer(Informed.liking ~ Product + Information 
++ Gender+ (1|Consumer) + (1|Product:Consumer), data=ham)
 
 
 #elimination of non-significant effects
