@@ -8,7 +8,7 @@ Performs log-likelihood ratio test on random effects of linear mixed effects mod
 Returns a data frame with  values of Chi square statistics and corresponding p-values of log-likelihood ratio tests. 
 }
 \usage{
-rand(model, ...)
+rand(model, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

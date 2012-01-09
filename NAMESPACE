@@ -1,15 +1,16 @@
 #useDynLib(lme4, .registration=TRUE)
+import(lme4)
 importFrom(numDeriv, hessian, grad)
 import(Matrix)
+import(methods)
 importFrom(MASS, ginv)
 import(Hmisc)
 importFrom(gplots, barplot2)
 import(pbkrtest)
 
 
+exportClasses("merModLmerTest")
 
-exportClasses("summary.merLmerTest")
-exportClasses("merLmerTest")
 
 export(rand)
 export(lsmeans)
@@ -17,10 +18,11 @@ export(difflsmeans)
 export(step)
 export(lmer)
 
-#export("sigma")
+
 
 
 exportMethods("anova", "summary")
+
 
 S3method(print, step)
 S3method(plot, step)

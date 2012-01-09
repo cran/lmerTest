@@ -13,10 +13,10 @@ TVbo
 \format{
 \describe{
   \item{\code{Assessor}}{
-    factor: Numbering identifying assessors
+    factor: numbering identifying assessors
   }
   \item{\code{TVset}}{
-    factor - attribute of the product
+    factor: attribute of the product
   }
   \item{\code{Picture}}{
     factor: attribute of the product
@@ -40,12 +40,19 @@ library(lmerTest)
 #import TVbo data from lmerTest package
 data(TVbo)
 
-
+\dontshow{
 m <- lmer(log(Coloursaturation)~TVset*Picture+
 (1|Assessor)+(1|Assessor:TVset), data=TVbo)
 
 step(m, test.effs="TVset", reduce.fixed=TRUE, reduce.random=TRUE)
+}
 
+\dontrun{
+m <- lmer(Coloursaturation ~ TVset*Picture+
+(1|Assessor)+(1|Assessor:TVset), data=TVbo)
+
+step(m, test.effs="TVset", reduce.fixed=FALSE, reduce.random=TRUE)
+}
 }
 
 \keyword{datasets}
