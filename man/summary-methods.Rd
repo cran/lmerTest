@@ -11,7 +11,7 @@
 
 
 \item{\code{signature(object = "merModLmerTest", \dots)}}{
- summary of the results of linear mixed effects model fitting of object. Returns the same as summary function of "merMod" class but  with an additional column \code{t.pval}, which gives \code{p}-values for the \code{t} test of fixed terms with Satterthwaite approximation for degrees of freedom.
+ summary of the results of linear mixed effects model fitting of object. Returns a similar to summary function of "merMod" class but with additional columns with the names \code{"df"}, \code{"t value"} and \code{"Pr(>t)"} representing degrees of freedom, \code{t}-statistics and \code{p}-values respectively  calculated based on Satterthwaite's approximation.
       \code{\link{summary}}
 }
 }}
@@ -23,4 +23,7 @@
 
 # will give you an additional column with p values for the t test
 summary(fm1)
+
+#will give the summary of lme4 package
+summary(fm1, "lme4")
 }

@@ -50,9 +50,6 @@ carrots
 #import lme4 package and lmerTest package
 library(lmerTest)
 
-#import carrots data from lmerTest package
-data(carrots)
-
 m.carrots <- lmer(Preference ~ sens2 + Homesize
 +(1+sens2|Consumer), data=carrots)
 

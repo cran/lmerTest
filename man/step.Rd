@@ -10,7 +10,7 @@ performs automatic backward elimination of all effects of linear mixed effect mo
 \usage{
 step(model, ddf="Satterthwaite", type=3, alpha.random = 0.1, alpha.fixed = 0.05, 
 reduce.fixed = TRUE, reduce.random = TRUE, lsmeans.calc=TRUE,
-difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple", ...)
+difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -67,6 +67,7 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple", ...)
    approximation method for the grad function, which is used in calculation of denominator degrees of freedom. Could be "simple" or "Richardson". "simple" is the default one.
 }
 
+
   \item{\dots}{
      other potential arguments.
 }
@@ -102,9 +103,6 @@ Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 \examples{
 #import lme4 package and lmerTest package
 library(lmerTest)
-
-#import carrots data from lmerTest package
-data(ham)
 
 \dontrun{
 m <- lmer(Informed.liking ~ Product*Information*Gender+ 

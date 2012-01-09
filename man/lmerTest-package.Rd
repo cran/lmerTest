@@ -45,9 +45,6 @@ Schaalje G.B., McBride J.B., Fellingham G.W. 2002 Adequacy of approximations to 
 #import lme4 package and lmerTest package
 library(lmerTest)
 
-#import ham data from lmerTest package
-data(ham)
-
 # an object of class merModLmerTest
 m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
 

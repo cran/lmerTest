@@ -340,8 +340,12 @@ calcFpvalueMAIN <- function(term, L, X.design, fullCoefs, model, rho, ddf, metho
     if( type == 3 )
     {
       
-      Lc <- makeContrastType3SAS(model, term, L)             
-      result.fstat <- calcFpvalueSS(term, Lc, fullCoefs, X.design, model, rho, ddf, method.grad=method.grad, type)           
+      Lc <- makeContrastType3SAS(model, term, L)    
+      #non identifiable because of rank deficiency
+      if(!length(Lc))
+        result.fstat <- list(denom=0, Fstat=NA, pvalue=NA, ndf=NA)
+      else
+        result.fstat <- calcFpvalueSS(term, Lc, fullCoefs, X.design, model, rho, ddf, method.grad=method.grad, type)           
     }
     
     if( type == 1 )
@@ -405,9 +409,9 @@ for(i in 1:length(fixed.term))
      
 }
 
-names.design.withLevels <- c("Intercept", colnames(X.design))
+names.design.withLevels <- c("(Intercept)", colnames(X.design))
 X.design <- cbind(rep(1,dim(X.design)[1]),X.design)
-names.design <- c("Intercept", names.design)
+names.design <- c("(Intercept)", names.design)
 colnames(X.design) <- names.design
 return(list(X.design=X.design, names.design.withLevels=names.design.withLevels))
 }
@@ -594,7 +598,12 @@ calcGeneralSetForHypothesis <- function(X.design, rho)
   #xtx2<-t(X.design2) %*% X.design2
   
   g2 <- matrix(0,ncol=ncol(xtx), nrow=nrow(xtx))
-  g2[rho$nums.Coefs,rho$nums.Coefs] <- solve(xtx[rho$nums.Coefs,rho$nums.Coefs])
+  
+  #if(!"(Intercept)" %in% names(rho$nums.Coefs))
+  #  inds <- c(which(colnames(X.design)=="(Intercept)"), rho$nums.Coefs)
+ # else
+    inds <- rho$nums.Coefs
+  g2[inds,inds] <- solve(xtx[inds,inds])
   #g2<-ginv(xtx2)
   g2[abs(g2)<1e-10] <- 0
   
@@ -691,17 +700,17 @@ makeContrastType3SAS <- function(model, term, L)
 ############################################################################
 #get formula for model 
 ############################################################################
-getFormula<-function(model, withRand=TRUE)
+getFormula <- function(model, withRand=TRUE)
 {
-  fmodel<-formula(model)
-  terms.fm<-attr(terms.formula(fmodel),"term.labels")
-  ind.rand.terms<-which(unlist(lapply(terms.fm,function(x) substring.location(x, "|")$first))!=0)
-  terms.fm[ind.rand.terms]<-unlist(lapply(terms.fm[ind.rand.terms],function(x) paste("(",x,")",sep="")))
-  fm<-paste(fmodel)
+  fmodel <- formula(model)
+  terms.fm <- attr(terms.formula(fmodel),"term.labels")
+  ind.rand.terms <- which(unlist(lapply(terms.fm,function(x) substring.location(x, "|")$first))!=0)
+  terms.fm[ind.rand.terms] <- unlist(lapply(terms.fm[ind.rand.terms],function(x) paste("(",x,")",sep="")))
+  fm <- paste(fmodel)
   if(withRand)
-    fm[3]<-paste(terms.fm,collapse=" + ")
+    fm[3] <- paste(terms.fm,collapse=" + ")
   else
-    fm[3]<-paste(terms.fm[-ind.rand.terms],collapse=" + ")
+    fm[3] <- paste(terms.fm[-ind.rand.terms],collapse=" + ")
   
   if(fm[3]=="")
     fo <- as.formula(paste(fm[2],fm[1],1, sep=""))
@@ -1071,7 +1080,7 @@ getNumsDummyCoefs2 <- function(model, data)
   m <- lm(model, data=summary(model,"lme4")@frame)
   
   #get full coefficients
-  dc <- dummy.coef(m)
+  dc <- dummy.coef.modif(m)
   names.dc <- names(dc)[1]
   for (i in 2:length(dc))
   {
@@ -1122,7 +1131,7 @@ getNumsDummyCoefs <- function(model, data, l)
   #m <- lm(model, data=model$data)  
   
   #get full coefficients
-  dc <- dummy.coef(m)
+  dc <- dummy.coef.modif(m)
   zeroCoefs <- which(unlist(dc)==0)
   nonzeroCoefs <- which(unlist(dc)!=0)
   return(list(nums.zeroCoefs = zeroCoefs, nums.Coefs = nonzeroCoefs))
@@ -1272,7 +1281,7 @@ popMatrix <- function(object, effect=NULL, at=NULL, only.at=TRUE){
     attr(res,"grid") <- eff.grid
     attr(res,"at") <- at
   }
-  class(res) <- c("popMatrix", "conMatrix","matrix")
+  class(res) <- c("popMatrix", "conMatrix", "matrix")
   res 
 }
 
@@ -1461,6 +1470,9 @@ isCorrInt <- function(term)
     return(TRUE)
   if(substring.location(term,"+ 1 |")$last !=0)
     return(TRUE)
+  sbstr <- substr(term,substring.location(term,"(")$first + 1,substring.location(term,"|")$last - 1)
+  if(length(grep("1", sbstr))==0 && length(grep("0", sbstr))==0)
+    return(TRUE)
   return(FALSE)  
 }
 
@@ -1486,8 +1498,11 @@ changeSlopePart <- function(term, isCorr)
   
   if(isCorr)
   {
-    ind.int <- if(length(which(parts==" 1 "))!=0) which(parts==" 1 ") else which(parts=="1 ")    
-    new.terms <- c(paste("(",paste(c(parts[-ind.int], " 0 "), collapse="+"),grouppart, sep=""),paste("(1 ",grouppart,sep=""))
+    ind.int <- if(length(which(parts==" 1 "))!=0) which(parts==" 1 ") else which(parts=="1 ") 
+    if(length(ind.int) == 0)
+      new.terms <- c(paste("(",paste(c(slopepart, " 0 "), collapse="+"),grouppart, sep=""),paste("(1 ",grouppart,sep=""))
+    else
+      new.terms <- c(paste("(",paste(c(parts[-ind.int], " 0 "), collapse="+"),grouppart, sep=""),paste("(1 ",grouppart,sep=""))
   }
   else
   {
@@ -1532,10 +1547,21 @@ getGrSlrand <- function(rand.term)
   return(list(gr=gr,sl=sl))
 }
 
-### Find Index of the random term in VarCorr matrix
-findIndTerm <- function(vcr,GrSl)
+findGroupForRandomTerm <- function(vcr, randomGroup)
 {
-  indsGr <- which(names(vcr)==GrSl$gr)
+  randomGroup2 <- paste(unlist(strsplit(randomGroup, ":")), collapse=".")
+  which(names(vcr) %in% c(randomGroup, unlist(lapply(1:100, function(x) paste(randomGroup, ".", sep="",x))), randomGroup2,  unlist(lapply(1:100, function(x) paste(randomGroup2, ".", sep="",x))))==TRUE)
+}
+
+
+### Find Index of the random term in VarCorr matrix
+findIndTerm <- function(vcr, GrSl)
+{
+  #indsGr <- which(names(vcr)==GrSl$gr)
+  # for lme4 >1.0
+  indsGr <- findGroupForRandomTerm(vcr, GrSl$gr)
+  if(length(indsGr)==1)
+    return(indsGr)
   for(indGr in indsGr)
   {
     if(length(which((names(attr(vcr[[indGr]],"stddev"))==GrSl$sl)==FALSE))==0)
@@ -1548,7 +1574,7 @@ checkIsZeroVarOrCorr <- function(model, rand.term, isCorr)
 {
  
   vcr <- VarCorr(model)
-  ind.term <- findIndTerm(vcr,getGrSlrand(rand.term))
+  ind.term <- findIndTerm(vcr, getGrSlrand(rand.term))
   if(isCorr)
   {
     matcorr <- attr(vcr[[ind.term]],"correlation")
@@ -1586,12 +1612,12 @@ elimZeroVarOrCorr <- function(model, data, l)
           new.terms <- changeSlopePart(rand.term,isCorr.int)
           fm[3] <- paste(fm[3], "-", rand.term, "+" , paste(new.terms,collapse="+"))
           #print(paste("Random term",rand.term, "was eliminated because of having correlation +-1 or NaN", sep=" "))
-          warning(paste(" \n Random term", rand.term, "was eliminated because of having correlation +-1 or NaN \n", sep=" "), call. = FALSE, immediate. = TRUE)
+          message(paste("Random term", rand.term, "was eliminated because of having correlation +-1 or NaN \n", sep=" "))
         }
         else
         {
           fm[3] <- paste(fm[3], "-", rand.term)
-          warning(paste("\n Random term",rand.term, "was eliminated because of standard deviation being equal to 0 \n", sep=" "), call. = FALSE, immediate. = TRUE)
+          message(paste("Random term",rand.term, "was eliminated because of standard deviation being equal to 0 \n", sep=" "))
         }
           
         mf.final <-  as.formula(paste(fm[2],fm[1],fm[3], sep=""))
@@ -1770,10 +1796,17 @@ getREML <- function(model)
     return(getME(model, "is_REML"))
 
 }
+
 #update model
 updateModel <- function(model, mf.final, reml, l)
 {
-  return(suppressWarnings(update(object=model, formula.=mf.final, REML=reml, contrasts=l)))
+  if(!mf.final == as.formula(.~.))
+  {
+     inds <-  names(l) %in% attr(terms(mf.final), "term.labels")
+     #update contrast l
+     l <- l[inds]
+  }
+  return(update(object=model, formula.=mf.final, REML=reml, contrasts=l))
   
   
 #   if(!is.null(l)) 
@@ -1856,9 +1889,16 @@ refitLM <- function(obj, l="contr.SAS") {
 #   m$call <- cl
 #   m
   
-  mm <- model.frame.fixed(obj)
+  #mm <- model.frame.fixed(obj)
+  mm <- model.frame(obj)
   colnames(mm)[1] <- "y"
-  fo <- getFormula(obj, withRand=FALSE)# formula(obj,fixed.only=TRUE)  
+  fo <- getFormula(obj, withRand=FALSE)# formula(obj,fixed.only=TRUE)
+  if(fo != as.formula(.~.))
+  {
+    inds <-  names(l) %in% attr(terms(fo), "term.labels")
+    #update contrast l
+    l <- l[inds]
+  }
   fo <- update(fo, y ~ .)
   lm(fo, data=mm, contrasts = l)
 }
@@ -1931,3 +1971,97 @@ getFirstinSearchlme4 <- function()
     return("lme4")
 }
 
+
+# format table according to elim.num column
+formatElimNumTable <- function(table)
+{
+  if("elim.num" %in% colnames(table)){
+    table[which(table[,"elim.num"]==0),"elim.num"] <- 1000
+    table <- table[with(table, order(elim.num, decreasing=FALSE)),]
+    table[,"elim.num"] <- as.character(table[,"elim.num"])
+    table[which(table[,"elim.num"]=="1000"),"elim.num"] <- "kept"
+  }
+  return(table)
+}
+
+
+################################################################################
+#### dummy.coef modified
+################################################################################
+dummy.coef.modif <- function(object, use.na=FALSE, ...)
+{
+  Terms <- terms(object)
+  tl <- attr(Terms, "term.labels")
+  int <- attr(Terms, "intercept")
+  facs <- attr(Terms, "factors")[-1, , drop=FALSE]
+  Terms <- delete.response(Terms)
+  classes.vars <- attr(Terms,"dataClasses")[-1]
+  vars <- names(classes.vars)#all.vars(Terms)
+  ### change vars according to the presentce of nmatrix
+  ind.matr <- grep("nmatrix", classes.vars)
+  vars.final <- vars
+  for ( i in ind.matr ){
+    ind <- which(vars.final==vars[i])
+    seqpoly <- seq(1, strtoi(substring2(classes.vars[i], substring.location(classes.vars[i], "nmatrix")$last+2, nchar(classes.vars[i]))))
+    nmatr.vars <- paste(names(classes.vars)[i], seqpoly, sep="")
+    vars.final[ind] <- nmatr.vars[1]
+    vars.final <- append(vars.final, nmatr.vars[-1], after = ind)
+  }
+  vars <- vars.final
+  
+  xl <- object$xlevels
+  if(!length(xl)) {  		# no factors in model
+    return(as.list(coef(object)))
+  }
+  nxl <- setNames(rep.int(1, length(vars)), vars)
+  tmp <- unlist(lapply(xl, length)) ## ?? vapply(xl, length, 1L)
+  nxl[names(tmp)] <- tmp
+  lterms <- apply(facs, 2L, function(x) prod(nxl[x > 0]))
+  nl <- sum(lterms)
+  args <- setNames(vector("list", length(vars)), vars)
+  for(i in vars)
+    args[[i]] <- if(nxl[[i]] == 1) rep.int(1, nl)
+  else factor(rep.int(xl[[i]][1L], nl), levels = xl[[i]])
+  dummy <- do.call("data.frame", args)
+  pos <- 0
+  rn <- rep.int(tl, lterms)
+  rnn <- rep.int("", nl)
+  for(j in tl) {
+    i <- vars[facs[, j] > 0]
+    ifac <- i[nxl[i] > 1]
+    if(length(ifac) == 0L) {        # quantitative factor
+      rnn[pos+1] <- j
+    } else if(length(ifac) == 1L) {	# main effect
+      dummy[ pos+1L:lterms[j], ifac ] <- xl[[ifac]]
+      rnn[ pos+1L:lterms[j] ] <- as.character(xl[[ifac]])
+    } else {			# interaction
+      tmp <- expand.grid(xl[ifac])
+      dummy[ pos+1L:lterms[j], ifac ] <- tmp
+      rnn[ pos+1L:lterms[j] ] <-
+        apply(as.matrix(tmp), 1L, function(x) paste(x, collapse=":"))
+    }
+    pos <- pos + lterms[j]
+  }
+  ## some terms like poly(x,1) will give problems here, so allow
+  ## NaNs and set to NA afterwards.
+  mf <- model.frame(Terms, dummy, na.action=function(x)x, xlev=xl)
+  mm <- model.matrix(Terms, mf, object$contrasts, xl)
+  if(any(is.na(mm))) {
+    warning("some terms will have NAs due to the limits of the method")
+    mm[is.na(mm)] <- NA
+  }
+  coef <- object$coefficients
+  if(!use.na) coef[is.na(coef)] <- 0
+  asgn <- attr(mm,"assign")
+  res <- setNames(vector("list", length(tl)), tl)
+  for(j in seq_along(tl)) {
+    keep <- asgn == j
+    ij <- rn == tl[j]
+    res[[j]] <-
+      setNames(drop(mm[ij, keep, drop=FALSE] %*% coef[keep]), rnn[ij])
+  }
+  if(int > 0) {
+    res <- c(list("(Intercept)" = coef[int]), res)
+  }
+  res
+}

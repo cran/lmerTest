@@ -40,9 +40,6 @@ Schaalje G.B., McBride J.B., Fellingham G.W. 2002 Adequacy of approximations to 
 #import lmerTest package
 library(lmerTest)
 
-#import ham data from lmerTest package
-data(ham)
-
 m.ham <- lmer(Informed.liking ~ Product*Information*Gender 
 + (1|Consumer), data=ham)
 
@@ -60,5 +57,10 @@ anova(m.ham, ddf="Kenward-Roger")
 
 # anova table, that is returned by lme4 package
 anova(m.ham, ddf="lme4")
+
+\dontshow{
+fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
+                           (1+sens2|Consumer), data=carrots)
+}
 }
 

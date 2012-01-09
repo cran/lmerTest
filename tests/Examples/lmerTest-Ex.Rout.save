@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2013-09-16 r63937) -- "Unsuffered Consequences"
+R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: i386-w64-mingw32/i386 (32-bit)
 
@@ -20,11 +20,12 @@ Type 'q()' to quit R.
 > pkgname <- "lmerTest"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
-> options(pager = "console")
 > library('lmerTest')
 Loading required package: Matrix
-Loading required package: lattice
 Loading required package: lme4
+Loading required package: lattice
+KernSmooth 2.23 loaded
+Copyright M. P. Wand 1997-2009
 
 Attaching package: 'lmerTest'
 
@@ -56,9 +57,6 @@ The following object is masked from 'package:stats':
 > #import lme4 package and lmerTest package
 > library(lmerTest)
 > 
-> #import TVbo data from lmerTest package
-> data(TVbo)
-> 
 > ## Don't show: 
 > m <- lmer(log(Coloursaturation)~TVset*Picture+
 + (1|Assessor)+(1|Assessor:TVset), data=TVbo)
@@ -66,19 +64,15 @@ The following object is masked from 'package:stats':
 > step(m, test.effs="TVset", reduce.fixed=TRUE, reduce.random=TRUE)
 
 Random effects:
-                     Chi.sq Chi.DF elim.num p.value    
-(1 | Assessor)         0.04      1        1     0.8    
-(1 | Assessor:TVset)  60.77      1        0   6e-15 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+                     Chi.sq Chi.DF elim.num p.value
+(1 | Assessor)         0.04      1        1  0.8416
+(1 | Assessor:TVset)  60.76      1     kept  <1e-07
 
 Fixed effects:
-              Sum Sq Mean Sq NumDF DenDF F.value elim.num   Pr(>F)    
-TVset          0.410  0.2050     2    21   13.56        0 0.000166 ***
-Picture        0.137  0.0458     3   159    3.03        0 0.031126 *  
-TVset:Picture  0.238  0.0396     6   159    2.62        0 0.018872 *  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+              Sum Sq Mean Sq NumDF  DenDF F.value elim.num Pr(>F)
+TVset         0.4100  0.2050     2  21.00 13.5584     kept 0.0002
+Picture       0.1374  0.0458     3 158.87  3.0296     kept 0.0311
+TVset:Picture 0.2378  0.0396     6 158.87  2.6214     kept 0.0189
 
 Least squares means:
            TVset Picture Estimate Standard Error DF t-value Lower CI Upper CI
@@ -135,16 +129,14 @@ lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture +
 > #import lmerTest package
 > library(lmerTest)
 > 
-> #import ham data from lmerTest package
-> data(ham)
-> 
 > m.ham <- lmer(Informed.liking ~ Product*Information*Gender 
 + + (1|Consumer), data=ham)
 > 
 > # type 3 anova table with  denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m.ham)
-Analysis of Variance Table of type 3 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Satterthwaite 
+approximation for degrees of freedom
                            Df Sum Sq Mean Sq F value  Denom   Pr(>F)    
 Product                     3 91.807 30.6024  6.9865 552.97 0.000128 ***
 Information                 1  6.520  6.5201  1.4631 552.97 0.226959    
@@ -159,7 +151,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # type 1 anova table with denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m.ham, type=1)
-Analysis of Variance Table of type 1 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 1  with  Satterthwaite 
+approximation for degrees of freedom
                            Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
 Product                     3 91.807 30.6024  6.9476 552.97 0.0001351 ***
 Information                 1  6.520  6.5201  1.4802 552.97 0.2242580    
@@ -174,7 +167,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # type3 anova table with additional F statistics and denominator degrees of freedom
 > # calculated based on Kenward-Roger's approximation
 > anova(m.ham, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3 with  Kenward-Roger  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
                            Df Sum Sq Mean Sq F value Denom   Pr(>F)    
 Product                     3 91.807 30.6024  6.9865   553 0.000128 ***
 Information                 1  6.520  6.5201  1.4631   553 0.226959    
@@ -198,6 +192,11 @@ Product:Gender              3  8.421  2.8071  0.6373
 Information:Gender          1  1.407  1.4075  0.3195
 Product:Information:Gender  3  5.992  1.9972  0.4534
 > 
+> ## Don't show: 
+> fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
++                            (1+sens2|Consumer), data=carrots)
+> ## End Don't show
+> 
 > 
 > 
 > cleanEx()
@@ -217,9 +216,6 @@ Product:Information:Gender  3  5.992  1.9972  0.4534
 > #import lme4 package and lmerTest package
 > library(lmerTest)
 > 
-> #import carrots data from lmerTest package
-> data(carrots)
-> 
 > m.carrots <- lmer(Preference ~ sens2 + Homesize
 + +(1+sens2|Consumer), data=carrots)
 > 
@@ -228,19 +224,15 @@ Product:Information:Gender  3  5.992  1.9972  0.4534
 > step(m.carrots, ddf="Kenward-Roger")
 
 Random effects:
-                             Chi.sq Chi.DF elim.num p.value    
-(1 + sens2 | Consumer)        0.707      1        1    0.40    
-      (sens2 + 0 | Consumer)  5.991      1        0    0.01 *  
-      (1 | Consumer)         82.463      1        0  <2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+                             Chi.sq Chi.DF elim.num p.value
+(1 + sens2 | Consumer)         0.71      1        1  0.4003
+      (sens2 + 0 | Consumer)   5.99      1     kept  0.0144
+      (1 | Consumer)          82.46      1     kept  <1e-07
 
 Fixed effects:
-         Sum Sq Mean Sq NumDF DenDF F.value elim.num   Pr(>F)    
-sens2     58.69   58.69     1   102   54.82        0 3.89e-11 ***
-Homesize   5.52    5.52     1   101    5.16        0   0.0253 *  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+          Sum Sq Mean Sq NumDF  DenDF F.value elim.num Pr(>F)
+sens2    58.6879 58.6879     1 102.00 54.8233     kept <1e-07
+Homesize  5.5217  5.5217     1 100.99  5.1584     kept 0.0253
 
 Least squares means:
             Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
@@ -283,9 +275,6 @@ lme4::lmer(formula = Preference ~ sens2 + Homesize + (sens2 +
 > 
 > #import lme4 package and lmerTest package
 > library(lmerTest)
-> 
-> #import ham data from lmerTest package
-> data(ham)
 > 
 > #specify lmer model
 > m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
@@ -334,16 +323,14 @@ Gender:Information  1 2- 2 2    0.949     0.3
 > #import lmerTest package
 > library(lmerTest)
 > 
-> #import ham data from lmerTest package
-> data(ham)
-> 
 > m <- lmer(Informed.liking ~ Product*Information*Gender 
 + + (1|Product:Consumer) , data=ham)
 > 
 > #anova table with p-values with Satterthwaite's approximation for denominator 
 > #degrees of freedom
 > anova(m)
-Analysis of Variance Table of type 3 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Satterthwaite 
+approximation for degrees of freedom
                            Df  Sum Sq Mean Sq F value  Denom  Pr(>F)  
 Product                     3 17.3868  5.7956  3.5000 315.98 0.01584 *
 Information                 1  6.5201  6.5201  3.8702 315.98 0.05003 .
@@ -361,22 +348,18 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 + test.effs=c("Product", "Information"))
 
 Random effects:
-                       Chi.sq Chi.DF p.value    
-(1 | Product:Consumer)    197      1  <2e-16 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+                       Chi.sq Chi.DF p.value
+(1 | Product:Consumer) 197.36      1 < 1e-07
 
 Fixed effects:
-                           Sum Sq Mean Sq NumDF DenDF F.value Pr(>F)  
-Product                     17.39   5.796     3   316   3.500 0.0158 *
-Information                  6.52   6.520     1   316   3.870 0.0500 .
-Gender                       1.83   1.831     1   316   1.099 0.2952  
-Product:Information         10.39   3.462     3   316   2.089 0.1016  
-Product:Gender               1.59   0.532     3   316   0.319 0.8115  
-Information:Gender           1.41   1.407     1   316   0.845 0.3586  
-Product:Information:Gender   5.99   1.997     3   316   1.199 0.3101  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+                            Sum Sq Mean Sq NumDF  DenDF F.value Pr(>F)
+Product                    17.3868  5.7956     3 315.98  3.5000 0.0158
+Information                 6.5201  6.5201     1 315.98  3.8702 0.0500
+Gender                      1.8305  1.8305     1 315.98  1.0993 0.2952
+Product:Information        10.3873  3.4624     3 315.98  2.0891 0.1016
+Product:Gender              1.5948  0.5316     3 315.98  0.3193 0.8115
+Information:Gender          1.4075  1.4075     1 315.98  0.8452 0.3586
+Product:Information:Gender  5.9915  1.9972     3 315.98  1.1994 0.3101
 
 Least squares means:
                Product Information Gender Estimate Standard Error  DF t-value
@@ -448,7 +431,8 @@ lme4::lmer(formula = Informed.liking ~ Product + Information +
 > # anova table the same as of class merMod but with additional F statistics and  
 > # p-values calculated based on Satterthwaite's approximations
 > anova(fm1)
-Analysis of Variance Table of type 3 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Satterthwaite 
+approximation for degrees of freedom
      Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
 Days  1  30031   30031  45.853 16.995 3.269e-06 ***
 ---
@@ -460,7 +444,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Note: method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
  target signature 'dgCMatrix#ngCMatrix'.
  "ANY#sparseMatrix" would also be valid
-Analysis of Variance Table of type 3 with  Kenward-Roger  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
      Df Sum Sq Mean Sq F value Denom    Pr(>F)    
 Days  1  30031   30031  45.853    17 3.264e-06 ***
 ---
@@ -489,9 +474,9 @@ Random effects:
 Number of obs: 180, groups: Subject, 18
 
 Fixed effects:
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  251.405      6.825   36.84  < 2e-16 ***
-Days          10.467      1.546    6.77 3.27e-06 ***
+            Estimate Std. Error      df t value Pr(>|t|)    
+(Intercept)  251.405      6.825  16.998  36.838  < 2e-16 ***
+Days          10.467      1.546  16.995   6.771 3.27e-06 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -534,9 +519,6 @@ object  6 1763.9 1783.1 -875.97   1751.9 0.0639      1     0.8004
 > #import lme4 package and lmerTest package
 > library(lmerTest)
 > 
-> #import ham data from lmerTest package
-> data(ham)
-> 
 > # an object of class merModLmerTest
 > m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
 > 
@@ -556,13 +538,13 @@ Random effects:
 Number of obs: 648, groups: Consumer, 81
 
 Fixed effects:
-             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)    5.8290     0.2460  23.694  < 2e-16 ***
-Gender2       -0.2443     0.2606  -0.938  0.35135    
-Information2   0.2006     0.1643   1.221  0.22258    
-Product2      -0.7037     0.2324  -3.029  0.00257 ** 
-Product3       0.2840     0.2324   1.222  0.22220    
-Product4       0.1173     0.2324   0.505  0.61392    
+             Estimate Std. Error       df t value Pr(>|t|)    
+(Intercept)    5.8290     0.2460 235.9000  23.694  < 2e-16 ***
+Gender2       -0.2443     0.2606  79.0000  -0.938  0.35135    
+Information2   0.2006     0.1643 563.0000   1.221  0.22258    
+Product2      -0.7037     0.2324 563.0000  -3.029  0.00257 ** 
+Product3       0.2840     0.2324 563.0000   1.222  0.22220    
+Product4       0.1173     0.2324 563.0000   0.505  0.61392    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -577,7 +559,8 @@ Product4    -0.472  0.000  0.000  0.500  0.500
 > # anova table the same as of class merMod but with additional F statistics and 
 > # p-values calculated based on Satterthwaite's approximations
 > anova(m)
-Analysis of Variance Table of type 3 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Satterthwaite 
+approximation for degrees of freedom
             Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
 Gender       1  3.844  3.8437  0.8790  78.98 0.3513471    
 Information  1  6.520  6.5201  1.4909 562.97 0.2225805    
@@ -588,7 +571,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # anova table the same as of class merMod but with additional F statistics and  
 > # p-values calculated based on Kenward-Roger's approximations
 > anova(m, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3 with  Kenward-Roger  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
             Df Sum Sq Mean Sq F value Denom    Pr(>F)    
 Gender       1  3.844  3.8437  0.8790    79 0.3513465    
 Information  1  6.520  6.5201  1.4909   563 0.2225804    
@@ -606,20 +590,6 @@ Product      3 91.807 30.6024  6.9979
 > 
 > # backward elimination of non-significant effects of model m
 > st <- step(m)
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Gender' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Gender' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Information' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Gender' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Information' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Gender' is absent, its contrast will be ignored
-Warning in model.matrix.default(mt, mf, contrasts) :
-  variable 'Information' is absent, its contrast will be ignored
 > 
 > plot(st)
 > 
@@ -643,9 +613,6 @@ Warning in model.matrix.default(mt, mf, contrasts) :
 > 
 > #import lme4 package and lmerTest package
 > library(lmerTest)
-> 
-> #import ham data from lmerTest package
-> data(ham)
 > 
 > #specify lmer model
 > m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
@@ -719,7 +686,8 @@ Fixed Effects:
 > # type 3 anova table with  denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m)
-Analysis of Variance Table of type 3 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Satterthwaite 
+approximation for degrees of freedom
      Df Sum Sq Mean Sq F value  Denom  Pr(>F)    
 Days  1  29442   29442  45.046 18.148 2.6e-06 ***
 ---
@@ -728,7 +696,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # type 1 anova table with denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m, type=1)
-Analysis of Variance Table of type 1 with  Satterthwaite  approximation for degrees of freedom
+Analysis of Variance Table of type 1  with  Satterthwaite 
+approximation for degrees of freedom
      Df Sum Sq Mean Sq F value  Denom  Pr(>F)    
 Days  1  29442   29442  45.046 18.148 2.6e-06 ***
 ---
@@ -737,7 +706,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # type3 anova table with additional F statistics and denominator degrees of freedom
 > # calculated based on Kenward-Roger's approximation
 > anova(m, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3 with  Kenward-Roger  approximation for degrees of freedom
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
      Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
 Days  1  29442   29442  45.046 18.188 2.571e-06 ***
 ---
@@ -766,9 +736,9 @@ Random effects:
 Number of obs: 180, groups: Subject, 18
 
 Fixed effects:
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  251.405      6.885   36.51  < 2e-16 ***
-Days          10.467      1.560    6.71  2.6e-06 ***
+            Estimate Std. Error      df t value Pr(>|t|)    
+(Intercept)  251.405      6.885  18.154  36.513  < 2e-16 ***
+Days          10.467      1.560  18.148   6.712  2.6e-06 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -795,9 +765,6 @@ Days -0.184
 > 
 > #import lme4 package and lmerTest package
 > library(lmerTest)
-> 
-> #import carrots data from lmerTest package
-> data(carrots)
 > 
 > #lmer model with correlation between intercept and slopes
 > #in the random part
@@ -826,9 +793,6 @@ Analysis of Random effects Table:
 > 
 > #import lme4 package and lmerTest package
 > library(lmerTest)
-> 
-> #import carrots data from lmerTest package
-> data(ham)
 > 
 > ## Not run: 
 > ##D m <- lmer(Informed.liking ~ Product*Information*Gender+ 
@@ -891,11 +855,35 @@ Random effects:
 Number of obs: 180, groups: Subject, 18
 
 Fixed effects:
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  251.405      6.825   36.84  < 2e-16 ***
-Days          10.467      1.546    6.77 3.27e-06 ***
+            Estimate Std. Error      df t value Pr(>|t|)    
+(Intercept)  251.405      6.825  16.998  36.838  < 2e-16 ***
+Days          10.467      1.546  16.995   6.771 3.27e-06 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+> 
+> #will give the summary of lme4 package
+> summary(fm1, "lme4")
+Linear mixed model fit by REML ['merModLmerTest']
+Formula: Reaction ~ Days + (Days | Subject) 
+   Data: sleepstudy 
+
+REML criterion at convergence: 1743.628 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.10   24.741       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups: Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825   36.84
+Days          10.467      1.546    6.77
 
 Correlation of Fixed Effects:
      (Intr)
@@ -907,7 +895,7 @@ Days -0.138
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  20.95 0.14 21.46 NA NA 
+Time elapsed:  37.52 0.7 38.38 NA NA 
 > grDevices::dev.off()
 null device 
           1 

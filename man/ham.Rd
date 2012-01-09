@@ -39,9 +39,6 @@ ham
 #import lmerTest package
 library(lmerTest)
 
-#import ham data from lmerTest package
-data(ham)
-
 m <- lmer(Informed.liking ~ Product*Information*Gender 
 + (1|Product:Consumer) , data=ham)
 
