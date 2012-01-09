@@ -40,7 +40,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type=3, alpha.rand
   else
   {
     #update model to mer class
-    model <- updateModel(model, .~.,model@dims[["REML"]], l)
+    model <- updateModel(model, .~., model@dims[["REML"]], l)
   }
   
   
@@ -290,13 +290,13 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type=3, alpha.rand
       {
         if(isLSMEANS)
         {
-          lsmeans.tab<-calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=TRUE)
+          lsmeans.tab<-calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=TRUE, l)
           result$lsmeans.table<-lsmeans.tab$summ.data
           result$diffs.lsmeans.table<-NULL
         }
         if(isDiffLSMEANS)
         {
-          lsmeans.tab<-calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=FALSE)
+          lsmeans.tab<-calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=FALSE, l)
           result$diffs.lsmeans.table<-lsmeans.tab$summ.data
           result$lsmeans.table<-NULL
         }
@@ -316,7 +316,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type=3, alpha.rand
       
       #save full coefficients in rho
       #rho$s.test<-coefs.real
-      nums.dummy.coefs <- getNumsDummyCoefs(model, data)
+      nums.dummy.coefs <- getNumsDummyCoefs(model, data, l)
       rho$nums.zeroCoefs <- nums.dummy.coefs$nums.zeroCoefs
       rho$nums.Coefs <- nums.dummy.coefs$nums.Coefs
       
@@ -399,7 +399,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type=3, alpha.rand
   #if in step function least squares means of diffs of LSMEANS are required
   if(lsmeans.calc)
   {
-    lsmeans.tab <- calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=TRUE)
+    lsmeans.tab <- calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=TRUE, l)
     result$lsmeans.table <- lsmeans.tab$summ.data
   }
   else
@@ -408,7 +408,7 @@ totalAnovaRandLsmeans <- function(model, ddf="Satterthwaite", type=3, alpha.rand
   }
   if(difflsmeans.calc)
   {
-    lsmeans.tab <- calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=FALSE)
+    lsmeans.tab <- calcLSMEANS(model, data, rho, alpha.fixed, test.effs=test.effs, method.grad=method.grad, lsmeansORdiff=FALSE, l)
     result$diffs.lsmeans.table <- lsmeans.tab$summ.data
   }
   else
