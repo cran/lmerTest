@@ -541,6 +541,7 @@ calcGeneralSetForHypothesis<-function(X.design, rho)
 makeContrastType3SAS<-function(model, term, L)
 {
   
+  eps <- 1e-8
   #apply rule 1 (Goodnight 1976)
   
   #find all effects that contain term effect
@@ -563,7 +564,9 @@ makeContrastType3SAS<-function(model, term, L)
     
   for(colnum in colnums)
   {
-    pivots<-which(L[,colnum]!=0)
+    
+    pivots<-which(abs(L[,colnum]) > eps)
+    #pivots<-which(L[,colnum]!=0)
     if(length(pivots)>0)
     {
       L[pivots[1],]<-L[pivots[1],]/L[pivots[1],colnum]
@@ -902,7 +905,7 @@ calcLsmeansForEff<-function(lsmeans.summ, fac.comb, eff, split.eff, alpha, mat, 
 ###################################################################
 #calculate LSMEANS DIFFS and CI for all effects
 ###################################################################
-calcLSMEANS<-function(model, data, rho, alpha, test.effs = NULL, method.grad="Richardson", lsmeansORdiff=TRUE)
+calcLSMEANS<-function(model, data, rho, alpha, test.effs = NULL, method.grad="Richardson", lsmeansORdiff=TRUE, l)
 {  
  
  #library(gplots)
@@ -913,7 +916,8 @@ calcLSMEANS<-function(model, data, rho, alpha, test.effs = NULL, method.grad="Ri
  #else
  #   m<-lm(as.formula(paste(fm[2],fm[1],fm[3], sep="")), data=data)
  #####################################
- m<-lm(model, data=model$data)  
+ m<-lm(model, data=model$data, contrasts=l)
+ #m<-lm(model, data=model$data)
  effs<-attr(terms(m),"term.labels")
  if(!is.null(test.effs))
     effs<-effs[effs %in% test.effs]
@@ -1019,7 +1023,7 @@ getNumsDummyCoefs2<-function(model, data)
 
 
 # get dummy coefficients of the fixed part of the model
-getNumsDummyCoefs<-function(model, data)
+getNumsDummyCoefs<-function(model, data, l)
 {
   ### old code ######################
   #fm<-getFormula(model, withRand=FALSE)
@@ -1029,7 +1033,8 @@ getNumsDummyCoefs<-function(model, data)
   #   m<-lm(as.formula(paste(fm[2],fm[1],fm[3], sep="")), data=data) 
   ####################################
   
-  m<-lm(model, data=model$data)  
+  m<-lm(model, data=model$data, contrasts=l)  
+  #m<-lm(model, data=model$data)  
   
   #get full coefficients
   dc<-dummy.coef(m)

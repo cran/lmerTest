@@ -1,0 +1,767 @@
+
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: i386-w64-mingw32/i386 (32-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "lmerTest"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> options(pager = "console")
+> library('lmerTest')
+Loading required package: Matrix
+Loading required package: lattice
+Loading required package: lme4
+
+Attaching package: 'lme4'
+
+The following object(s) are masked from 'package:stats':
+
+    AIC, BIC
+
+
+Attaching package: 'lmerTest'
+
+The following object(s) are masked from 'package:lme4':
+
+    lmer
+
+The following object(s) are masked from 'package:stats':
+
+    step
+
+> 
+> assign(".oldSearch", search(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("TVbo")
+> ### * TVbo
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: TVbo
+> ### Title: TV dataset
+> ### Aliases: TVbo
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import TVbo data from lmerTest package
+> data(TVbo)
+> 
+> 
+> m <- lmer(log(Coloursaturation)~TVset*Picture+
++ (1|Assessor)+(1|Assessor:TVset), data=TVbo)
+[1] "Asymptotic covariance matrix A is not positive!"
+> 
+> step(m, test.effs="TVset", reduce.fixed=TRUE, reduce.random=TRUE)
+Warning: 
+ Random term (1 | Assessor) was eliminated because of standard deviation being equal to 0 
+
+
+Random effects:
+                     Chi.sq Chi.DF elim.num p.value    
+(1 | Assessor:TVset)   60.8      1        0   6e-15 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Fixed effects:
+              NumDF DenDF F.value elim.num Pr(>F)    
+TVset             2    21   13.56        0  2e-04 ***
+Picture           3   159    3.03        0   0.03 *  
+TVset:Picture     6   159    2.62        0   0.02 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Least squares means:
+           TVset Picture Estimate Standard Error DF t-value Lower CI Upper CI
+TVset  TV1     1      NA   2.0005         0.0425 21    47.0     1.91     2.09
+TVset  TV2     2      NA   2.2712         0.0425 21    53.4     2.18     2.36
+TVset  TV3     3      NA   1.9992         0.0425 21    47.0     1.91     2.09
+           p-value    
+TVset  TV1  <2e-16 ***
+TVset  TV2  <2e-16 ***
+TVset  TV3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+ Differences of LSMEANS:
+              Estimate Standard Error   DF t-value Lower CI Upper CI p-value
+TVset TV1-TV2     -0.3         0.0602 21.0   -4.50   -0.396   -0.146   2e-04
+TVset TV1-TV3      0.0         0.0602 21.0    0.02   -0.124    0.126       1
+TVset TV2-TV3      0.3         0.0602 21.0    4.52    0.147    0.397   2e-04
+                 
+TVset TV1-TV2 ***
+TVset TV1-TV3    
+TVset TV2-TV3 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Final model:
+lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture + 
+    (1 | Assessor:TVset) + TVset:Picture, data = TVbo, REML = ..2, 
+    contrasts = ..3)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("carrots")
+> ### * carrots
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: carrots
+> ### Title: Consumer preference mapping of carrots
+> ### Aliases: carrots
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import carrots data from lmerTest package
+> data(carrots)
+> 
+> m <- lmer(Preference ~ sens2 + Homesize
++ +(1+sens2|Consumer), data=carrots)
+> 
+> # only elimination of the random part is required. 
+> #approximation of ddf is Kenward-Roger
+> step(m, reduce.random=TRUE, reduce.fixed=FALSE, ddf="Kenward-Roger")
+
+Random effects:
+                             Chi.sq Chi.DF elim.num p.value    
+(1 + sens2 | Consumer)        0.707      1        1    0.40    
+      (sens2 + 0 | Consumer)  5.987      1        0    0.01 *  
+      (1 | Consumer)         82.445      1        0  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Fixed effects:
+         NumDF DenDF F.value Pr(>F)    
+sens2        1   102       1  4e-11 ***
+Homesize     1   101       1   0.03 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Least squares means:
+            Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
+Homesize  1        1   4.9062         0.0707 101  69.4200     4.77     5.05
+Homesize  3        2   4.6661         0.0787 101  59.3300     4.51     4.82
+            p-value    
+Homesize  1  <2e-16 ***
+Homesize  3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+ Differences of LSMEANS:
+             Estimate Standard Error    DF t-value Lower CI Upper CI p-value  
+Homesize 1-3      0.2          0.106 100.9    2.27   0.0304     0.45    0.03 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Final model:
+lme4::lmer(formula = Preference ~ sens2 + Homesize + (sens2 + 
+    0 | Consumer) + (1 | Consumer), data = carrots, REML = ..2, 
+    contrasts = ..3)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("difflsmeans")
+> ### * difflsmeans
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: difflsmeans
+> ### Title: Calculates Differences of Least Squares Means and Confidence
+> ###   Intervals for the factors of a fixed part of mixed effects model of
+> ###   lmer object.
+> ### Aliases: difflsmeans
+> 
+> ### ** Examples
+> 
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import ham data from lmerTest package
+> data(ham)
+> 
+> #specify lmer model
+> m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
+> 
+> #calculate least squares means for interaction Gender:Information
+> difflsmeans(m1, test.effs="Gender:Information")
+Differences of LSMEANS:
+                             Estimate Standard Error    DF t-value Lower CI
+Gender:Information  1 1- 2 1      0.2         0.3095 153.6    0.49   -0.460
+Gender:Information  1 1- 1 2     -0.3         0.2347 565.0   -1.25   -0.754
+Gender:Information  1 1- 2 2      0.0         0.3095 153.6    0.14   -0.567
+Gender:Information  2 1- 1 2     -0.4         0.3095 153.6   -1.43   -1.055
+Gender:Information  2 1- 2 2     -0.1         0.2376 565.0   -0.45   -0.573
+Gender:Information  1 2- 2 2      0.3         0.3095 153.6    1.09   -0.274
+                             Upper CI p-value
+Gender:Information  1 1- 2 1    0.762     0.6
+Gender:Information  1 1- 1 2    0.168     0.2
+Gender:Information  1 1- 2 2    0.656     0.9
+Gender:Information  2 1- 1 2    0.168     0.2
+Gender:Information  2 1- 2 2    0.360     0.7
+Gender:Information  1 2- 2 2    0.949     0.3
+> 
+> #import TVbo data from lmerTest package
+> data(TVbo) 
+> 
+> m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
+> plot(difflsmeans(m, test.effs="TVset"))
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("ham")
+> ### * ham
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: ham
+> ### Title: Conjoint study of dry cured ham
+> ### Aliases: ham
+> ### Keywords: datasets
+> 
+> ### ** Examples
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import ham data from lmerTest package
+> data(ham)
+> 
+> m <- lmer(Informed.liking ~ Product*Information*Gender 
++ + (1|Product:Consumer) , REML=FALSE, data=ham)
+> 
+> #anova table with p-values with Satterthwaite's approximation for denominator 
+> #degrees of freedom
+> anova(m)
+Analysis of Variance Table with  Satterthwaite  approximation for degrees of freedom
+                           Df  Sum Sq Mean Sq F value  Denom  Pr(>F)  
+Product                     3 17.3807  5.7936  3.5887 323.98 0.01405 *
+Information                 1  6.5201  6.5201  3.9681 323.97 0.04721 *
+Gender                      1  1.8299  1.8299  1.1272 323.98 0.28917  
+Product:Information         3 10.3873  3.4624  2.1420 323.97 0.09482 .
+Product:Gender              3  1.5943  0.5314  0.3273 323.98 0.80560  
+Information:Gender          1  1.4075  1.4075  0.8666 323.97 0.35258  
+Product:Information:Gender  3  5.9915  1.9972  1.2297 323.97 0.29888  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> #analysis of random and fixed parts and post hoc 
+> #analysis of Product and Information effects
+> step(m, reduce.random=FALSE, reduce.fixed=FALSE,
++ test.effs=c("Product", "Information"))
+Warning in totalAnovaRandLsmeans(model = model, ddf = ddf, type = type,  :
+  
+ model has been refitted with REML=TRUE 
+
+
+Random effects:
+                       Chi.sq Chi.DF p.value    
+(1 | Product:Consumer)    197      1  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Fixed effects:
+                           NumDF DenDF F.value Pr(>F)  
+Product                        3   316   3.500   0.02 *
+Information                    1   316   3.870   0.05 .
+Gender                         1   316   1.099   0.30  
+Product:Information            3   316   2.089   0.10  
+Product:Gender                 3   316   0.319   0.81  
+Information:Gender             1   316   0.845   0.36  
+Product:Information:Gender     3   316   1.199   0.31  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Least squares means:
+               Product Information Gender Estimate Standard Error  DF t-value
+Product  1           1          NA     NA    5.808          0.233 316    24.9
+Product  2           2          NA     NA    5.101          0.233 316    21.9
+Product  3           3          NA     NA    6.091          0.233 316    26.1
+Product  4           4          NA     NA    5.926          0.233 316    25.4
+Information  1      NA           1     NA    5.632          0.127 432    44.3
+Information  2      NA           2     NA    5.831          0.127 432    45.9
+               Lower CI Upper CI p-value    
+Product  1         5.35     6.27  <2e-16 ***
+Product  2         4.64     5.56  <2e-16 ***
+Product  3         5.63     6.55  <2e-16 ***
+Product  4         5.47     6.38  <2e-16 ***
+Information  1     5.38     5.88  <2e-16 ***
+Information  2     5.58     6.08  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+ Differences of LSMEANS:
+                Estimate Standard Error    DF t-value Lower CI Upper CI p-value
+Product 1-2          0.7          0.330 316.0    2.15   0.0589    1.355   0.033
+Product 1-3         -0.3          0.330 316.0   -0.86  -0.9307    0.366   0.392
+Product 1-4         -0.1          0.330 316.0   -0.36  -0.7655    0.531   0.722
+Product 2-3         -1.0          0.330 316.0   -3.00  -1.6379   -0.341   0.003
+Product 2-4         -0.8          0.330 316.0   -2.50  -1.4727   -0.176   0.013
+Product 3-4          0.2          0.330 316.0    0.50  -0.4830    0.814   0.616
+Information 1-2     -0.2          0.101 316.0   -1.97  -0.3990    0.000   0.050
+                  
+Product 1-2     * 
+Product 1-3       
+Product 1-4       
+Product 2-3     **
+Product 2-4     * 
+Product 3-4       
+Information 1-2 * 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Final model:
+lme4::lmer(formula = Informed.liking ~ Product + Information + 
+    Gender + (1 | Product:Consumer) + Product:Information + Product:Gender + 
+    Information:Gender + Product:Information:Gender, data = ham, 
+    REML = ..2, contrasts = ..3)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("lmer")
+> ### * lmer
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: lmer
+> ### Title: Fit Linear Mixed-Effects Models
+> ### Aliases: lmer
+> ### Keywords: models methods
+> 
+> ### ** Examples
+> 
+> ## linear mixed models
+> fm1 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
+> fm2 <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject), sleepstudy)
+> 
+> # anova table the same as of class mer but with additional F statistics and  
+> # p-values calculated based on Satterthwaite's approximations
+> anova(fm1)
+Analysis of Variance Table with  Satterthwaite  approximation for degrees of freedom
+     Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
+Days  1  29987   29987  45.853 16.995 3.269e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> # anova table the same as of class mer 
+> anova(fm1, ddf="lme4")
+Analysis of Variance Table
+     Df Sum Sq Mean Sq F value
+Days  1  29987   29987  45.785
+> 
+> # gives summary of merLmerTest class. The same as of class summary.mer but with 
+> # additional p-values calculated based on Satterthwate's approximations
+> summary(fm1)
+Linear mixed model fit by REML 
+Formula: Reaction ~ Days + (Days | Subject) 
+   Data: sleepstudy 
+  AIC  BIC logLik deviance REMLdev
+ 1756 1775 -871.8     1752    1744
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr  
+ Subject  (Intercept) 612.092  24.7405        
+          Days         35.072   5.9221  0.066 
+ Residual             654.941  25.5918        
+Number of obs: 180, groups: Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  251.405      6.825   36.84  < 2e-16 ***
+Days          10.467      1.546    6.77 3.27e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("lmerTest-package")
+> ### * lmerTest-package
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: lmerTest-package
+> ### Title: The package performs different kinds of tests on lmer objects,
+> ###   such as F tests of type 3 hypothesis for the fixed part,
+> ###   log-likelihood ratio tests for the random part, least squares means
+> ###   (population means) and differences of least squares means for the
+> ###   factors of the fixed part with corresponding plots. The package also
+> ###   provides with a function step, that preforms backward elimination of
+> ###   non-significant effects, starting from the random effects, and then
+> ###   fixed ones.
+> ### Aliases: lmerTest-package lmerTest
+> 
+> ### ** Examples
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import ham data from lmerTest package
+> data(ham)
+> 
+> # an object of class merLmerTest
+> m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
+> 
+> # gives summary of lmer object. The same as of class summary.mer but with 
+> # additional p-values calculated based on Satterthwate's approximations
+> summary(m)
+Linear mixed model fit by REML 
+Formula: Informed.liking ~ Gender + Information + Product + (1 | Consumer) 
+   Data: ham 
+  AIC  BIC logLik deviance REMLdev
+ 2889 2924  -1436     2864    2873
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Consumer (Intercept) 0.8280   0.90995 
+ Residual             4.3731   2.09119 
+Number of obs: 648, groups: Consumer, 81
+
+Fixed effects:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept)    5.8290     0.2460  23.695  < 2e-16 ***
+Gender2       -0.2443     0.2605  -0.938  0.35135    
+Information2   0.2006     0.1643   1.221  0.22258    
+Product2      -0.7037     0.2324  -3.029  0.00257 ** 
+Product3       0.2840     0.2324   1.222  0.22220    
+Product4       0.1173     0.2324   0.505  0.61392    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Correlation of Fixed Effects:
+            (Intr) Gendr2 Infrm2 Prdct2 Prdct3
+Gender2     -0.523                            
+Informatin2 -0.334  0.000                     
+Product2    -0.472  0.000  0.000              
+Product3    -0.472  0.000  0.000  0.500       
+Product4    -0.472  0.000  0.000  0.500  0.500
+> 
+> # anova table the same as of class mer but with additional F statistics and 
+> # p-values calculated based on Satterthwaite's approximations
+> anova(m)
+Analysis of Variance Table with  Satterthwaite  approximation for degrees of freedom
+            Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
+Gender       1  3.843  3.8429  0.8789  78.98 0.3513507    
+Information  1  6.520  6.5201  1.4910 562.97 0.2225800    
+Product      3 91.807 30.6024  6.9979 562.97 0.0001256 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> # anova table the same as of class mer but with additional F statistics and  
+> # p-values calculated based on Kenward-Roger's approximations
+> anova(m, ddf="Kenward-Roger")
+Analysis of Variance Table with  Kenward-Roger  approximation for degrees of freedom
+            Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
+Gender       1  3.843  3.8429       1  79.02 0.3513189    
+Information  1  6.520  6.5201       1 563.00 0.2225799    
+Product      3 91.807 30.6024       1 563.00 0.0001256 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> # anova table the same as of class mer 
+> anova(m, ddf="lme4")
+Analysis of Variance Table
+            Df Sum Sq Mean Sq F value
+Gender       1  3.843  3.8429  0.8788
+Information  1  6.520  6.5201  1.4910
+Product      3 91.807 30.6024  6.9979
+> 
+> # backward elimination of non-significant effects of model m
+> st<-step(m)
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Information' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Information' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Information' is absent, its contrast will be ignored
+> 
+> plot(st)
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("lsmeans")
+> ### * lsmeans
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: lsmeans
+> ### Title: Calculates Least Squares Means and Confidence Intervals for the
+> ###   factors of a fixed part of mixed effects model of lmer object.
+> ### Aliases: lsmeans
+> 
+> ### ** Examples
+> 
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import ham data from lmerTest package
+> data(ham)
+> 
+> #specify lmer model
+> m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
+> 
+> #calculate least squares means for interaction Gender:Information
+> lsmeans(m1, test.effs="Gender:Information")
+Least Squares Means table:
+                        Gender Information Estimate Standard Error  DF t-value
+Gender:Information  1 1      1           1    5.707          0.218 154    26.2
+Gender:Information  2 1      2           1    5.556          0.220 154    25.2
+Gender:Information  1 2      1           2    6.000          0.218 154    27.6
+Gender:Information  2 2      2           2    5.662          0.220 154    25.7
+                        Lower CI Upper CI p-value    
+Gender:Information  1 1     5.28     6.14  <2e-16 ***
+Gender:Information  2 1     5.12     5.99  <2e-16 ***
+Gender:Information  1 2     5.57     6.43  <2e-16 ***
+Gender:Information  2 2     5.23     6.10  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> #import TVbo data from lmerTest package
+> data(TVbo) 
+> 
+> m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
+> plot(lsmeans(m))
+> lsmeans(m, test.effs="TVset")
+Least Squares Means table:
+           TVset Picture Estimate Standard Error   DF t-value Lower CI Upper CI
+TVset  TV1   1.0      NA    7.525          0.233 12.4    32.3     7.02     8.03
+TVset  TV2   2.0      NA    9.778          0.233 12.4    42.0     9.27    10.28
+TVset  TV3   3.0      NA    7.475          0.233 12.4    32.1     6.97     7.98
+           p-value    
+TVset  TV1  <2e-16 ***
+TVset  TV2  <2e-16 ***
+TVset  TV3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("merLmerTest-class")
+> ### * merLmerTest-class
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: merLmerTest-class
+> ### Title: Mixed Model Representations
+> ### Aliases: merLmerTest-class summary.merLmerTest-class
+> ###   anova,merLmerTest-method summary,merLmerTest-method
+> ###   summary,summary.merLmerTest-method
+> ### Keywords: classes
+> 
+> ### ** Examples
+> 
+> 
+> (m <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject),
++              data = sleepstudy))
+Linear mixed model fit by REML 
+Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject) 
+   Data: sleepstudy 
+  AIC  BIC logLik deviance REMLdev
+ 1754 1770 -871.8     1752    1744
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Subject  (Intercept) 627.568  25.0513 
+ Subject  Days         35.858   5.9882 
+ Residual             653.584  25.5653 
+Number of obs: 180, groups: Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  251.405      6.885   36.51  < 2e-16 ***
+Days          10.467      1.559    6.71  2.6e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.184
+> 
+> # anova table with additional F statistics and denominator degrees of freedom
+> # calculated based on Satterthwaite's approximation
+> anova(m)
+Analysis of Variance Table with  Satterthwaite  approximation for degrees of freedom
+     Df Sum Sq Mean Sq F value  Denom  Pr(>F)    
+Days  1  29018   29018  45.046 18.148 2.6e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> # anova table with additional F statistics and denominator degrees of freedom
+> # calculated based on Kenward-Roger's approximation
+> anova(m, ddf="Kenward-Roger")
+Analysis of Variance Table with  Kenward-Roger  approximation for degrees of freedom
+     Df Sum Sq Mean Sq F value  Denom    Pr(>F)    
+Days  1  29018   29018       1 18.194 2.564e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+> 
+> # anova table, that is returned by lme4 package
+> anova(m, ddf="lme4")
+Analysis of Variance Table
+     Df Sum Sq Mean Sq F value
+Days  1  29018   29018  44.398
+> 
+> # summary of merLmerTest object. Returns the same as mer object but with an 
+> #additional column of p values for the t test. 
+> summary(m)
+Linear mixed model fit by REML 
+Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject) 
+   Data: sleepstudy 
+  AIC  BIC logLik deviance REMLdev
+ 1754 1770 -871.8     1752    1744
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Subject  (Intercept) 627.568  25.0513 
+ Subject  Days         35.858   5.9882 
+ Residual             653.584  25.5653 
+Number of obs: 180, groups: Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value Pr(>|t|)    
+(Intercept)  251.405      6.885   36.51  < 2e-16 ***
+Days          10.467      1.559    6.71  2.6e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.184
+> 
+> 
+> 
+> 
+> cleanEx()
+> nameEx("rand")
+> ### * rand
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: rand
+> ### Title: Performs log-likelihood ratio test on random effects of linear
+> ###   mixed effects model.
+> ### Aliases: rand
+> 
+> ### ** Examples
+> 
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import carrots data from lmerTest package
+> data(carrots)
+> 
+> #lmer model with correlation between intercept and slopes
+> #in the random part
+> m <- lmer(Preference ~ sens2+Homesize+(1+sens2|Consumer), data=carrots)
+> 
+> # table with  p-values for the random effects
+> rand(m)
+Analysis of Random effects Table:
+                       Chi.sq Chi.DF p.value
+(1 + sens2 | Consumer)  0.707      1     0.4
+> 
+> 
+> 
+> cleanEx()
+> nameEx("step")
+> ### * step
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: step
+> ### Title: Performs backward elimination of non-significant effects of
+> ###   linear mixed effects model:
+> ### Aliases: step
+> 
+> ### ** Examples
+> 
+> #import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> #import carrots data from lmerTest package
+> data(ham)
+> 
+> 
+> m <- lmer(Informed.liking ~ Product + Information + Gender+ (1|Consumer) + (1|Product:Consumer), data=ham)
+> 
+> 
+> #elimination of non-significant effects
+> s <- step(m)
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+Warning in model.matrix.default(mt, mf, contrasts) :
+  variable 'Gender' is absent, its contrast will be ignored
+> 
+> #plot of post-hoc analysis of the final model
+> plot(s)
+> 
+> 
+> 
+> 
+> 
+> 
+> ### * <FOOTER>
+> ###
+> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  41.08 0.34 42.19 NA NA 
+> grDevices::dev.off()
+pdf 
+  2 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')

@@ -1,8 +1,8 @@
-185bf2ec8391e91cd5119ef229cf97e1 *DESCRIPTION
+1f5b7c8c5053a266f12a3b543dce35b5 *DESCRIPTION
 9ee86d6f4b626f1ee5d2a5b865666e9b *NAMESPACE
 fb4b46862c7f521f99495b6ce80e65ab *R/classes.R
-bea0778019afb1d69d5d65981446a72c *R/lmerTestFunctions.R
-c9020e0b951aaa504fc65d4e7b1be124 *R/utils.R
+da0a04b73b77c3b3d5561b108ebf56b0 *R/lmerTestFunctions.R
+6726fa1c3747f22f80fd1d49ac2ec2eb *R/utils.R
 14b928552563309e6a84b8d953cda4e4 *data/TVbo.rda
 cffd6c78a0406fc2ea7bd1670c1921c2 *data/carrots.rda
 fee30b6b64fd268d3fc1910ee4366bee *data/ham.rda
@@ -16,3 +16,4 @@ cba5814228e9c7d584fc58d1c595f5a6 *man/TVbo.Rd
 ef1ffd2a93ffe7e2f9d47ca7d479f837 *man/merLmerTest-class.Rd
 466e67c2a3522f412c29481049f17388 *man/rand.Rd
 0d033c0e2120d815a3c6bc0310b56e2e *man/step.Rd
+4afd9d991b18f9b5963b7f54fb2ac76e *tests/Examples/lmerTest-Ex.Rout.save
