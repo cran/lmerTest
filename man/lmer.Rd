@@ -17,6 +17,9 @@
   The \code{\linkS4class{merLmerTest}} class, \code{\linkS4class{mer}} class
 }
 \examples{
+
+library(lmerTest)
+
 ## linear mixed models
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
 fm2 <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject), sleepstudy)

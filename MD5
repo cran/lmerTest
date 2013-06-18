@@ -1,8 +1,8 @@
-1f5b7c8c5053a266f12a3b543dce35b5 *DESCRIPTION
+e7d122338d47d74e22d5f31445006f53 *DESCRIPTION
 9ee86d6f4b626f1ee5d2a5b865666e9b *NAMESPACE
 fb4b46862c7f521f99495b6ce80e65ab *R/classes.R
 da0a04b73b77c3b3d5561b108ebf56b0 *R/lmerTestFunctions.R
-6726fa1c3747f22f80fd1d49ac2ec2eb *R/utils.R
+82d45ce3dc358b279036cba156adb3b1 *R/utils.R
 14b928552563309e6a84b8d953cda4e4 *data/TVbo.rda
 cffd6c78a0406fc2ea7bd1670c1921c2 *data/carrots.rda
 fee30b6b64fd268d3fc1910ee4366bee *data/ham.rda
@@ -10,10 +10,10 @@ cba5814228e9c7d584fc58d1c595f5a6 *man/TVbo.Rd
 642ce285679ef82c4e7398882e7ac19c *man/carrots.Rd
 2a6244dfd37f0d963f61695183ff0625 *man/difflsmeans.Rd
 26e875aad119b97278bbd8fc56b52b44 *man/ham.Rd
-6e7b83931f319d27347833bd5ad3790c *man/lmer.Rd
+ab660f6cf8bb80c512de45b3669764dd *man/lmer.Rd
 3be4767435f069814d67f99326483736 *man/lmerTest-package.Rd
 2d4bef628f01659af5c9e1ef514e3f28 *man/lsmeans.Rd
-ef1ffd2a93ffe7e2f9d47ca7d479f837 *man/merLmerTest-class.Rd
+19db6670ceb6f9821456308b38a5a856 *man/merLmerTest-class.Rd
 466e67c2a3522f412c29481049f17388 *man/rand.Rd
-0d033c0e2120d815a3c6bc0310b56e2e *man/step.Rd
-4afd9d991b18f9b5963b7f54fb2ac76e *tests/Examples/lmerTest-Ex.Rout.save
+5dc302127ed68bfa711d90bc07337310 *man/step.Rd
+07972a367d455010e2c6522b1f9f1606 *tests/Examples/lmerTest-Ex.Rout.save

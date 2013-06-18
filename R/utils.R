@@ -276,7 +276,7 @@ calcFpvalue<-function(term, L, model, rho, ddf, method.grad="simple")
     else
       res.KR<-KRmodcomp(model,Lc)
    # return(list(denom = res.KR$stats["df2"], Fstat = res.KR$stats["Fstat"], pvalue =  res.KR$stats["p.value"]))
-    return(list(denom = res.KR$test[1,"ddf"], Fstat = res.KR$test[1,"F.scaling"], pvalue =  res.KR$test[1,"p.value"]))
+    return(list(denom = res.KR$test[1,"ddf"], Fstat = res.KR$test[1,"stat"], pvalue =  res.KR$test[1,"p.value"]))
   }
   else
   {
@@ -1585,14 +1585,14 @@ elimRandEffs<-function(model, data, alpha, reduce.random, l)
       #  model.red<-eval(substitute(lmer(mf.final, data=data),list(mf.final=mf.final)))
       model.red<-updateModel(model, mf.final, model@dims[["REML"]], l)
       anova.red<-anova(model, model.red)
-      infoForTerms[[rand.term]]<-saveInfoForTerm(rand.term, anova.red$Chisq[2], anova.red[2,6] , anova.red$Pr[2])
+      infoForTerms[[rand.term]]<-saveInfoForTerm(rand.term, anova.red$Chisq[2], anova.red[2,6] , anova.red$'Pr(>Chisq)'[2])
             
-      if((anova.red$Pr[2] >= pv.max) && reduce.random)
+      if((anova.red$'Pr(>Chisq)'[2] >= pv.max) && reduce.random)
       { 
-           pv.max<-anova.red$Pr[2]
+           pv.max<-anova.red$'Pr(>Chisq)'[2]
            infoForTermElim<-infoForTerms[[rand.term]]
            model.final<-model.red 
-           if(anova.red$Pr[2]==1)
+           if(anova.red$'Pr(>Chisq)'[2]==1)
              break
       }
     }    
