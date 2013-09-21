@@ -36,14 +36,14 @@ ham
 }
 \examples{
 
-#import lme4 package and lmerTest package
+#import lmerTest package
 library(lmerTest)
 
 #import ham data from lmerTest package
 data(ham)
 
 m <- lmer(Informed.liking ~ Product*Information*Gender 
-+ (1|Product:Consumer) , REML=FALSE, data=ham)
++ (1|Product:Consumer) , data=ham)
 
 #anova table with p-values with Satterthwaite's approximation for denominator 
 #degrees of freedom

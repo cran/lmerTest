@@ -7,14 +7,14 @@
 
 \details{
 
-  This \code{lmer} function is an overloaded function of \code{lmer} of \code{mer} class with an additional slot t.pval, which gives p-values for the t test of fixed terms with Satterthwaite approximation for degees of freedom.
+  This \code{lmer} function is an overloaded function of \code{lmer} of  \code{merMod} class for \pkg{lme4} package  with an additional slot \code{t.pval}, which gives \verb{p}-values for the \verb{t} test of fixed terms with Satterthwaite approximation for degees of freedom.
   
 }
 \value{
-  An object of class \code{"\linkS4class{merLmerTest}"}
+  An object of class \code{"\linkS4class{merModLmerTest}"} 
 }
 \seealso{
-  The \code{\linkS4class{merLmerTest}} class, \code{\linkS4class{mer}} class
+  \code{\linkS4class{merModLmerTest}} class
 }
 \examples{
 
@@ -24,16 +24,23 @@ library(lmerTest)
 fm1 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
 fm2 <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject), sleepstudy)
 
-# anova table the same as of class mer but with additional F statistics and  
+# anova table the same as of class merMod but with additional F statistics and  
 # p-values calculated based on Satterthwaite's approximations
 anova(fm1)
 
-# anova table the same as of class mer 
+# anova table the same as of class merMod but with additional F statistics and  
+# p-values calculated based on Kenward-Roger's approximations
+anova(fm1, ddf="Kenward-Roger")
+
+# anova table the same as of class merMod
 anova(fm1, ddf="lme4")
 
-# gives summary of merLmerTest class. The same as of class summary.mer but with 
+# gives summary of merModLmerTest class. The same as of class merMod but with
 # additional p-values calculated based on Satterthwate's approximations
 summary(fm1)
+
+## multiple comparisons statistics. The one from lme4 package
+anova(fm1, fm2)
 
 }
 \keyword{models}

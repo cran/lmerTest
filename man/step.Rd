@@ -23,11 +23,11 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple", ...)
 
 \item{ddf}{
     
-     approximation for denominator degrees of freedom. By default Satterthwaite's approximation. ddf=Kenward-Roger calculates Kenward-Roger approximation
+     approximation for denominator degrees of freedom. By default Satterthwaite's approximation. ddf="Kenward-Roger"" calculates Kenward-Roger approximation
 }
 
 \item{type}{
-   type of hypothesis to be tested. Currently there is only one choice type=3, which means the hypothesis of type 3.
+   type of hypothesis to be tested (SAS notation). Either type=1 or type=3. 
 }
 
 \item{alpha.random}{
@@ -60,7 +60,7 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple", ...)
 
 \item{test.effs}{
     
-    charachter vector specifying the names of terms to be tested in LSMEANS. If NULL all the terms are tested. If isLSMEANS==FALSE then LSMEANS are not calculated.
+    charachter vector specifying the names of terms to be tested in LSMEANS. If NULL all the terms are tested. If lsmeans.calc==FALSE then LSMEANS are not calculated.
 }
 
 \item{method.grad}{
@@ -73,7 +73,7 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple", ...)
 }
 \details{
 Elimination of all effects is done one at a time.
-Elimination of the fixed part is done by the principle of marginality that is: the highest order interactions are tested first: if they are significant, the lower order effects are not tested for significance.
+Elimination of the fixed part is done by the principle of marginality that is: the highest order interactions are tested first: if they are significant, the lower order effects are not tested for significance. If the elimination of the random part is required, the model with REML=FALSE is updated automatically to REML=TRUE before the elimination process starts.
 }
 \value{
 %%  ~Describe the value returned
@@ -106,9 +106,9 @@ library(lmerTest)
 #import carrots data from lmerTest package
 data(ham)
 
-
-m <- lmer(Informed.liking ~ Product + Information 
-+ Gender+ (1|Consumer) + (1|Product:Consumer), data=ham)
+\dontrun{
+m <- lmer(Informed.liking ~ Product*Information*Gender+ 
+(1|Consumer) + (1|Product:Consumer), data=ham)
 
 
 #elimination of non-significant effects
@@ -116,6 +116,7 @@ s <- step(m)
 
 #plot of post-hoc analysis of the final model
 plot(s)
+}
 
 
 
