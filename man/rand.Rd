@@ -59,9 +59,6 @@ If the effect has random slopes, then first the correlations between itercept an
 #import lme4 package and lmerTest package
 library(lmerTest)
 
-#import carrots data from lmerTest package
-data(carrots)
-
 #lmer model with correlation between intercept and slopes
 #in the random part
 m <- lmer(Preference ~ sens2+Homesize+(1+sens2|Consumer), data=carrots)

@@ -56,9 +56,6 @@ Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 #import lme4 package and lmerTest package
 library(lmerTest)
 
-#import ham data from lmerTest package
-data(ham)
-
 #specify lmer model
 m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 
