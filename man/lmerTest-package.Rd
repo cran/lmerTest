@@ -4,11 +4,11 @@
 \docType{package}
 \title{
  The package performs different kinds of tests on lmer objects, such as \verb{F} tests of type 3/type 1 hypotheses for the fixed part, 
-log-likelihood ratio tests for the random part, least squares means (population means) and differences of least squares means for the factors of the fixed part with corresponding plots. The package also provides with a function step, that preforms backward elimination of non-significant effects, starting from the random effects, and then fixed ones. 
+likelihood ratio tests for the random part, least squares means (population means) and differences of least squares means for the factors of the fixed part with corresponding plots. The package also provides with a function step, that preforms backward elimination of non-significant effects, starting from the random effects, and then fixed ones. 
 }
 \description{
- The package provides anova function, that gives data frame similar to what gives \pkg{lme4} package but with \verb{p}-values calculated from \verb{F} statistics of type 3/type 1 hypotheses. There are two options for denominator degrees of freedom of \verb{F} statistics: "Satterthwaite" and "Kenward-Roger". The calculation of anova with Kenward-Roger's approximation is based on function from \pkg{pbkrtest} package, the calculation of Satterthwaite's approximation is based on SAS proc mixed theory (see reference).The type 3 hypothesis (marginal) is calculated according to SAS theory (SAS Institute Inc., 1978). The package also provides summary function, which gives the same as \pkg{lme4} package summary function but with \verb{p}-values added for the \verb{t}-test (based on Satterthwaite approximation for denominator degrees of freedom).
-The tests on random effects are performed using log-likelihood ratio tests with one degree of freedom, which means, testing one effect in a time.
+ The package provides anova function, that gives data frame similar to what gives \pkg{lme4} package but with \verb{p}-values calculated from \verb{F} statistics of type 3/type 1 hypotheses. There are two options for denominator degrees of freedom of \verb{F} statistics: "Satterthwaite" and "Kenward-Roger". The calculation of anova with Kenward-Roger's approximation is based on function from \pkg{pbkrtest} package, the calculation of Satterthwaite's approximation is based on SAS proc mixed theory (see reference).The type 3 hypothesis (marginal) is calculated according to SAS theory (SAS Institute Inc., 1978). The package also provides \code{summary} function, which gives the same as \pkg{lme4} package summary function but with \verb{p}-values and degrees of freedom added for the \verb{t}-test (based on Satterthwaite approximation for denominator degrees of freedom).
+The tests on random effects are performed using likelihood ratio tests.
 }
 
 \details{
@@ -42,7 +42,7 @@ Schaalje G.B., McBride J.B., Fellingham G.W. 2002 Adequacy of approximations to 
 %%~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 %%}
 \examples{
-#import lme4 package and lmerTest package
+#import lmerTest package
 library(lmerTest)
 
 # an object of class merModLmerTest
@@ -53,14 +53,16 @@ m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
 summary(m)
 
 # anova table the same as of class merMod but with additional F statistics and 
+#  and denominator degrees of freedom and 
 # p-values calculated based on Satterthwaite's approximations
 anova(m)
 
 # anova table the same as of class merMod but with additional F statistics and  
+# denominator degrees of freedom and 
 # p-values calculated based on Kenward-Roger's approximations
 anova(m, ddf="Kenward-Roger")
 
-# anova table the same as of class mer 
+# anova table of class merMod 
 anova(m, ddf="lme4")
 
 # backward elimination of non-significant effects of model m

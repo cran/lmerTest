@@ -7,8 +7,8 @@
 
 \details{
 
-  This \code{lmer} function is an overloaded function of \code{lmer} of  \code{merMod} class for \pkg{lme4} package  with an additional slot \code{t.pval}, which gives \verb{p}-values for the \verb{t} test of fixed terms with Satterthwaite approximation for degees of freedom.
-  
+  This \code{lmer} function is an overloaded function of \code{lmer} (\code{merMod} class from \pkg{lme4} package).
+    
 }
 \value{
   An object of class \code{"\linkS4class{merModLmerTest}"} 

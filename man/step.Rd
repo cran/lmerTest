@@ -5,7 +5,7 @@
 Performs backward elimination of non-significant effects of linear mixed effects model:
 }
 \description{
-performs automatic backward elimination of all effects of linear mixed effect model. First backward elimination of the random part is performed following by backward elimination of the fixed part. Finally LSMEANS(population means) and differences of LSMEANS for the fixed part of the model are calculated and the final model is provided. The p-values for the fixed effects are calculated from F test based on Sattethwaite's or Kenward-Roger approximation), p-values for the random effects are based on log-likelihood ratio test.  All analysis may be performed on lmer object of lme4 package. 
+performs automatic backward elimination of all effects of linear mixed effect model. First backward elimination of the random part is performed following by backward elimination of the fixed part. Finally LSMEANS (population means) and differences of LSMEANS for the fixed part of the model are calculated and the final model is provided. The \verb{p}-values for the fixed effects are calculated from \verb{F} test based on Sattethwaite's or Kenward-Roger approximation), \verb{p}-values for the random effects are based on likelihood ratio test.  All analysis may be performed on \code{lmer} object of \pkg{lme4} package. 
 }
 \usage{
 step(model, ddf="Satterthwaite", type=3, alpha.random = 0.1, alpha.fixed = 0.05, 
@@ -37,7 +37,7 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 
 \item{alpha.fixed}{
     
-     significance level for elimination of the fixed part (for F test and t-test for least squares means)
+     significance level for elimination of the fixed part (for \code{F} test and \code{t}-test for least squares means)
 }
 
 \item{reduce.fixed}{
@@ -60,7 +60,7 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 
 \item{test.effs}{
     
-    charachter vector specifying the names of terms to be tested in LSMEANS. If NULL all the terms are tested. If lsmeans.calc==FALSE then LSMEANS are not calculated.
+    charachter vector specifying the names of terms to be tested in LSMEANS. If NULL all the terms are tested. If \code{lsmeans.calc==FALSE} then LSMEANS are not calculated.
 }
 
 \item{method.grad}{
@@ -74,12 +74,12 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 }
 \details{
 Elimination of all effects is done one at a time.
-Elimination of the fixed part is done by the principle of marginality that is: the highest order interactions are tested first: if they are significant, the lower order effects are not tested for significance. If the elimination of the random part is required, the model with REML=FALSE is updated automatically to REML=TRUE before the elimination process starts.
+Elimination of the fixed part is done by the principle of marginality that is: the highest order interactions are tested first: if they are significant, the lower order effects are not tested for significance. 
 }
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
- \item{rand.table}{data frame with value of Chi square statistics, p-values  for the random effects}
+ \item{rand.table}{data frame with value of Chi square statistics, p-values  for the likelihood ratio test for random effects}
   \item{anova.table }{data frame with tests for whether the model fixed terms are significant (Analysis of Variance)}
   \item{lsmeans.table}{Least Squares Means data frame with p-values and Confidence intervals}
   \item{diffs.lsmeans.table}{Differences of Least Squares Means data frame with p-values and Confidence intervals}
@@ -93,7 +93,7 @@ Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 }
 
 \note{
- For the plots barplot2 function from gplots package was used
+  For the random coefficient models: in the random part if correlation is present between slope and intercept, then the simplified model will contain just an intercept. That is if the random part of the initial model is \code{(1+c|f)}, where \code{c} is a covariate, then this model is compared to \code{(1|f)} by using LRT. If there are multiple slopes, then the the slope with the highest \verb{p}-value (and higher then alpha level) is eliminated. That is if the random part of the initial model has the following form \code{(1+c1+c2|f)}, where \code{c1} and \code{c2} are covariates, then two simplified models are constracted and compared to the initial one: the first one has \code{(1+c1|f)} in the random part and the second one has: \code{(1+c2|f)}. The simplification of the random part does not consider the cases where \code{c} is a factor (is left for the future implementation).
 }
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 

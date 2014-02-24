@@ -2,10 +2,10 @@
 \alias{rand}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Performs log-likelihood ratio test on random effects of linear mixed effects model. 
+Performs likelihood ratio test on random effects of linear mixed effects model. 
 }
 \description{
-Returns a data frame with  values of Chi square statistics and corresponding p-values of log-likelihood ratio tests. 
+Returns a data frame with  values of Chi square statistics and corresponding p-values of likelihood ratio tests. 
 }
 \usage{
 rand(model, \dots)
@@ -36,7 +36,7 @@ Produces a data frame with tests for the random terms being non-significant.
  
  Chi Df: The degrees of freedom for the test
  
- p.value: The p-value of the log-likelihood ratio test for the effect
+ p.value: The p-value of the likelihood ratio test for the effect
 
 }
 %%\references{
@@ -45,9 +45,7 @@ Produces a data frame with tests for the random terms being non-significant.
 \author{
 Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 }
-\note{
-If the effect has random slopes, then first the correlations between itercept and slopes are checked for significance
-}
+
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
