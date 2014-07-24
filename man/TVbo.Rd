@@ -40,7 +40,6 @@ library(lmerTest)
 \dontshow{
 m <- lmer(log(Coloursaturation)~TVset*Picture+
 (1|Assessor)+(1|Assessor:TVset), data=TVbo)
-
 step(m, test.effs="TVset", reduce.fixed=TRUE, reduce.random=TRUE)
 }
 

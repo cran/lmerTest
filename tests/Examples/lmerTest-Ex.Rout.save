@@ -1,6 +1,6 @@
 
-R version 3.0.2 (2013-09-25) -- "Frisbee Sailing"
-Copyright (C) 2013 The R Foundation for Statistical Computing
+R Under development (unstable) (2014-07-21 r66220) -- "Unsuffered Consequences"
+Copyright (C) 2014 The R Foundation for Statistical Computing
 Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -61,7 +61,6 @@ The following object is masked from 'package:stats':
 > ## Don't show: 
 > m <- lmer(log(Coloursaturation)~TVset*Picture+
 + (1|Assessor)+(1|Assessor:TVset), data=TVbo)
-> 
 > step(m, test.effs="TVset", reduce.fixed=TRUE, reduce.random=TRUE)
 
 Random effects:
@@ -102,7 +101,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Final model:
 lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture + 
     (1 | Assessor:TVset) + TVset:Picture, data = TVbo, REML = reml, 
-    contrasts = l)
+    contrasts = l.lmerTest.private.contrast)
 > ## End Don't show
 > 
 > ## Not run: 
@@ -131,7 +130,7 @@ lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture +
 > library(lmerTest)
 > 
 > m.ham <- lmer(Informed.liking ~ Product*Information*Gender 
-+ + (1|Consumer), data=ham)
++ + (1|Consumer), data = ham)
 > 
 > # type 3 anova table with  denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
@@ -151,23 +150,13 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > # type 1 anova table with denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
-> anova(m.ham, type=1)
-Analysis of Variance Table of type 1  with  Satterthwaite 
-approximation for degrees of freedom
-                           Sum Sq Mean Sq NumDF  DenDF F.value    Pr(>F)    
-Product                    91.807 30.6024     3 552.97  6.9475 0.0001351 ***
-Information                 6.520  6.5201     1 552.97  1.4802 0.2242582    
-Gender                      3.872  3.8715     1  78.98  0.8789 0.3513508    
-Product:Information        10.387  3.4624     3 552.97  0.7861 0.5020073    
-Product:Gender              8.421  2.8071     3 552.97  0.6373 0.5912406    
-Information:Gender          1.407  1.4075     1 552.97  0.3195 0.5721201    
-Product:Information:Gender  5.992  1.9972     3 552.97  0.4534 0.7149855    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> ## Not run: 
+> ##D anova(m.ham, type = 1)
+> ## End(Not run)
 > 
 > # type3 anova table with additional F statistics and denominator degrees of freedom
 > # calculated based on Kenward-Roger's approximation
-> anova(m.ham, ddf="Kenward-Roger")
+> anova(m.ham, ddf = "Kenward-Roger")
 Analysis of Variance Table of type 3  with  Kenward-Roger 
 approximation for degrees of freedom
                            Sum Sq Mean Sq NumDF DenDF F.value   Pr(>F)    
@@ -181,21 +170,16 @@ Product:Information:Gender  5.992  1.9972     3   553  0.4534 0.714985
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
-> # anova table, that is returned by lme4 package
-> anova(m.ham, ddf="lme4")
-Analysis of Variance Table
-                           Df Sum Sq Mean Sq F value
-Product                     3 91.807 30.6024  6.9475
-Information                 1  6.520  6.5201  1.4802
-Gender                      1  3.872  3.8715  0.8789
-Product:Information         3 10.387  3.4624  0.7861
-Product:Gender              3  8.421  2.8071  0.6373
-Information:Gender          1  1.407  1.4075  0.3195
-Product:Information:Gender  3  5.992  1.9972  0.4534
+> ## Not run: 
+> ##D # anova table, that is returned by lme4 package
+> ##D anova(m.ham, ddf = "lme4")
+> ## End(Not run)
 > 
 > ## Don't show: 
-> fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
-+                            (1+sens2|Consumer), data=carrots)
+> ## Not run: 
+> ##D fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
+> ##D                            (1+sens2|Consumer), data=carrots)
+> ## End(Not run)
 > ## End Don't show
 > 
 > 
@@ -221,20 +205,17 @@ Product:Information:Gender  3  5.992  1.9972  0.4534
 + +(1+sens2|Consumer), data=carrots)
 > 
 > # only elimination of the random part is required. 
-> #approximation of ddf is Kenward-Roger
-> step(m.carrots, ddf="Kenward-Roger")
-Note: method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
- target signature 'dgCMatrix#ngCMatrix'.
- "ANY#sparseMatrix" would also be valid
+> #approximation of ddf is Satterthwaite
+> step(m.carrots, reduce.random = FALSE)
 
 Random effects:
-               Chi.sq Chi.DF elim.num p.value
-sens2:Consumer    6.7      2     kept  0.0351
+               Chi.sq Chi.DF p.value
+sens2:Consumer    6.7      2  0.0351
 
 Fixed effects:
           Sum Sq Mean Sq NumDF  DenDF F.value elim.num Pr(>F)
-sens2    58.6855 58.6855     1 102.00 54.8205     kept <1e-07
-Homesize  5.9790  5.9790     1 100.99  5.4770     kept 0.0212
+sens2    58.6855 58.6855     1 101.79 54.8206     kept <1e-07
+Homesize  5.9790  5.9790     1 100.93  5.5855     kept   0.02
 
 Least squares means:
             Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
@@ -254,7 +235,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Final model:
 lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 + sens2 | 
-    Consumer), data = carrots, REML = reml, contrasts = l)
+    Consumer), data = carrots, REML = reml, contrasts = l.lmerTest.private.contrast)
 > 
 > 
 > 
@@ -404,7 +385,7 @@ Final model:
 lme4::lmer(formula = Informed.liking ~ Product + Information + 
     Gender + (1 | Product:Consumer) + Product:Information + Product:Gender + 
     Information:Gender + Product:Information:Gender, data = ham, 
-    REML = reml, contrasts = l)
+    REML = reml, contrasts = l.lmerTest.private.contrast)
 > 
 > 
 > 
@@ -441,28 +422,21 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > # anova table the same as of class merMod but with additional F statistics and  
 > # p-values calculated based on Kenward-Roger's approximations
-> anova(fm1, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3  with  Kenward-Roger 
-approximation for degrees of freedom
-     Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
-Days  30031   30031     1    17  45.853 3.264e-06 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-> 
-> # anova table the same as of class merMod
-> anova(fm1, ddf="lme4")
-Analysis of Variance Table
-     Df Sum Sq Mean Sq F value
-Days  1  30031   30031  45.853
+> ## Not run: 
+> ##D anova(fm1, ddf="Kenward-Roger")
+> ##D 
+> ##D # anova table the same as of class merMod
+> ##D anova(fm1, ddf="lme4")
+> ## End(Not run)
 > 
 > # gives summary of merModLmerTest class. The same as of class merMod but with
 > # additional p-values calculated based on Satterthwate's approximations
 > summary(fm1)
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (Days | Subject) 
-   Data: sleepstudy 
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
 
-REML criterion at convergence: 1743.6 
+REML criterion at convergence: 1743.6
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -473,7 +447,7 @@ Random effects:
  Subject  (Intercept) 612.09   24.740       
           Days         35.07    5.922   0.07
  Residual             654.94   25.592       
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 
 Fixed effects:
             Estimate Std. Error      df t value Pr(>|t|)    
@@ -487,16 +461,9 @@ Correlation of Fixed Effects:
 Days -0.138
 > 
 > ## multiple comparisons statistics. The one from lme4 package
-> anova(fm1, fm2)
-refitting model(s) with ML (instead of REML)
-Data: sleepstudy
-Models:
-..1: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject)
-object: Reaction ~ Days + (Days | Subject)
-       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
-..1     5 1762.0 1778.0 -876.00   1752.0                         
-object  6 1763.9 1783.1 -875.97   1751.9 0.0639      1     0.8004
-> 
+> ## Not run: 
+> ##D anova(fm1, fm2)
+> ## End(Not run)
 > 
 > 
 > 
@@ -529,10 +496,10 @@ object  6 1763.9 1783.1 -875.97   1751.9 0.0639      1     0.8004
 > # additional p-values calculated based on Satterthwate's approximations
 > summary(m)
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Informed.liking ~ Gender + Information + Product + (1 | Consumer) 
-   Data: ham 
+Formula: Informed.liking ~ Gender + Information + Product + (1 | Consumer)
+   Data: ham
 
-REML criterion at convergence: 2872.5 
+REML criterion at convergence: 2872.5
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -542,7 +509,7 @@ Random effects:
  Groups   Name        Variance Std.Dev.
  Consumer (Intercept) 0.828    0.9099  
  Residual             4.373    2.0912  
-Number of obs: 648, groups: Consumer, 81
+Number of obs: 648, groups:  Consumer, 81
 
 Fixed effects:
              Estimate Std. Error       df t value Pr(>|t|)    
@@ -579,15 +546,9 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # anova table the same as of class merMod but with additional F statistics and  
 > # denominator degrees of freedom and 
 > # p-values calculated based on Kenward-Roger's approximations
-> anova(m, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3  with  Kenward-Roger 
-approximation for degrees of freedom
-            Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
-Gender       3.844  3.8437     1    79  0.8789 0.3513501    
-Information  6.520  6.5201     1   563  1.4910 0.2225799    
-Product     91.807 30.6024     3   563  6.9979 0.0001256 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> ## Not run: 
+> ##D anova(m, ddf = "Kenward-Roger")
+> ## End(Not run)
 > 
 > # anova table of class merMod 
 > anova(m, ddf="lme4")
@@ -679,15 +640,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > (m <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject),
 +              data = sleepstudy))
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject) 
-   Data: sleepstudy 
-REML criterion at convergence: 1743.669 
+Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject)
+   Data: sleepstudy
+REML criterion at convergence: 1743.669
 Random effects:
  Groups    Name        Std.Dev.
  Subject   (Intercept) 25.051  
  Subject.1 Days         5.988  
  Residual              25.565  
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 Fixed Effects:
 (Intercept)         Days  
      251.41        10.47  
@@ -704,23 +665,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > # type 1 anova table with denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
-> anova(m, type=1)
-Analysis of Variance Table of type 1  with  Satterthwaite 
-approximation for degrees of freedom
-     Sum Sq Mean Sq NumDF  DenDF F.value  Pr(>F)    
-Days  29442   29442     1 18.148  45.046 2.6e-06 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> ## Not run: 
+> ##D anova(m, type=1)
+> ## End(Not run)
 > 
 > # type3 anova table with additional F statistics and denominator degrees of freedom
 > # calculated based on Kenward-Roger's approximation
-> anova(m, ddf="Kenward-Roger")
-Analysis of Variance Table of type 3  with  Kenward-Roger 
-approximation for degrees of freedom
-     Sum Sq Mean Sq NumDF  DenDF F.value    Pr(>F)    
-Days  29442   29442     1 18.188  45.046 2.571e-06 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> ## Not run: 
+> ##D anova(m, ddf="Kenward-Roger")
+> ## End(Not run)
 > 
 > # anova table, that is returned by lme4 package
 > anova(m, ddf="lme4")
@@ -732,10 +685,10 @@ Days  1  29442   29442  45.047
 > #additional column of p values for the t test. 
 > summary(m)
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject) 
-   Data: sleepstudy 
+Formula: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject)
+   Data: sleepstudy
 
-REML criterion at convergence: 1743.7 
+REML criterion at convergence: 1743.7
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -746,7 +699,7 @@ Random effects:
  Subject   (Intercept) 627.57   25.051  
  Subject.1 Days         35.86    5.988  
  Residual              653.58   25.565  
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 
 Fixed effects:
             Estimate Std. Error      df t value Pr(>|t|)    
@@ -841,15 +794,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > (fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy))
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (Days | Subject) 
-   Data: sleepstudy 
-REML criterion at convergence: 1743.628 
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
+REML criterion at convergence: 1743.628
 Random effects:
  Groups   Name        Std.Dev. Corr
  Subject  (Intercept) 24.740       
           Days         5.922   0.07
  Residual             25.592       
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 Fixed Effects:
 (Intercept)         Days  
      251.41        10.47  
@@ -857,10 +810,10 @@ Fixed Effects:
 > # will give you an additional column with p values for the t test
 > summary(fm1)
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (Days | Subject) 
-   Data: sleepstudy 
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
 
-REML criterion at convergence: 1743.6 
+REML criterion at convergence: 1743.6
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -871,7 +824,7 @@ Random effects:
  Subject  (Intercept) 612.09   24.740       
           Days         35.07    5.922   0.07
  Residual             654.94   25.592       
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 
 Fixed effects:
             Estimate Std. Error      df t value Pr(>|t|)    
@@ -887,10 +840,10 @@ Days -0.138
 > #will give the summary of lme4 package
 > summary(fm1, ddf="lme4")
 Linear mixed model fit by REML ['merModLmerTest']
-Formula: Reaction ~ Days + (Days | Subject) 
-   Data: sleepstudy 
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
 
-REML criterion at convergence: 1743.6 
+REML criterion at convergence: 1743.6
 
 Scaled residuals: 
     Min      1Q  Median      3Q     Max 
@@ -901,7 +854,7 @@ Random effects:
  Subject  (Intercept) 612.09   24.740       
           Days         35.07    5.922   0.07
  Residual             654.94   25.592       
-Number of obs: 180, groups: Subject, 18
+Number of obs: 180, groups:  Subject, 18
 
 Fixed effects:
             Estimate Std. Error t value
@@ -918,7 +871,7 @@ Days -0.138
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  34.94 1.16 36.3 NA NA 
+Time elapsed:  21.43 0.19 21.7 NA NA 
 > grDevices::dev.off()
 null device 
           1 

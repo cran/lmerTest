@@ -235,7 +235,11 @@ calcSatterth  <-  function(Lc, rho, method.grad)
   else
      C.theta.optim <- Ct.rhbc(rho, rho$param$vec.matr, Lc)
   #invC.theta<-ginv(C.theta.optim)
-  invC.theta <- solve(C.theta.optim)
+  
+  invC.theta <- tryCatch({solve(C.theta.optim)}, error = function(e) { NULL })
+  if(is.null(invC.theta))
+    return(list(denom = 0, Fstat = NA, pvalue = NA, ndf=NA))
+  
   q <- qr(C.theta.optim)$rank
   F.stat <- (t(Lc %*% rho$fixEffs) %*% invC.theta %*% (Lc %*% rho$fixEffs))/q
   
@@ -282,7 +286,8 @@ getSS <- function(L, coef, XtX.) {
 ###########################################################################
 # function to calculate F stat and pvalues for a given term
 ###########################################################################
-calcFpvalueSS <- function(term, Lc, fullCoefs, X.design, model, rho, ddf, method.grad="simple", type)
+calcFpvalueSS <- function(term, Lc, fullCoefs, X.design, model, rho, ddf, 
+                          method.grad="simple", type)
 {
   
   if(is.null(Lc))
@@ -334,7 +339,8 @@ calcFpvalueSS <- function(term, Lc, fullCoefs, X.design, model, rho, ddf, method
 ###########################################################################
 # function to calculate F stat and pvalues for a given term. MAIN
 ###########################################################################
-calcFpvalueMAIN <- function(term, L, X.design, fullCoefs, model, rho, ddf, method.grad="simple", type)
+calcFpvalueMAIN <- function(term, L, X.design, fullCoefs, model, rho, ddf, 
+                            method.grad="simple", type)
 {
                          
     if( type == 3 )
@@ -446,7 +452,7 @@ initAnovaTable <- function(model, test.terms, isFixReduce)
     {
       anova.table <- c(anova.table[,1:5], 0, anova.table[,6])
       anova.table <- matrix(anova.table, nrow=1, ncol=length(anova.table))
-      colnames(anova.table) <- c("Sum Sq", "Mean Sq", "NumDF", "DenDF", "F.value", "elim.num"," Pr(>F)")
+      colnames(anova.table) <- c("Sum Sq", "Mean Sq", "NumDF", "DenDF", "F.value", "elim.num","Pr(>F)")
       rownames(anova.table) <- rownames(anm)
       return(anova.table)
     }
@@ -493,7 +499,8 @@ getIndTermsContained <- function(allterms, ind.hoi)
 
 orderterms <- function(anova.table)
 {
-   return(unlist(lapply(rownames(anova.table), function(x) length(unlist(strsplit(x,":"))))))
+   return(unlist(lapply(rownames(anova.table), function(x) 
+     length(unlist(strsplit(x,":"))))))
 }
 ###############################################################################
 # get terms to compare in anova.table
@@ -567,7 +574,8 @@ getNAterm <- function(anova.table, terms){
 ###############################################################################
 # eliminate NS effect from the model
 ############################################################################### 
-elimNSFixedTerm <- function(model, anova.table, data, alpha, elim.num, l)
+elimNSFixedTerm <- function(model, anova.table, data, alpha, elim.num, 
+                            l.lmerTest.private.contrast)
 {
   ns.term <- getNSFixedTerm(model, anova.table, data, alpha)
   if( is.null(ns.term) )
@@ -585,7 +593,9 @@ elimNSFixedTerm <- function(model, anova.table, data, alpha, elim.num, l)
   #  model<-eval(substitute(lmer(mf.final, data=data, contrasts=l),list(mf.final=mf.final)))
   #else
   #  model<-eval(substitute(lmer(mf.final, data=data),list(mf.final=mf.final)))
-  model <- updateModel(model, mf.final, getME(model, "is_REML"), l) #updateModel(model, mf.final, model@dims[["REML"]], l)
+  model <- updateModel(model, mf.final, getME(model, "is_REML"), 
+                       l.lmerTest.private.contrast) 
+  #updateModel(model, mf.final, model@dims[["REML"]], l.lmerTest.private.contrast)
   #model<-update(model,formula. = mf.final)
   return( list(model=model, anova.table=anova.table) )
 }
@@ -898,8 +908,10 @@ calc.cols <- function(x)
 #get names for ploting barplots for the effects
 getNamesForPlot <- function(names, ind)
 {
-  namesForPlot <- unlist(lapply(names, function(y) substring2(y, 1, substring.location(y, " ")$first[1]-1)))
-  namesForLevels <- unlist(lapply(names, function(y) substring2(y, substring.location(y, " ")$first[1]+ind, nchar(y))))
+  namesForPlot <- unlist(lapply(names, 
+                                function(y) substring2(y, 1, substring.location(y, " ")$first[1]-1)))
+  namesForLevels <- unlist(lapply(names,
+                                  function(y)  substring2(y, substring.location(y, " ")$first[1]+ind, nchar(y))))
   return(list(namesForPlot=namesForPlot, namesForLevels=namesForLevels))
 }
 
@@ -924,16 +936,29 @@ plotLSMEANS <- function(table, response, which.plot=c("LSMEANS", "DIFF of LSMEAN
       #par(mfrow=c(1,1))
       #x11()
       layout(matrix(c(rep(1,3),2,rep(1,3),2), 2, 4, byrow = TRUE))
-      barplot2(table[inds.eff,"Estimate"],col=unlist(col.bars), ci.l=table[inds.eff,ncol(table)-2], ci.u=table[inds.eff,ncol(table)-1], plot.ci=TRUE, names.arg=namesForLevels[inds.eff], xlab=un.names[i], ylab=response, main=paste(which.plot," and CI plot for", un.names[i]))
+      barplot2(table[inds.eff,"Estimate"],col=unlist(col.bars), 
+               ci.l=table[inds.eff,ncol(table)-2], 
+               ci.u=table[inds.eff,ncol(table)-1], plot.ci=TRUE, 
+               names.arg=namesForLevels[inds.eff], 
+               ylab=response, main=paste(which.plot," and CI plot for", 
+                                         un.names[i]), las=2)
       plot.new()
-      legend("topright", c("ns","p<0.05", "p<0.01", "p<0.001"), pch=15, col=c("grey","yellow","orange","red"), title="SIGNIFICANCE", bty="n", cex=0.8)
+      legend("topright", c("ns","p<0.05", "p<0.01", "p<0.001"), pch=15, 
+             col=c("grey","yellow","orange","red"), title="SIGNIFICANCE", 
+             bty="n", cex=0.8)
       if(which.plot=="LSMEANS")
       {
         if(length(split.eff)==2)
         {
           par(mfrow=c(1,1))
           #windows()
-          interaction.plot(table[inds.eff,split.eff[1]], table[inds.eff,split.eff[2]], table[inds.eff,"Estimate"], xlab=split.eff[1], ylab=response, trace.label=paste(split.eff[2]), main="2-way Interaction plot", col=1:nlevels(table[inds.eff,split.eff[2]]))
+          interaction.plot(table[inds.eff,split.eff[1]], 
+                           table[inds.eff,split.eff[2]], 
+                           table[inds.eff,"Estimate"], 
+                           xlab=split.eff[1], ylab=response, 
+                           trace.label=paste(split.eff[2]), 
+                           main="2-way Interaction plot", 
+                           col=1:nlevels(table[inds.eff,split.eff[2]]))
         }
       }             
     }
@@ -941,7 +966,8 @@ plotLSMEANS <- function(table, response, which.plot=c("LSMEANS", "DIFF of LSMEAN
 
 
 #calculate DIFFERENCES OF LSMEANS and STDERR for effect
-calcDiffsForEff <- function(facs, fac.comb, split.eff, eff, effs, data, rho, alpha, mat, method.grad)
+calcDiffsForEff <- function(facs, fac.comb, split.eff, eff, effs, data, rho, 
+                            alpha, mat, method.grad)
 {
    ###calculating diffs for 2 way interaction
    if(length(split.eff)>=1 && length(split.eff)<=2)
@@ -967,13 +993,15 @@ calcDiffsForEff <- function(facs, fac.comb, split.eff, eff, effs, data, rho, alp
       # else
       # {
           mat.names.diffs <- combn(fac.comb.names,2)
-          mat.nums.diffs <- apply(mat.names.diffs, c(1,2), function(x) which(fac.comb.names==x))
+          mat.nums.diffs <- apply(mat.names.diffs, c(1,2), 
+                                  function(x) which(fac.comb.names==x))
       # }     
      }
      else
      {
        mat.names.diffs <- combn(fac.comb,2)
-       mat.nums.diffs <- apply(mat.names.diffs, c(1,2), function(x) which(fac.comb==x))
+       mat.nums.diffs <- apply(mat.names.diffs, c(1,2), 
+                               function(x) which(fac.comb==x))
      }
     
      mat.diffs <- matrix(0, nrow=ncol(mat.nums.diffs), ncol=ncol(mat))
@@ -996,7 +1024,8 @@ calcDiffsForEff <- function(facs, fac.comb, split.eff, eff, effs, data, rho, alp
 }
 
 #calculate LSMEANS and STDERR for effect
-calcLsmeansForEff <- function(lsmeans.summ, fac.comb, eff, split.eff, alpha, mat, rho, facs, method.grad)
+calcLsmeansForEff <- function(lsmeans.summ, fac.comb, eff, split.eff, alpha, mat, 
+                              rho, facs, method.grad)
 {
    
    summ.eff <- matrix(NA, ncol=ncol(lsmeans.summ), nrow=nrow(fac.comb))
@@ -1032,7 +1061,9 @@ calcLsmeansForEff <- function(lsmeans.summ, fac.comb, eff, split.eff, alpha, mat
 ###################################################################
 #calculate LSMEANS DIFFS and CI for all effects
 ###################################################################
-calcLSMEANS <- function(model, data, rho, alpha, test.effs = NULL, method.grad="Richardson", lsmeansORdiff=TRUE, l)
+calcLSMEANS <- function(model, data, rho, alpha, test.effs = NULL, 
+                        method.grad="Richardson", lsmeansORdiff=TRUE, 
+                        l.lmerTest.private.contrast)
 {  
  
  #library(gplots)
@@ -1043,7 +1074,7 @@ calcLSMEANS <- function(model, data, rho, alpha, test.effs = NULL, method.grad="
  #else
  #   m <- lm(as.formula(paste(fm[2],fm[1],fm[3], sep="")), data=data)
  #####################################
- m <- refitLM(model, l)
+ m <- refitLM(model, l.lmerTest.private.contrast)
  #m <- lm(formula(model,fixed.only=TRUE), data=model.frame.fixed(model), contrasts=l)
  #lm(model, data=model.frame.fixed(model), contrasts=l)
  #m <- lm(model, data=summary(model,"lme4")@frame, contrasts=l)
@@ -1054,21 +1085,24 @@ calcLSMEANS <- function(model, data, rho, alpha, test.effs = NULL, method.grad="
  dclass <- attr(terms(m),"dataClasses")
  facs <- names(dclass[which(dclass=="factor")])
  #Get standard deviation of random parameters from model
- std.rand <- c(unlist(lapply(VarCorr(model), function(x) attr(x,"stddev"))), attr(VarCorr(model), "sc"))^2 #as.numeric(rho$s@REmat[,3])
+ std.rand <- c(unlist(lapply(VarCorr(model), function(x) attr(x,"stddev"))), 
+               attr(VarCorr(model), "sc"))^2 #as.numeric(rho$s@REmat[,3])
   
  
  #init lsmeans summary
  if(lsmeansORdiff)
  {
    lsmeans.summ <-  matrix(ncol=length(facs)+7,nrow=0)
-   colnames(lsmeans.summ) <- c(facs,"Estimate","Standard Error", "DF", "t-value", "Lower CI", "Upper CI", "p-value")
+   colnames(lsmeans.summ) <- c(facs,"Estimate","Standard Error", "DF", "t-value",
+                               "Lower CI", "Upper CI", "p-value")
    summ.data <- as.data.frame(lsmeans.summ)
  }
  else
  {
    #init diff summary
    diff.summ <-  matrix(ncol=7,nrow=0)
-   colnames(diff.summ) <- c("Estimate","Standard Error", "DF", "t-value", "Lower CI", "Upper CI", "p-value")
+   colnames(diff.summ) <- c("Estimate","Standard Error", "DF", "t-value", 
+                            "Lower CI", "Upper CI", "p-value")
    summ.data <- as.data.frame(diff.summ)
  }
  
@@ -1085,9 +1119,14 @@ calcLSMEANS <- function(model, data, rho, alpha, test.effs = NULL, method.grad="
    #  par(mfrow=c(1,1))
    #fill
    if(!lsmeansORdiff)
-     summ.data <- rbind(summ.data,   calcDiffsForEff(facs, fac.comb, split.eff, eff, effs, data, rho, alpha, mat, method.grad))
+     summ.data <- rbind(summ.data,   calcDiffsForEff(facs, fac.comb, split.eff,
+                                                     eff, effs, data, rho, alpha,
+                                                     mat, method.grad))
    else
-     summ.data <- rbind(summ.data,   calcLsmeansForEff(lsmeans.summ, fac.comb, eff, split.eff, alpha, mat, rho, facs, method.grad))
+     summ.data <- rbind(summ.data,   calcLsmeansForEff(lsmeans.summ, fac.comb, 
+                                                       eff, split.eff, alpha, 
+                                                       mat, rho, facs, 
+                                                       method.grad))
  }
  return(list(summ.data = summ.data))
 }
@@ -1154,7 +1193,7 @@ getNumsDummyCoefs2 <- function(model, data)
 
 
 # get dummy coefficients of the fixed part of the model
-getNumsDummyCoefs <- function(model, data, l)
+getNumsDummyCoefs <- function(model, data, l.lmerTest.private.contrast)
 {
   ### old code ######################
   #fm <- getFormula(model, withRand=FALSE)
@@ -1164,7 +1203,7 @@ getNumsDummyCoefs <- function(model, data, l)
   #   m <- lm(as.formula(paste(fm[2],fm[1],fm[3], sep="")), data=data) 
   ####################################
   
-  m <- refitLM(model, l)
+  m <- refitLM(model, l.lmerTest.private.contrast)
   #m <- lm(formula(model,fixed.only=TRUE), data=model.frame.fixed(model), contrasts=l) #lm(model, data=summary(model,"lme4")@frame, contrasts=l)  
   #m <- lm(model, data=model$data)  
   
@@ -1383,7 +1422,9 @@ emptyAnovaLsmeansTAB <- function()
 ### get names of terms out of rownames of rand.table
 getTermsRandtable <- function(names.rand.table)
 {
-  return(unlist(lapply(names.rand.table, function(x) substring2(x,substring.location(x,"(")$first, nchar(x)))))
+  return(unlist(lapply(names.rand.table, 
+                       function(x) substring2(x,substring.location(x,"(")$first, 
+                                              nchar(x)))))
 }
 
 
@@ -1462,7 +1503,8 @@ checkPresRandTerms <- function(mf.final)
 }
 
 ### compare mixed model versus fixed
-compareMixVSFix <- function(model, mf.final, data, name.term, rand.table, alpha, elim.num, reduce.random)
+compareMixVSFix <- function(model, mf.final, data, name.term, rand.table, alpha, 
+                            elim.num, reduce.random)
 {
   #library(nlme)
   #return(NULL)
@@ -1531,20 +1573,23 @@ isCorrSlope <- function(term)
 }
 
 #create reduce slopes model
-createModelRedSlopes <- function(x, term, fm, model, l)
+createModelRedSlopes <- function(x, term, fm, model, l.lmerTest.private.contrast)
 {
   fm[3] <- paste(fm[3], "-", term, "+" , paste(x,collapse="+"))
   mf.final <-  as.formula(paste(fm[2],fm[1],fm[3], sep=""))
   mf.final <- update.formula(mf.final,mf.final)
-  model.red <- updateModel(model, mf.final, getME(model, "is_REML"), l)
+  model.red <- updateModel(model, mf.final, getME(model, "is_REML"), 
+                           l.lmerTest.private.contrast)
   #anova.red <- anova(model, model.red)
   return(model.red)
 }
 
 # find the NS slope term in the model
-findNSslopesTerm <- function(term, isCorr, fm, model, l)
+findNSslopesTerm <- function(term, isCorr, fm, model, l.lmerTest.private.contrast)
 {
-  redModels <- sapply(getRedSlopeTerms(term, isCorr), function(x) createModelRedSlopes(x, term, fm, model, l))
+  redModels <- sapply(getRedSlopeTerms(term, isCorr), 
+                      function(x) createModelRedSlopes(x, term, fm, model, 
+                                                       l.lmerTest.private.contrast))
   
 }
 
@@ -1676,7 +1721,7 @@ checkIsZeroVarOrCorr <- function(model, rand.term, isCorr)
 }
 
 #### eliminate components with zero variance or correlation +-1, NaN
-elimZeroVarOrCorr <- function(model, data, l)
+elimZeroVarOrCorr <- function(model, data, l.lmerTest.private.contrast)
 {
   stop=FALSE
   while(!stop)
@@ -1688,25 +1733,31 @@ elimZeroVarOrCorr <- function(model, data, l)
       
       isCorr.int <- isCorrInt(rand.term)
       isCorr.slope <- isCorrSlope(rand.term)
-      if(checkIsZeroVarOrCorr(model, rand.term, isCorr.int || (isCorr.slope && length(substring.location(rand.term,"+")$first)>1)))
+      if(checkIsZeroVarOrCorr(model, rand.term, isCorr.int || 
+                                (isCorr.slope && 
+                                   length(substring.location(rand.term,"+")$first)>1)))
       {
               
         fm <- paste(fmodel)
         if(isCorr.int || (isCorr.slope && length(substring.location(rand.term,"+")$first)>1)) 
         {
-          new.terms <- changeSlopePart(rand.term,isCorr.int)
+          new.terms <- changeSlopePart(rand.term, isCorr.int)
           fm[3] <- paste(fm[3], "-", rand.term, "+" , paste(new.terms,collapse="+"))
           #print(paste("Random term",rand.term, "was eliminated because of having correlation +-1 or NaN", sep=" "))
-          message(paste("Random term", rand.term, "was eliminated because of having correlation +-1 or NaN \n", sep=" "))
+          message(paste("Random term", rand.term, 
+                        "was eliminated because of having correlation +-1 or NaN \n", 
+                        sep=" "))
         }
         else
         {
           fm[3] <- paste(fm[3], "-", rand.term)
-          message(paste("Random term",rand.term, "was eliminated because of standard deviation being equal to 0 \n", sep=" "))
+          message(paste("Random term",rand.term, 
+                        "was eliminated because of standard deviation being equal to 0 \n", 
+                        sep=" "))
         }
           
-        mf.final <-  as.formula(paste(fm[2],fm[1],fm[3], sep=""))
-        mf.final <- update.formula(mf.final,mf.final)
+        mf.final <-  as.formula(paste(fm[2], fm[1], fm[3], sep=""))
+        mf.final <- update.formula(mf.final, mf.final)
         is.present.rand <- checkPresRandTerms(mf.final)
         if(!is.present.rand)
         {
@@ -1722,7 +1773,8 @@ elimZeroVarOrCorr <- function(model, data, l)
         #  model <- eval(substitute(lmer(mf.final, data=data, REML=model@dims[["REML"]], contrasts=l),list(mf.final=mf.final)))
         #else
         #  model <- eval(substitute(lmer(mf.final, data=data, REML=model@dims[["REML"]]),list(mf.final=mf.final)))
-        model <- updateModel(model, mf.final, getME(model, "is_REML"), l)
+        model <- updateModel(model, mf.final, getME(model, "is_REML"), 
+                             l.lmerTest.private.contrast)
         elimZero <- TRUE
         break       
       }
@@ -1782,7 +1834,7 @@ elimZeroVarOrCorr <- function(model, data, l)
 #       #  model.red <- eval(substitute(lmer(mf.final, data=data, contrasts=l),list(mf.final=mf.final)))
 #       #else
 #       #  model.red <- eval(substitute(lmer(mf.final, data=data),list(mf.final=mf.final)))
-#       model.red <- updateModel(model, mf.final, getME(model, "is_REML"), l)
+#       model.red <- updateModel(model, mf.final, getME(model, "is_REML"), l.lmerTest.private.contrast)
 #       anova.red <- anova(model, model.red)
 #       infoForTerms[[rand.term]] <- saveInfoForTerm(rand.term, anova.red$Chisq[2], anova.red$"Chi Df"[2] , anova.red$'Pr(>Chisq)'[2])
 #       
@@ -1829,7 +1881,8 @@ saveResultsFixModel <- function(result, model)
   result$anova.table <- anova(model)
   result$model <- model
   lsmeans.summ <-  matrix(ncol=7,nrow=0)
-  colnames(lsmeans.summ) <- c("Estimate","Standard Error", "DF", "t-value", "Lower CI", "Upper CI", "p-value")
+  colnames(lsmeans.summ) <- c("Estimate","Standard Error", "DF", "t-value", 
+                              "Lower CI", "Upper CI", "p-value")
   result$lsmeans.table <- lsmeans.summ
   result$diffs.lsmeans.table <- lsmeans.summ
   return(result)
@@ -1885,24 +1938,24 @@ getREML <- function(model)
 }
 
 #update model
-updateModel <- function(model, mf.final, reml, l)
+updateModel <- function(model, mf.final, reml, l.lmerTest.private.contrast)
 {
   #if(!mf.final == as.formula(.~.))
   if(!mf.final == as.formula(paste(".~.")))
   {
      #inds <-  names(l) %in% attr(terms(mf.final), "term.labels")
-    inds <-  names(l) %in% attr(terms(as.formula(mf.final)), "term.labels")
-     #update contrast l
-     l <- l[inds]
+    inds <-  names(l.lmerTest.private.contrast) %in% attr(terms(as.formula(mf.final)), 
+                                                          "term.labels")
+     #update contrast l.lmerTest.private.contrast
+    l.lmerTest.private.contrast <- l.lmerTest.private.contrast[inds]
   }
   
  nfit <- update(object=model, formula.=mf.final
-                , REML=reml ,contrasts=l, evaluate=FALSE)
+                , REML=reml ,contrasts=l.lmerTest.private.contrast, evaluate=FALSE)
  env <- environment(formula(model))
- assign("l",l,envir=env)
- assign("reml",reml,envir=env)
- nfit <- eval(nfit, envir = env)
- 
+ assign("l.lmerTest.private.contrast", l.lmerTest.private.contrast, envir=env)
+ assign("reml", reml, envir=env)
+ nfit <- eval(nfit, envir = env) 
  return(nfit)   
 }
 
@@ -1960,7 +2013,7 @@ model.frame.fixed <- function(model) {
   model.frame(model)[varsAll %in% varsFixed]
 }
 
-refitLM <- function(obj, l="contr.SAS") {
+refitLM <- function(obj, l.lmerTest.private.contrast="contr.SAS") {
 #   cl <- match.call()
 #   bits <- getME(obj,c("X","y","offset"))
 #   w <- weights(obj)
@@ -1980,12 +2033,12 @@ refitLM <- function(obj, l="contr.SAS") {
   fo <- getFormula(obj, withRand=FALSE)# formula(obj,fixed.only=TRUE)
   if(fo != as.formula(.~.))
   {
-    inds <-  names(l) %in% attr(terms(fo), "term.labels")
+    inds <-  names(l.lmerTest.private.contrast) %in% attr(terms(fo), "term.labels")
     #update contrast l
-    l <- l[inds]
+    l.lmerTest.private.contrast <- l.lmerTest.private.contrast[inds]
   }
   fo <- update(fo, y ~ .)
-  lm(fo, data=mm, contrasts = l)
+  lm(fo, data=mm, contrasts = l.lmerTest.private.contrast)
 }
 
 ###########################################################
@@ -1999,7 +2052,8 @@ fillAnovaTable <- function(result, anova.table)
       next
     anova.table[result[[i]]$name, 4] <- result[[i]]$denom
     anova.table[result[[i]]$name, 5] <- result[[i]]$Fstat
-    anova.table[result[[i]]$name, which(colnames(anova.table)=="Pr(>F)")] <- result[[i]]$pvalue
+    anova.table[result[[i]]$name, which(colnames(anova.table)=="Pr(>F)")] <- 
+      result[[i]]$pvalue
     #anova.table[result[[i]]$name, 1] <- result[[i]]$ss
     #anova.table[result[[i]]$name, 2] <- result[[i]]$ss/result[[i]]$ndf
     

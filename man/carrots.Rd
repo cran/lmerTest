@@ -54,8 +54,8 @@ m.carrots <- lmer(Preference ~ sens2 + Homesize
 +(1+sens2|Consumer), data=carrots)
 
 # only elimination of the random part is required. 
-#approximation of ddf is Kenward-Roger
-step(m.carrots, ddf="Kenward-Roger")
+#approximation of ddf is Satterthwaite
+step(m.carrots, reduce.random = FALSE)
 }
 
 \keyword{datasets}

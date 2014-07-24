@@ -41,7 +41,7 @@ Schaalje G.B., McBride J.B., Fellingham G.W. 2002 Adequacy of approximations to 
 library(lmerTest)
 
 m.ham <- lmer(Informed.liking ~ Product*Information*Gender 
-+ (1|Consumer), data=ham)
++ (1|Consumer), data = ham)
 
 # type 3 anova table with  denominator degrees of freedom
 # calculated based on Satterthwaite's approximation
@@ -49,18 +49,24 @@ anova(m.ham)
 
 # type 1 anova table with denominator degrees of freedom
 # calculated based on Satterthwaite's approximation
-anova(m.ham, type=1)
+\dontrun{
+anova(m.ham, type = 1)
+}
 
 # type3 anova table with additional F statistics and denominator degrees of freedom
 # calculated based on Kenward-Roger's approximation
-anova(m.ham, ddf="Kenward-Roger")
+anova(m.ham, ddf = "Kenward-Roger")
 
+\dontrun{
 # anova table, that is returned by lme4 package
-anova(m.ham, ddf="lme4")
+anova(m.ham, ddf = "lme4")
+}
 
 \dontshow{
+\dontrun{
 fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
                            (1+sens2|Consumer), data=carrots)
+}
 }
 }
 

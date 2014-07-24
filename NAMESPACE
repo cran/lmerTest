@@ -7,9 +7,10 @@ importFrom(MASS, ginv)
 import(Hmisc)
 importFrom(gplots, barplot2)
 import(pbkrtest)
+#importFrom(stats, step)
 
 
-exportClasses("merModLmerTest")
+exportClasses(merModLmerTest)
 
 
 export(rand)
@@ -23,7 +24,8 @@ export(lmer)
 
 exportMethods("anova", "summary")
 
-
+#S3method(step, merModLmerTest)
+#export(step.merModLmerTest)
 S3method(print, step)
 S3method(plot, step)
 S3method(print, rand)

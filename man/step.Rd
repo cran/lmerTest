@@ -9,7 +9,7 @@ performs automatic backward elimination of all effects of linear mixed effect mo
 }
 \usage{
 step(model, ddf="Satterthwaite", type=3, alpha.random = 0.1, alpha.fixed = 0.05, 
-reduce.fixed = TRUE, reduce.random = TRUE, lsmeans.calc=TRUE,
+reduce.fixed = TRUE, reduce.random = TRUE, fixed.calc=TRUE, lsmeans.calc=TRUE,
 difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 
 }
@@ -50,6 +50,12 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
     logical for whether the reduction of the random part is required
 }
 
+\item{fixed.calc}{
+    
+    logical for whether the calculation of the table for fixed effects is needed. 
+    If FALSE then only the analysis of random effects is done
+}
+
 \item{lsmeans.calc}{    
     logical for whether the calculation of LSMEANS(population means) is required
 }
@@ -75,6 +81,8 @@ difflsmeans.calc=TRUE, test.effs=NULL, method.grad="simple",  ...)
 \details{
 Elimination of all effects is done one at a time.
 Elimination of the fixed part is done by the principle of marginality that is: the highest order interactions are tested first: if they are significant, the lower order effects are not tested for significance. 
+The step function of lmerTest overrides the one from stats package for lm objects. So if the
+lmerTest is attached and one wants to call step fof lm object, then needs to use stats::step
 }
 \value{
 %%  ~Describe the value returned

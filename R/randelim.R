@@ -20,7 +20,10 @@ fillRowRandTable <- function(term, rand.table, elim.num, reduce.random)
       colnames(rand.table.upd) <- c("Chi.sq", "Chi.DF", "elim.num", "p.value")
      
       rownames(rand.table.upd) <- paste(paste(rep(" ", 
-                                            substring.location( names(term$term), term$term[[1]]$gr.part)$first-2), collapse=""), term$term[[1]]$gr.part, collapse="")
+                                            substring.location( names(term$term), 
+                                                                term$term[[1]]$gr.part)$first-2),
+                                            collapse=""), term$term[[1]]$gr.part, 
+                                        collapse="")
       if(nrow.term==nrow(rand.table))
       {
         rand.table <- rbind(rand.table, rand.table.upd)
@@ -28,12 +31,14 @@ fillRowRandTable <- function(term, rand.table, elim.num, reduce.random)
       }
       else
       {
-        rnames <- c(rownames(rand.table)[1:nrow.term], rownames(rand.table.upd),rownames(rand.table)[(nrow.term+1):nrow(rand.table)])
-        rand.table <- rbind(rand.table[1:nrow.term,], rand.table.upd, rand.table[(nrow.term+1):nrow(rand.table),])  
+        rnames <- c(rownames(rand.table)[1:nrow.term], rownames(rand.table.upd),
+                    rownames(rand.table)[(nrow.term+1):nrow(rand.table)])
+        rand.table <- rbind(rand.table[1:nrow.term,], rand.table.upd, 
+                            rand.table[(nrow.term+1):nrow(rand.table),])  
         rownames(rand.table) <- rnames 
       } 
-    }
-      
+    }      
+    
   }
       
   rand.table  
@@ -45,7 +50,8 @@ updateRandTable <- function(infoForTerm, rand.table,
 {  
   if(!is.null(infoForTerm$term))
   {   
-    rand.table <- fillRowRandTable(infoForTerm, rand.table, elim.num, reduce.random)  
+    rand.table <- fillRowRandTable(infoForTerm, rand.table, elim.num, 
+                                   reduce.random)  
   } 
   else
   {
@@ -297,7 +303,8 @@ saveInfoForTerm <- function(term, chisq, chisq.df, pv)
 
 
 ### eliminate NS random terms 
-elimRandEffs <- function(model, data, alpha, reduce.random, l)
+elimRandEffs <- function(model, data, alpha, reduce.random, 
+                         l.lmerTest.private.contrast)
 {
   isInitRand <- TRUE
   elim.num <- 1
@@ -330,13 +337,18 @@ elimRandEffs <- function(model, data, alpha, reduce.random, l)
       # no more random terms in the model
       if(!is.present.rand)
       {
-        return(compareMixVSFix(model, mf.final, data, rnm, rand.table, alpha, elim.num, reduce.random))
+        return(compareMixVSFix(model, mf.final, data, rnm, rand.table, alpha,
+                               elim.num, reduce.random))
         
       } 
-      model.red <- updateModel(model, mf.final, getME(model, "is_REML"), l)
+      model.red <- updateModel(model, mf.final, getME(model, "is_REML"), 
+                               l.lmerTest.private.contrast)
       anova.red <- suppressMessages(anova(model, model.red))
-      infoForTerms[[names(rnm)]] <- saveInfoForTerm(rnm, anova.red$Chisq[2], anova.red$"Chi Df"[2] , anova.red$'Pr(>Chisq)'[2])
-      if((anova.red$'Pr(>Chisq)'[2] >= pv.max) && reduce.random)
+      infoForTerms[[names(rnm)]] <- saveInfoForTerm(rnm, anova.red$Chisq[2], 
+                                                    anova.red$"Chi Df"[2] , 
+                                                    anova.red$'Pr(>Chisq)'[2])
+      if(((anova.red$'Pr(>Chisq)'[2] >= pv.max) || 
+            abs(1-anova.red$'Pr(>Chisq)'[2])<1e-6) && reduce.random)
       { 
         pv.max <- anova.red$'Pr(>Chisq)'[2]
         infoForTermElim <- infoForTerms[[names(rnm)]]
@@ -348,7 +360,8 @@ elimRandEffs <- function(model, data, alpha, reduce.random, l)
     
     if(!reduce.random)
     {
-      rand.table <- updateRandTable(infoForTerms, rand.table, reduce.random=reduce.random)
+      rand.table <- updateRandTable(infoForTerms, rand.table, 
+                                    reduce.random=reduce.random)
       model.last <- model
       break
     }
@@ -357,12 +370,14 @@ elimRandEffs <- function(model, data, alpha, reduce.random, l)
     
     if(infoForTermElim$pv > alpha)
     {
-      rand.table <- updateRandTable(infoForTermElim, rand.table, elim.num, reduce.random)
+      rand.table <- updateRandTable(infoForTermElim, rand.table, elim.num, 
+                                    reduce.random)
       elim.num <- elim.num+1      
     }
     else
     {
-      rand.table <- updateRandTable(infoForTerms, rand.table, reduce.random=reduce.random)
+      rand.table <- updateRandTable(infoForTerms, rand.table, 
+                                    reduce.random=reduce.random)
       model.last <- model
       break
     }

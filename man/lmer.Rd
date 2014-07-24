@@ -30,18 +30,21 @@ anova(fm1)
 
 # anova table the same as of class merMod but with additional F statistics and  
 # p-values calculated based on Kenward-Roger's approximations
+\dontrun{
 anova(fm1, ddf="Kenward-Roger")
 
 # anova table the same as of class merMod
 anova(fm1, ddf="lme4")
+}
 
 # gives summary of merModLmerTest class. The same as of class merMod but with
 # additional p-values calculated based on Satterthwate's approximations
 summary(fm1)
 
 ## multiple comparisons statistics. The one from lme4 package
+\dontrun{
 anova(fm1, fm2)
-
+}
 }
 \keyword{models}
 \keyword{methods}

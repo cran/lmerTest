@@ -39,11 +39,15 @@ anova(m)
 
 # type 1 anova table with denominator degrees of freedom
 # calculated based on Satterthwaite's approximation
+\dontrun{
 anova(m, type=1)
+}
 
 # type3 anova table with additional F statistics and denominator degrees of freedom
 # calculated based on Kenward-Roger's approximation
+\dontrun{
 anova(m, ddf="Kenward-Roger")
+}
 
 # anova table, that is returned by lme4 package
 anova(m, ddf="lme4")

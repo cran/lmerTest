@@ -60,7 +60,9 @@ anova(m)
 # anova table the same as of class merMod but with additional F statistics and  
 # denominator degrees of freedom and 
 # p-values calculated based on Kenward-Roger's approximations
-anova(m, ddf="Kenward-Roger")
+\dontrun{
+anova(m, ddf = "Kenward-Roger")
+}
 
 # anova table of class merMod 
 anova(m, ddf="lme4")
