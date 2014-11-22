@@ -8,7 +8,7 @@
  Produces a data frame which resembles to what SAS software gives in proc mixed statement. The approximation of degrees of freedom is Satterthwate's.
 }
 \usage{
-lsmeans(model, test.effs=NULL, method.grad="simple",...)
+lsmeans(model, test.effs=NULL,  ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,9 +22,6 @@ lsmeans(model, test.effs=NULL, method.grad="simple",...)
      charachter vector specyfying the names of terms to be tested. If NULL all the terms are tested.
 }
 
-\item{method.grad}{
-   approximation method for the grad function, which is used in calculation of denominator degrees of freedom. Could be "simple" or "Richardson". "simple" is the default one (and the faster one).
-}
 
   \item{\dots}{
      other potential arguments.

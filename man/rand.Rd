@@ -25,7 +25,7 @@ rand(model, \dots)
 }
 
 \value{
-Produces a data frame with tests for the random terms being non-significant.
+Produces a data frame with LR tests for the random terms.
 }
 
 \details{

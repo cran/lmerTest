@@ -1,0 +1,133 @@
+
+R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> require(lmerTest)
+Loading required package: lmerTest
+Loading required package: Matrix
+Loading required package: lme4
+Loading required package: Rcpp
+
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step
+
+> 
+> ## from merModLmerTest
+> m <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject),
++           data = sleepstudy)
+> 
+> anova(m, type=1)
+Analysis of Variance Table of type 1  with  Satterthwaite 
+approximation for degrees of freedom
+     Sum Sq Mean Sq NumDF  DenDF F.value    Pr(>F)    
+Days  29442   29442     1 18.156  45.046 2.594e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> anova(m, ddf="Kenward-Roger")
+Loading required package: pbkrtest
+Loading required package: MASS
+Loading required package: parallel
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
+     Sum Sq Mean Sq NumDF  DenDF F.value    Pr(>F)    
+Days  29442   29442     1 18.188  45.046 2.571e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> ## from lmerTest
+> m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
+> 
+> anova(m, ddf = "Kenward-Roger")
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
+            Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
+Gender       3.844  3.8437     1    79  0.8789 0.3513501    
+Information  6.520  6.5201     1   563  1.4910 0.2225799    
+Product     91.807 30.6024     3   563  6.9979 0.0001256 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> ## from anova methods
+> m.ham <- lmer(Informed.liking ~ Product*Information*Gender 
++               + (1|Consumer), data = ham)
+> 
+> an.lmerTest <- anova(m.ham, type = 1)
+> 
+> an.lme4 <- anova(m.ham, ddf = "lme4")
+> 
+> ## check that F values and so SS and MS agree in lmerTest and lme4
+> stopifnot(all.equal(an.lmerTest[,"F.value"], an.lme4[, "F value"]),
++           all.equal(an.lmerTest[,"Sum Sq"], an.lme4[, "Sum Sq"]),
++           all.equal(an.lmerTest[,"Mean Sq"], an.lme4[, "Mean Sq"]))
+> 
+> fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
++               (1+sens2|Consumer), data=carrots)
+> 
+> ## from lmer
+> fm1 <- lmer(Reaction ~ Days + (Days|Subject), sleepstudy)
+> fm2 <- lmer(Reaction ~ Days + (1|Subject) + (0 + Days|Subject), sleepstudy)
+> 
+> an.sleep <- anova(fm1, type = 1)
+> an.sleep2 <- anova(fm2, type = 1)
+> 
+> ## check with SAS
+> TOL <- 1e-6
+> stopifnot(all.equal(an.sleep[, "F.value"], 45.8530, tol = TOL))
+> stopifnot(all.equal(an.sleep[, "DenDF"], 17, tol = TOL))
+> 
+> ## for model withut correlations
+> stopifnot(all.equal(an.sleep[, "F.value"], 45.8530, tol = TOL))
+> stopifnot(all.equal(an.sleep[, "DenDF"], 17, tol = TOL))
+> 
+> ## check KR works
+> anova(fm1, ddf="Kenward-Roger")
+Note: method with signature 'sparseMatrix#ANY' chosen for function 'kronecker',
+ target signature 'dgCMatrix#ngCMatrix'.
+ "ANY#sparseMatrix" would also be valid
+Analysis of Variance Table of type 3  with  Kenward-Roger 
+approximation for degrees of freedom
+     Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
+Days  30031   30031     1    17  45.853 3.264e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> # anova table the same as of class merMod
+> anova(fm1, ddf="lme4")
+Analysis of Variance Table
+     Df Sum Sq Mean Sq F value
+Days  1  30031   30031  45.853
+> 
+> anova(fm1, fm2)
+refitting model(s) with ML (instead of REML)
+Data: sleepstudy
+Models:
+..1: Reaction ~ Days + (1 | Subject) + (0 + Days | Subject)
+object: Reaction ~ Days + (Days | Subject)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)
+..1     5 1762.0 1778.0 -876.00   1752.0                         
+object  6 1763.9 1783.1 -875.97   1751.9 0.0639      1     0.8004
+> 
+> proc.time()
+   user  system elapsed 
+   5.38    0.21    5.60 

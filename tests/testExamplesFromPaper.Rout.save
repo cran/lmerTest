@@ -1,0 +1,424 @@
+
+R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> require(lmerTest)
+Loading required package: lmerTest
+Loading required package: Matrix
+Loading required package: lme4
+Loading required package: Rcpp
+
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step
+
+> 
+> modelTVbo <- lmer(Colourbalance ~ TVset*Picture
++                   + (1 | Assessor) + (1 | Assessor:TVset)
++                   + (1 | Assessor:Picture)
++                   + (1 | Assessor:TVset:Picture)
++                   + (1 | Repeat) + (1 | Repeat:TVset)
++                   + (1 | Repeat:Picture) + (1|TVset:Picture:Repeat), data=TVbo)
+> 
+> stTV <- step(modelTVbo)
+> 
+> stTV
+
+Random effects:
+                       Chi.sq Chi.DF elim.num p.value
+Repeat:Picture           0.00      1        1  1.0000
+TVset:Picture:Repeat     0.00      1        2  1.0000
+Repeat                   0.07      1        3  0.7924
+Assessor:TVset:Picture   0.21      1        4  0.6439
+Assessor                 0.28      1        5  0.5990
+Assessor:TVset          66.78      1     kept  <1e-07
+Assessor:Picture         3.92      1     kept  0.0478
+Repeat:TVset             5.36      1     kept  0.0206
+
+Fixed effects:
+               Sum Sq Mean Sq NumDF  DenDF F.value elim.num Pr(>F)
+TVset         15.2315  7.6157     2  15.90  3.8988     kept 0.0419
+Picture        8.0123  2.6708     3  20.59  1.3673     kept 0.2806
+TVset:Picture 52.3508  8.7251     6 135.35  4.4668     kept 0.0004
+
+Least squares means:
+                     TVset Picture Estimate Standard Error   DF t-value
+TVset  TV1             1.0      NA    8.380          0.654 16.6   12.81
+TVset  TV2             2.0      NA    6.614          0.654 16.6   10.11
+TVset  TV3             3.0      NA    9.098          0.654 16.6   13.91
+Picture  1              NA     1.0    7.865          0.452 29.1   17.38
+Picture  2              NA     2.0    8.300          0.452 29.1   18.34
+Picture  3              NA     3.0    8.298          0.452 29.1   18.34
+Picture  4              NA     4.0    7.660          0.452 29.1   16.93
+TVset:Picture  TV1 1   1.0     1.0    9.006          0.738 26.7   12.20
+TVset:Picture  TV2 1   2.0     1.0    5.869          0.738 26.7    7.95
+TVset:Picture  TV3 1   3.0     1.0    8.719          0.738 26.7   11.81
+TVset:Picture  TV1 2   1.0     2.0    7.763          0.738 26.7   10.51
+TVset:Picture  TV2 2   2.0     2.0    7.469          0.738 26.7   10.11
+TVset:Picture  TV3 2   3.0     2.0    9.669          0.738 26.7   13.09
+TVset:Picture  TV1 3   1.0     3.0    8.350          0.738 26.7   11.31
+TVset:Picture  TV2 3   2.0     3.0    7.463          0.738 26.7   10.11
+TVset:Picture  TV3 3   3.0     3.0    9.081          0.738 26.7   12.30
+TVset:Picture  TV1 4   1.0     4.0    8.400          0.738 26.7   11.38
+TVset:Picture  TV2 4   2.0     4.0    5.656          0.738 26.7    7.66
+TVset:Picture  TV3 4   3.0     4.0    8.925          0.738 26.7   12.09
+                     Lower CI Upper CI p-value    
+TVset  TV1               7.00     9.76  <2e-16 ***
+TVset  TV2               5.23     8.00  <2e-16 ***
+TVset  TV3               7.72    10.48  <2e-16 ***
+Picture  1               6.94     8.79  <2e-16 ***
+Picture  2               7.37     9.23  <2e-16 ***
+Picture  3               7.37     9.22  <2e-16 ***
+Picture  4               6.74     8.59  <2e-16 ***
+TVset:Picture  TV1 1     7.49    10.52  <2e-16 ***
+TVset:Picture  TV2 1     4.35     7.38  <2e-16 ***
+TVset:Picture  TV3 1     7.20    10.23  <2e-16 ***
+TVset:Picture  TV1 2     6.25     9.28  <2e-16 ***
+TVset:Picture  TV2 2     5.95     8.98  <2e-16 ***
+TVset:Picture  TV3 2     8.15    11.18  <2e-16 ***
+TVset:Picture  TV1 3     6.83     9.87  <2e-16 ***
+TVset:Picture  TV2 3     5.95     8.98  <2e-16 ***
+TVset:Picture  TV3 3     7.57    10.60  <2e-16 ***
+TVset:Picture  TV1 4     6.88     9.92  <2e-16 ***
+TVset:Picture  TV2 4     4.14     7.17  <2e-16 ***
+TVset:Picture  TV3 4     7.41    10.44  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+                              Estimate Standard Error   DF t-value Lower CI
+TVset TV1 - TV2                    1.8         0.9156 15.9    1.93  -0.1764
+TVset TV1 - TV3                   -0.7         0.9156 15.9   -0.78  -2.6608
+TVset TV2 - TV3                   -2.5         0.9156 15.9   -2.71  -4.4264
+Picture 1 - 2                     -0.4         0.3879 20.6   -1.12  -1.2431
+Picture 1 - 3                     -0.4         0.3879 20.6   -1.12  -1.2410
+Picture 1 - 4                      0.2         0.3879 20.6    0.53  -0.6035
+Picture 2 - 3                      0.0         0.3879 20.6    0.01  -0.8056
+Picture 2 - 4                      0.6         0.3879 20.6    1.65  -0.1681
+Picture 3 - 4                      0.6         0.3879 20.6    1.64  -0.1702
+TVset:Picture  TV1 1 -  TV2 1      3.1         1.0107 23.5    3.10   1.0493
+TVset:Picture  TV1 1 -  TV3 1      0.3         1.0107 23.5    0.28  -1.8007
+TVset:Picture  TV1 1 -  TV1 2      1.2         0.5597 75.7    2.22   0.1289
+TVset:Picture  TV1 1 -  TV2 2      1.5         1.0443 26.7    1.47  -0.6065
+TVset:Picture  TV1 1 -  TV3 2     -0.7         1.0443 26.7   -0.63  -2.8065
+TVset:Picture  TV1 1 -  TV1 3      0.7         0.5597 75.7    1.17  -0.4586
+TVset:Picture  TV1 1 -  TV2 3      1.5         1.0443 26.7    1.48  -0.6003
+TVset:Picture  TV1 1 -  TV3 3     -0.1         1.0443 26.7   -0.07  -2.2190
+TVset:Picture  TV1 1 -  TV1 4      0.6         0.5597 75.7    1.08  -0.5086
+TVset:Picture  TV1 1 -  TV2 4      3.4         1.0443 26.7    3.21   1.2060
+TVset:Picture  TV1 1 -  TV3 4      0.1         1.0443 26.7    0.08  -2.0628
+TVset:Picture  TV2 1 -  TV3 1     -2.8         1.0107 23.5   -2.82  -4.9382
+TVset:Picture  TV2 1 -  TV1 2     -1.9         1.0443 26.7   -1.81  -4.0378
+TVset:Picture  TV2 1 -  TV2 2     -1.6         0.5597 75.7   -2.86  -2.7148
+TVset:Picture  TV2 1 -  TV3 2     -3.8         1.0443 26.7   -3.64  -5.9440
+TVset:Picture  TV2 1 -  TV1 3     -2.5         1.0443 26.7   -2.38  -4.6253
+TVset:Picture  TV2 1 -  TV2 3     -1.6         0.5597 75.7   -2.85  -2.7086
+TVset:Picture  TV2 1 -  TV3 3     -3.2         1.0443 26.7   -3.08  -5.3565
+TVset:Picture  TV2 1 -  TV1 4     -2.5         1.0443 26.7   -2.42  -4.6753
+TVset:Picture  TV2 1 -  TV2 4      0.2         0.5597 75.7    0.38  -0.9023
+TVset:Picture  TV2 1 -  TV3 4     -3.1         1.0443 26.7   -2.93  -5.2003
+TVset:Picture  TV3 1 -  TV1 2      1.0         1.0443 26.7    0.92  -1.1878
+TVset:Picture  TV3 1 -  TV2 2      1.2         1.0443 26.7    1.20  -0.8940
+TVset:Picture  TV3 1 -  TV3 2     -1.0         0.5597 75.7   -1.70  -2.0648
+TVset:Picture  TV3 1 -  TV1 3      0.4         1.0443 26.7    0.35  -1.7753
+TVset:Picture  TV3 1 -  TV2 3      1.3         1.0443 26.7    1.20  -0.8878
+TVset:Picture  TV3 1 -  TV3 3     -0.4         0.5597 75.7   -0.65  -1.4773
+TVset:Picture  TV3 1 -  TV1 4      0.3         1.0443 26.7    0.31  -1.8253
+TVset:Picture  TV3 1 -  TV2 4      3.1         1.0443 26.7    2.93   0.9185
+TVset:Picture  TV3 1 -  TV3 4     -0.2         0.5597 75.7   -0.37  -1.3211
+TVset:Picture  TV1 2 -  TV2 2      0.3         1.0107 23.5    0.29  -1.7945
+TVset:Picture  TV1 2 -  TV3 2     -1.9         1.0107 23.5   -1.89  -3.9945
+TVset:Picture  TV1 2 -  TV1 3     -0.6         0.5597 75.7   -1.05  -1.7023
+TVset:Picture  TV1 2 -  TV2 3      0.3         1.0443 26.7    0.29  -1.8440
+TVset:Picture  TV1 2 -  TV3 3     -1.3         1.0443 26.7   -1.26  -3.4628
+TVset:Picture  TV1 2 -  TV1 4     -0.6         0.5597 75.7   -1.14  -1.7523
+TVset:Picture  TV1 2 -  TV2 4      2.1         1.0443 26.7    2.02  -0.0378
+TVset:Picture  TV1 2 -  TV3 4     -1.2         1.0443 26.7   -1.11  -3.3065
+TVset:Picture  TV2 2 -  TV3 2     -2.2         1.0107 23.5   -2.18  -4.2882
+TVset:Picture  TV2 2 -  TV1 3     -0.9         1.0443 26.7   -0.84  -3.0253
+TVset:Picture  TV2 2 -  TV2 3      0.0         0.5597 75.7    0.01  -1.1086
+TVset:Picture  TV2 2 -  TV3 3     -1.6         1.0443 26.7   -1.54  -3.7565
+TVset:Picture  TV2 2 -  TV1 4     -0.9         1.0443 26.7   -0.89  -3.0753
+TVset:Picture  TV2 2 -  TV2 4      1.8         0.5597 75.7    3.24   0.6977
+TVset:Picture  TV2 2 -  TV3 4     -1.5         1.0443 26.7   -1.39  -3.6003
+TVset:Picture  TV3 2 -  TV1 3      1.3         1.0443 26.7    1.26  -0.8253
+TVset:Picture  TV3 2 -  TV2 3      2.2         1.0443 26.7    2.11   0.0622
+TVset:Picture  TV3 2 -  TV3 3      0.6         0.5597 75.7    1.05  -0.5273
+TVset:Picture  TV3 2 -  TV1 4      1.3         1.0443 26.7    1.21  -0.8753
+TVset:Picture  TV3 2 -  TV2 4      4.0         1.0443 26.7    3.84   1.8685
+TVset:Picture  TV3 2 -  TV3 4      0.7         0.5597 75.7    1.33  -0.3711
+TVset:Picture  TV1 3 -  TV2 3      0.9         1.0107 23.5    0.88  -1.2007
+TVset:Picture  TV1 3 -  TV3 3     -0.7         1.0107 23.5   -0.72  -2.8195
+TVset:Picture  TV1 3 -  TV1 4      0.0         0.5597 75.7   -0.09  -1.1648
+TVset:Picture  TV1 3 -  TV2 4      2.7         1.0443 26.7    2.58   0.5497
+TVset:Picture  TV1 3 -  TV3 4     -0.6         1.0443 26.7   -0.55  -2.7190
+TVset:Picture  TV2 3 -  TV3 3     -1.6         1.0107 23.5   -1.60  -3.7070
+TVset:Picture  TV2 3 -  TV1 4     -0.9         1.0443 26.7   -0.90  -3.0815
+TVset:Picture  TV2 3 -  TV2 4      1.8         0.5597 75.7    3.23   0.6914
+TVset:Picture  TV2 3 -  TV3 4     -1.5         1.0443 26.7   -1.40  -3.6065
+TVset:Picture  TV3 3 -  TV1 4      0.7         1.0443 26.7    0.65  -1.4628
+TVset:Picture  TV3 3 -  TV2 4      3.4         1.0443 26.7    3.28   1.2810
+TVset:Picture  TV3 3 -  TV3 4      0.2         0.5597 75.7    0.28  -0.9586
+TVset:Picture  TV1 4 -  TV2 4      2.7         1.0107 23.5    2.71   0.6555
+TVset:Picture  TV1 4 -  TV3 4     -0.5         1.0107 23.5   -0.52  -2.6132
+TVset:Picture  TV2 4 -  TV3 4     -3.3         1.0107 23.5   -3.23  -5.3570
+                              Upper CI p-value    
+TVset TV1 - TV2                  3.708   0.072 .  
+TVset TV1 - TV3                  1.223   0.444    
+TVset TV2 - TV3                 -0.542   0.015 *  
+Picture 1 - 2                    0.372   0.275    
+Picture 1 - 3                    0.374   0.277    
+Picture 1 - 4                    1.012   0.604    
+Picture 2 - 3                    0.810   0.996    
+Picture 2 - 4                    1.447   0.114    
+Picture 3 - 4                    1.445   0.116    
+TVset:Picture  TV1 1 -  TV2 1    5.226   0.005 ** 
+TVset:Picture  TV1 1 -  TV3 1    2.376   0.778    
+TVset:Picture  TV1 1 -  TV1 2    2.359   0.029 *  
+TVset:Picture  TV1 1 -  TV2 2    3.682   0.153    
+TVset:Picture  TV1 1 -  TV3 2    1.482   0.531    
+TVset:Picture  TV1 1 -  TV1 3    1.771   0.245    
+TVset:Picture  TV1 1 -  TV2 3    3.688   0.151    
+TVset:Picture  TV1 1 -  TV3 3    2.069   0.943    
+TVset:Picture  TV1 1 -  TV1 4    1.721   0.282    
+TVset:Picture  TV1 1 -  TV2 4    5.494   0.004 ** 
+TVset:Picture  TV1 1 -  TV3 4    2.225   0.939    
+TVset:Picture  TV2 1 -  TV3 1   -0.762   0.010 ** 
+TVset:Picture  TV2 1 -  TV1 2    0.250   0.081 .  
+TVset:Picture  TV2 1 -  TV2 2   -0.485   0.005 ** 
+TVset:Picture  TV2 1 -  TV3 2   -1.656   0.001 ** 
+TVset:Picture  TV2 1 -  TV1 3   -0.337   0.025 *  
+TVset:Picture  TV2 1 -  TV2 3   -0.479   0.006 ** 
+TVset:Picture  TV2 1 -  TV3 3   -1.068   0.005 ** 
+TVset:Picture  TV2 1 -  TV1 4   -0.387   0.022 *  
+TVset:Picture  TV2 1 -  TV2 4    1.327   0.705    
+TVset:Picture  TV2 1 -  TV3 4   -0.912   0.007 ** 
+TVset:Picture  TV3 1 -  TV1 2    3.100   0.368    
+TVset:Picture  TV3 1 -  TV2 2    3.394   0.242    
+TVset:Picture  TV3 1 -  TV3 2    0.165   0.094 .  
+TVset:Picture  TV3 1 -  TV1 3    2.513   0.727    
+TVset:Picture  TV3 1 -  TV2 3    3.400   0.240    
+TVset:Picture  TV3 1 -  TV3 3    0.752   0.519    
+TVset:Picture  TV3 1 -  TV1 4    2.463   0.763    
+TVset:Picture  TV3 1 -  TV2 4    5.207   0.007 ** 
+TVset:Picture  TV3 1 -  TV3 4    0.909   0.714    
+TVset:Picture  TV1 2 -  TV2 2    2.382   0.774    
+TVset:Picture  TV1 2 -  TV3 2    0.182   0.072 .  
+TVset:Picture  TV1 2 -  TV1 3    0.527   0.297    
+TVset:Picture  TV1 2 -  TV2 3    2.444   0.776    
+TVset:Picture  TV1 2 -  TV3 3    0.825   0.218    
+TVset:Picture  TV1 2 -  TV1 4    0.477   0.258    
+TVset:Picture  TV1 2 -  TV2 4    4.250   0.054 .  
+TVset:Picture  TV1 2 -  TV3 4    0.982   0.276    
+TVset:Picture  TV2 2 -  TV3 2   -0.112   0.040 *  
+TVset:Picture  TV2 2 -  TV1 3    1.263   0.406    
+TVset:Picture  TV2 2 -  TV2 3    1.121   0.991    
+TVset:Picture  TV2 2 -  TV3 3    0.531   0.134    
+TVset:Picture  TV2 2 -  TV1 4    1.213   0.380    
+TVset:Picture  TV2 2 -  TV2 4    2.927   0.002 ** 
+TVset:Picture  TV2 2 -  TV3 4    0.688   0.175    
+TVset:Picture  TV3 2 -  TV1 3    3.463   0.218    
+TVset:Picture  TV3 2 -  TV2 3    4.350   0.044 *  
+TVset:Picture  TV3 2 -  TV3 3    1.702   0.297    
+TVset:Picture  TV3 2 -  TV1 4    3.413   0.235    
+TVset:Picture  TV3 2 -  TV2 4    6.157   7e-04 ***
+TVset:Picture  TV3 2 -  TV3 4    1.859   0.188    
+TVset:Picture  TV1 3 -  TV2 3    2.976   0.389    
+TVset:Picture  TV1 3 -  TV3 3    1.357   0.476    
+TVset:Picture  TV1 3 -  TV1 4    1.065   0.929    
+TVset:Picture  TV1 3 -  TV2 4    4.838   0.016 *  
+TVset:Picture  TV1 3 -  TV3 4    1.569   0.587    
+TVset:Picture  TV2 3 -  TV3 3    0.469   0.123    
+TVset:Picture  TV2 3 -  TV1 4    1.206   0.377    
+TVset:Picture  TV2 3 -  TV2 4    2.921   0.002 ** 
+TVset:Picture  TV2 3 -  TV3 4    0.681   0.173    
+TVset:Picture  TV3 3 -  TV1 4    2.825   0.520    
+TVset:Picture  TV3 3 -  TV2 4    5.569   0.003 ** 
+TVset:Picture  TV3 3 -  TV3 4    1.271   0.781    
+TVset:Picture  TV1 4 -  TV2 4    4.832   0.012 *  
+TVset:Picture  TV1 4 -  TV3 4    1.563   0.608    
+TVset:Picture  TV2 4 -  TV3 4   -1.181   0.004 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Colourbalance ~ TVset + Picture + (1 | Assessor:TVset) + 
+    (1 | Assessor:Picture) + (1 | Repeat:TVset) + TVset:Picture, 
+    data = TVbo, REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
+    devFunOnly = devFunOnly.lmerTest.private)
+> 
+> modelTVbo_red <- lmer(Colourbalance ~ TVset*Picture
++                         + (1 | Assessor:TVset)
++                         + (1 | Assessor:Picture)
++                         +  (1 | Repeat:TVset)
++                        , data=TVbo)
+> 
+> modelTVbo_redAT <- lmer(Colourbalance ~ TVset*Picture
++                       + (1 | Assessor:Picture)
++                       +  (1 | Repeat:TVset)
++                       , data=TVbo)
+> 
+> modelTVbo_redAP <- lmer(Colourbalance ~ TVset*Picture
++                       + (1 | Assessor:TVset)
++                       +  (1 | Repeat:TVset)
++                       , data=TVbo)
+> 
+> modelTVbo_redRT <- lmer(Colourbalance ~ TVset*Picture
++                       + (1 | Assessor:TVset)
++                       + (1 | Assessor:Picture)
++                       , data=TVbo)
+> 
+> anova(modelTVbo_red, modelTVbo_redAT, refit = FALSE)
+Data: TVbo
+Models:
+..1: Colourbalance ~ TVset * Picture + (1 | Assessor:Picture) + (1 | 
+..1:     Repeat:TVset)
+object: Colourbalance ~ TVset * Picture + (1 | Assessor:TVset) + (1 | 
+object:     Assessor:Picture) + (1 | Repeat:TVset)
+       Df    AIC    BIC  logLik deviance  Chisq Chi Df Pr(>Chisq)    
+..1    15 828.36 877.23 -399.18   798.36                             
+object 16 763.58 815.70 -365.79   731.58 66.783      1  3.031e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> stopifnot(all.equal(anova(modelTVbo_red, 
++                           modelTVbo_redAP, 
++                           refit = FALSE)[2,"Pr(>Chisq)"],
++                     stTV$rand.table["Assessor:Picture","p.value"]))
+> 
+> stopifnot(all.equal(anova(modelTVbo_red, 
++                           modelTVbo_redAT, 
++                           refit = FALSE)[2,"Pr(>Chisq)"],
++                     stTV$rand.table["Assessor:TVset","p.value"]))
+> 
+> stopifnot(all.equal(anova(modelTVbo_red, 
++                           modelTVbo_redRT, 
++                           refit = FALSE)[2,"Pr(>Chisq)"],
++                     stTV$rand.table["Repeat:TVset","p.value"]))
+> 
+> 
+> ## for ham data
+> modelHam <- lmer(Informed.liking ~
++                  Product*Information*Gender*Age
++                  + (1 | Consumer)
++                  + (1 | Product:Consumer)
++                  + (1 | Information:Consumer), data=ham)
+> 
+> stHam <- step(modelHam)
+> 
+> stHam 
+
+Random effects:
+                     Chi.sq Chi.DF elim.num p.value
+Information:Consumer   1.54      1        1  0.2149
+Consumer               2.94      1     kept  0.0863
+Product:Consumer     165.56      1     kept  <1e-07
+
+Fixed effects:
+                                Sum Sq Mean Sq NumDF DenDF F.value elim.num
+Product:Information:Gender:Age  7.2065  2.4022     3   308  1.4606        1
+Product:Gender:Age              0.6234  0.2078     3   231  0.1258        2
+Product:Information:Gender      5.8789  1.9596     3   311  1.1863        3
+Product:Gender                  0.9155  0.3052     3   234  0.1844        4
+Product:Information:Age         7.2141  2.4047     3   314  1.4531        5
+Product:Age                     4.0334  1.3445     3   237  0.8090        6
+Product:Information            10.3873  3.4624     3   317  2.0834        7
+Information:Gender:Age          5.3415  5.3415     1   320  3.1817        8
+Information:Age                 0.0084  0.0084     1   321  0.0050        9
+Gender:Age                      1.2017  1.2017     1    77  0.7132       10
+Age                             0.0254  0.0254     1    78  0.0151       11
+Information:Gender              1.4075  1.4075     1   322  0.8353       12
+Gender                          1.4803  1.4803     1    79  0.8789       13
+Product                        19.3466  6.4489     3   240  3.8291     kept
+Information                     6.5201  6.5201     1   323  3.8714     kept
+                               Pr(>F)
+Product:Information:Gender:Age 0.2253
+Product:Gender:Age             0.9448
+Product:Information:Gender     0.3151
+Product:Gender                 0.9069
+Product:Information:Age        0.2274
+Product:Age                    0.4900
+Product:Information            0.1023
+Information:Gender:Age         0.0754
+Information:Age                0.9438
+Gender:Age                     0.4010
+Age                            0.9026
+Information:Gender             0.3614
+Gender                         0.3514
+Product                        0.0105
+Information                    0.0500
+
+Least squares means:
+               Product Information Estimate Standard Error  DF t-value Lower CI
+Product  1           1          NA    5.809          0.232 313    25.0     5.35
+Product  2           2          NA    5.105          0.232 313    22.0     4.65
+Product  3           3          NA    6.093          0.232 313    26.2     5.64
+Product  4           4          NA    5.926          0.232 313    25.5     5.47
+Information  1      NA           1    5.633          0.140 106    40.3     5.36
+Information  2      NA           2    5.833          0.140 106    41.7     5.56
+               Upper CI p-value    
+Product  1         6.27  <2e-16 ***
+Product  2         5.56  <2e-16 ***
+Product  3         6.55  <2e-16 ***
+Product  4         6.38  <2e-16 ***
+Information  1     5.91  <2e-16 ***
+Information  2     6.11  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+                  Estimate Standard Error    DF t-value Lower CI Upper CI
+Product 1 - 2          0.7          0.314 240.0    2.24   0.0849    1.323
+Product 1 - 3         -0.3          0.314 240.0   -0.90  -0.9027    0.335
+Product 1 - 4         -0.1          0.314 240.0   -0.37  -0.7361    0.501
+Product 2 - 3         -1.0          0.314 240.0   -3.14  -1.6064   -0.369
+Product 2 - 4         -0.8          0.314 240.0   -2.61  -1.4398   -0.202
+Product 3 - 4          0.2          0.314 240.0    0.53  -0.4521    0.785
+Information 1 - 2     -0.2          0.102 323.0   -1.97  -0.4012    0.000
+                  p-value   
+Product 1 - 2       0.026 * 
+Product 1 - 3       0.367   
+Product 1 - 4       0.709   
+Product 2 - 3       0.002 **
+Product 2 - 4       0.009 **
+Product 3 - 4       0.596   
+Information 1 - 2   0.050 * 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Informed.liking ~ Product + Information + 
+    (1 | Consumer) + (1 | Product:Consumer), data = ham, REML = reml.lmerTest.private, 
+    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+> 
+> TOL <- 1e-5
+> stopifnot(all.equal(as.vector(stHam$lsmeans.table[1:4, "Estimate"]), 
++                     as.vector(tapply(ham$Informed.liking, ham$Product, mean))
++                     , tol = TOL,
++                     check.attributes = FALSE, check.names = FALSE))
+> 
+> ## the carrots example is tested in testRand.R function
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  21.21    0.12   21.37 

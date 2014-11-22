@@ -3,8 +3,9 @@
 \docType{class}
 % Classes
 \alias{merModLmerTest-class}
+%\alias{anova.merModLmerTest}
 %\alias{coef.mer-class}
-%\alias{summary.merLmerTest-class}
+%\alias{summary.merModLmerTest}
 %\alias{ranef.mer-class}
 % Methods
 %\alias{anova,merLmerTest-method}
@@ -46,6 +47,7 @@ anova(m, type=1)
 # type3 anova table with additional F statistics and denominator degrees of freedom
 # calculated based on Kenward-Roger's approximation
 \dontrun{
+if(require(pbkrtest))
 anova(m, ddf="Kenward-Roger")
 }
 

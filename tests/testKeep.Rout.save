@@ -1,0 +1,554 @@
+
+R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
+Copyright (C) 2014 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> require(lmerTest)
+Loading required package: lmerTest
+Loading required package: Matrix
+Loading required package: lme4
+Loading required package: Rcpp
+
+Attaching package: 'lmerTest'
+
+The following object is masked from 'package:lme4':
+
+    lmer
+
+The following object is masked from 'package:stats':
+
+    step
+
+> 
+> ## for carrots data
+> modelCarrots <- lmer(Preference ~  sens2*sens1*Homesize*Age
++                       + (1 + sens1 | Consumer),
++                      data=carrots)
+> 
+> st1 <- step(modelCarrots, keep.effs = c("sens1","sens2"))
+> st1
+
+Random effects:
+               Chi.sq Chi.DF elim.num p.value
+sens1:Consumer   0.69      2     kept  0.7094
+
+Fixed effects:
+                          Sum Sq Mean Sq NumDF   DenDF F.value elim.num Pr(>F)
+sens2:sens1:Homesize:Age  3.5643  1.1881     3 1105.93  1.0741        1 0.3590
+sens2:Homesize:Age        1.8184  0.6061     3 1108.93  0.5479        2 0.6496
+sens2:sens1:Homesize      0.6030  0.6030     1 1111.96  0.5457        3 0.4602
+sens1:Homesize:Age        5.6502  1.8834     3  852.98  1.7051        4 0.1644
+sens1:Homesize            0.1620  0.1620     1  839.05  0.1464        5 0.7021
+Homesize:Age              7.0541  2.3514     3   95.02  2.1263        6 0.1020
+sens2:Homesize            3.0252  3.0252     1 1116.98  2.7338        7 0.0985
+sens2:sens1:Age           7.2501  2.4167     3 1117.98  2.1805        8 0.0887
+sens1:Age                 1.2025  0.6013     3 1037.59  0.5408        9 0.5825
+sens2:sens1               0.5850  0.5850     1 1124.00  0.5270       10 0.4680
+sens2:Age                 3.4142  1.1381     3 1124.98  1.0257       11 0.3803
+Age                       0.9573  0.3191     3   98.02  0.2876       12 0.8343
+sens2                    83.3854 83.3854     1 1127.99 75.1416     kept <1e-07
+sens1                     2.3907  2.3907     1 1060.11  2.1544     kept 0.1425
+Homesize                  5.8027  5.8027     1  101.00  5.2290     kept 0.0243
+
+Least squares means:
+            Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
+Homesize  1        1   4.9069         0.0707 101  69.4400     4.77     5.05
+Homesize  3        2   4.6653         0.0786 101  59.3300     4.51     4.82
+            p-value    
+Homesize  1  <2e-16 ***
+Homesize  3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+               Estimate Standard Error    DF t-value Lower CI Upper CI p-value
+Homesize 1 - 3      0.2          0.106 101.0    2.29    0.032    0.451    0.02
+                
+Homesize 1 - 3 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Preference ~ sens2 + sens1 + Homesize + 
+    (1 + sens1 | Consumer), data = carrots, REML = reml.lmerTest.private, 
+    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+> 
+> st2 <- step(modelCarrots, keep.effs = c("sens1", "Homesize:Age"))
+> st2
+
+Random effects:
+               Chi.sq Chi.DF elim.num p.value
+sens1:Consumer   0.69      2     kept  0.7094
+
+Fixed effects:
+                          Sum Sq Mean Sq NumDF   DenDF F.value elim.num Pr(>F)
+sens2:sens1:Homesize:Age  3.5643  1.1881     3 1105.93  1.0741        1 0.3590
+sens2:Homesize:Age        1.8184  0.6061     3 1108.93  0.5479        2 0.6496
+sens2:sens1:Homesize      0.6030  0.6030     1 1111.96  0.5457        3 0.4602
+sens1:Homesize:Age        5.6502  1.8834     3  852.98  1.7051        4 0.1644
+sens1:Homesize            0.1620  0.1620     1  839.05  0.1464        5 0.7021
+sens2:Homesize            3.0250  3.0250     1 1116.76  2.7355        6 0.0984
+sens2:sens1:Age           7.2498  2.4166     3 1117.77  2.1820        7 0.0885
+sens1:Age                 1.1949  0.5975     3  851.73  0.5377        8 0.5843
+sens2:sens1               0.5844  0.5844     1 1123.77  0.5269        9 0.4681
+sens2:Age                 3.4182  1.1394     3 1124.74  1.0275       10 0.3795
+sens2                    83.3830 83.3830     1 1127.74 75.1935     kept <1e-07
+sens1                     2.3714  2.3714     1  871.10  2.1385     kept 0.1440
+Homesize                  0.4202  0.4202     1   95.05  0.3789     kept 0.5397
+Age                       4.1153  1.3718     3   95.03  1.2370     kept 0.3007
+Homesize:Age              7.0442  2.3481     3   95.03  2.1174     kept 0.1031
+
+Least squares means:
+                  Homesize  Age Estimate Standard Error   DF t-value Lower CI
+Homesize  1            1.0   NA   4.8054         0.1083 95.1    44.4     4.59
+Homesize  3            2.0   NA   4.7201         0.0866 95.4    54.5     4.55
+Age  1                  NA  1.0   4.5107         0.1796 95.2    25.1     4.15
+Age  2                  NA  2.0   4.8406         0.1531 95.1    31.6     4.54
+Age  3                  NA  3.0   4.7770         0.0767 95.3    62.3     4.62
+Age  4                  NA  4.0   4.9226         0.1235 95.1    39.9     4.68
+Homesize:Age  1 1      1.0  1.0   4.3172         0.3062 95.0    14.1     3.71
+Homesize:Age  3 1      2.0  1.0   4.7042         0.1879 95.7    25.0     4.33
+Homesize:Age  1 2      1.0  2.0   5.0630         0.2652 95.0    19.1     4.54
+Homesize:Age  3 2      2.0  2.0   4.6182         0.1531 95.1    30.2     4.31
+Homesize:Age  1 3      1.0  3.0   4.9715         0.0970 95.5    51.3     4.78
+Homesize:Age  3 3      2.0  3.0   4.5825         0.1186 95.1    38.6     4.35
+Homesize:Age  1 4      1.0  4.0   4.8697         0.1186 95.1    41.0     4.63
+Homesize:Age  3 4      2.0  4.0   4.9754         0.2165 95.0    23.0     4.55
+                  Upper CI p-value    
+Homesize  1           5.02  <2e-16 ***
+Homesize  3           4.89  <2e-16 ***
+Age  1                4.87  <2e-16 ***
+Age  2                5.14  <2e-16 ***
+Age  3                4.93  <2e-16 ***
+Age  4                5.17  <2e-16 ***
+Homesize:Age  1 1     4.92  <2e-16 ***
+Homesize:Age  3 1     5.08  <2e-16 ***
+Homesize:Age  1 2     5.59  <2e-16 ***
+Homesize:Age  3 2     4.92  <2e-16 ***
+Homesize:Age  1 3     5.16  <2e-16 ***
+Homesize:Age  3 3     4.82  <2e-16 ***
+Homesize:Age  1 4     5.11  <2e-16 ***
+Homesize:Age  3 4     5.41  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+                         Estimate Standard Error   DF t-value Lower CI Upper CI
+Homesize 1 - 3                0.1         0.1385 95.0    0.62  -0.1898   0.3603
+Age 1 - 2                    -0.3         0.2360 95.1   -1.40  -0.7984   0.1385
+Age 1 - 3                    -0.3         0.1952 95.1   -1.36  -0.6539   0.1212
+Age 1 - 4                    -0.4         0.2179 95.1   -1.89  -0.8445   0.0207
+Age 2 - 3                     0.1         0.1712 95.0    0.37  -0.2762   0.4034
+Age 2 - 4                    -0.1         0.1966 95.0   -0.42  -0.4723   0.3084
+Age 3 - 4                    -0.1         0.1452 95.0   -1.00  -0.4339   0.1428
+Homesize:Age  1 1 -  3 1     -0.4         0.3592 95.1   -1.08  -1.1000   0.3260
+Homesize:Age  1 1 -  1 2     -0.7         0.4050 95.0   -1.84  -1.5498   0.0582
+Homesize:Age  1 1 -  3 2     -0.3         0.3423 95.0   -0.88  -0.9805   0.3785
+Homesize:Age  1 1 -  1 3     -0.7         0.3211 95.0   -2.04  -1.2918  -0.0169
+Homesize:Age  1 1 -  3 3     -0.3         0.3283 95.0   -0.81  -0.9171   0.3865
+Homesize:Age  1 1 -  1 4     -0.6         0.3283 95.0   -1.68  -1.2043   0.0992
+Homesize:Age  1 1 -  3 4     -0.7         0.3750 95.0   -1.76  -1.4026   0.0861
+Homesize:Age  3 1 -  1 2     -0.4         0.3249 95.2   -1.10  -1.0038   0.2862
+Homesize:Age  3 1 -  3 2      0.1         0.2423 95.4    0.35  -0.3950   0.5670
+Homesize:Age  3 1 -  1 3     -0.3         0.2113 95.6   -1.27  -0.6869   0.1522
+Homesize:Age  3 1 -  3 3      0.1         0.2221 95.5    0.55  -0.3193   0.5626
+Homesize:Age  3 1 -  1 4     -0.2         0.2221 95.5   -0.75  -0.6065   0.2754
+Homesize:Age  3 1 -  3 4     -0.3         0.2866 95.3   -0.95  -0.8402   0.2977
+Homesize:Age  1 2 -  3 2      0.4         0.3061 95.0    1.45  -0.1630   1.0526
+Homesize:Age  1 2 -  1 3      0.1         0.2823 95.0    0.32  -0.4689   0.6518
+Homesize:Age  1 2 -  3 3      0.5         0.2904 95.0    1.65  -0.0961   1.0571
+Homesize:Age  1 2 -  1 4      0.2         0.2904 95.0    0.67  -0.3833   0.7698
+Homesize:Age  1 2 -  3 4      0.1         0.3423 95.0    0.26  -0.5920   0.7671
+Homesize:Age  3 2 -  1 3     -0.4         0.1812 95.0   -1.95  -0.7130   0.0063
+Homesize:Age  3 2 -  3 3      0.0         0.1936 95.0    0.18  -0.3487   0.4201
+Homesize:Age  3 2 -  1 4     -0.3         0.1936 95.0   -1.30  -0.6359   0.1329
+Homesize:Age  3 2 -  3 4     -0.4         0.2651 95.0   -1.35  -0.8836   0.1691
+Homesize:Age  1 3 -  3 3      0.4         0.1531 95.1    2.54   0.0851   0.6930
+Homesize:Age  1 3 -  1 4      0.1         0.1531 95.1    0.66  -0.2022   0.4058
+Homesize:Age  1 3 -  3 4      0.0         0.2372 95.0   -0.02  -0.4747   0.4669
+Homesize:Age  3 3 -  1 4     -0.3         0.1677 95.0   -1.71  -0.6201   0.0457
+Homesize:Age  3 3 -  3 4     -0.4         0.2468 95.0   -1.59  -0.8829   0.0971
+Homesize:Age  1 4 -  3 4     -0.1         0.2468 95.0   -0.43  -0.5957   0.3843
+                         p-value  
+Homesize 1 - 3              0.54  
+Age 1 - 2                   0.17  
+Age 1 - 3                   0.18  
+Age 1 - 4                   0.06 .
+Age 2 - 3                   0.71  
+Age 2 - 4                   0.68  
+Age 3 - 4                   0.32  
+Homesize:Age  1 1 -  3 1    0.28  
+Homesize:Age  1 1 -  1 2    0.07 .
+Homesize:Age  1 1 -  3 2    0.38  
+Homesize:Age  1 1 -  1 3    0.04 *
+Homesize:Age  1 1 -  3 3    0.42  
+Homesize:Age  1 1 -  1 4    0.10 .
+Homesize:Age  1 1 -  3 4    0.08 .
+Homesize:Age  3 1 -  1 2    0.27  
+Homesize:Age  3 1 -  3 2    0.72  
+Homesize:Age  3 1 -  1 3    0.21  
+Homesize:Age  3 1 -  3 3    0.59  
+Homesize:Age  3 1 -  1 4    0.46  
+Homesize:Age  3 1 -  3 4    0.35  
+Homesize:Age  1 2 -  3 2    0.15  
+Homesize:Age  1 2 -  1 3    0.75  
+Homesize:Age  1 2 -  3 3    0.10  
+Homesize:Age  1 2 -  1 4    0.51  
+Homesize:Age  1 2 -  3 4    0.80  
+Homesize:Age  3 2 -  1 3    0.05 .
+Homesize:Age  3 2 -  3 3    0.85  
+Homesize:Age  3 2 -  1 4    0.20  
+Homesize:Age  3 2 -  3 4    0.18  
+Homesize:Age  1 3 -  3 3    0.01 *
+Homesize:Age  1 3 -  1 4    0.51  
+Homesize:Age  1 3 -  3 4    0.99  
+Homesize:Age  3 3 -  1 4    0.09 .
+Homesize:Age  3 3 -  3 4    0.11  
+Homesize:Age  1 4 -  3 4    0.67  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Preference ~ sens2 + sens1 + Homesize + 
+    Age + (1 + sens1 | Consumer) + Homesize:Age, data = carrots, 
+    REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
+    devFunOnly = devFunOnly.lmerTest.private)
+> 
+> step(modelCarrots, keep.effs = c("sens1:Consumer"))
+No  sens1:Consumer exist among effects in the model
+
+Random effects:
+               Chi.sq Chi.DF elim.num p.value
+sens1:Consumer   0.69      2        1  0.7094
+      Consumer  75.12      1     kept  <1e-07
+
+Fixed effects:
+                          Sum Sq Mean Sq NumDF   DenDF F.value elim.num Pr(>F)
+sens2:sens1:Homesize:Age  3.5628  1.1876     3 1105.94  1.0727        1 0.3597
+sens2:Homesize:Age        1.8180  0.6060     3 1108.94  0.5472        2 0.6501
+sens2:sens1:Homesize      0.6014  0.6014     1 1111.96  0.5437        3 0.4610
+sens1:Homesize:Age        5.7040  1.9013     3 1112.95  1.7198        4 0.1612
+sens1:Homesize            0.1624  0.1624     1 1116.01  0.1466        5 0.7019
+Homesize:Age              6.2906  2.0969     3   94.85  1.8944        6 0.1358
+sens2:Homesize            3.0258  3.0258     1 1116.98  2.7336        7 0.0985
+sens2:sens1:Age           7.2492  2.4164     3 1117.99  2.1797        8 0.0888
+sens1:Age                 1.2078  0.6039     3 1121.02  0.5430        9 0.5811
+sens2:sens1               0.5842  0.5842     1 1124.01  0.5262       10 0.4684
+sens2:Age                 3.4157  1.1386     3 1124.99  1.0259       11 0.3802
+Age                       0.9190  0.3063     3   97.98  0.2760       12 0.8426
+sens1                     2.3938  2.3938     1 1128.09  2.1567       13 0.1422
+sens2                    83.3626 83.3626     1 1129.00 75.0256     kept <1e-07
+Homesize                  5.7286  5.7286     1  100.97  5.1557     kept 0.0253
+
+Least squares means:
+            Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
+Homesize  1        1   4.9063         0.0707 101  69.4200     4.77     5.05
+Homesize  3        2   4.6662         0.0787 101  59.3300     4.51     4.82
+            p-value    
+Homesize  1  <2e-16 ***
+Homesize  3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+               Estimate Standard Error    DF t-value Lower CI Upper CI p-value
+Homesize 1 - 3      0.2          0.106 101.0    2.27   0.0303     0.45    0.03
+                
+Homesize 1 - 3 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 | Consumer), 
+    data = carrots, REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
+    devFunOnly = devFunOnly.lmerTest.private)
+> 
+> step(modelCarrots, keep.effs = c("dfgsdfg"))
+No  dfgsdfg exist among effects in the model
+
+Random effects:
+               Chi.sq Chi.DF elim.num p.value
+sens1:Consumer   0.69      2        1  0.7094
+      Consumer  75.12      1     kept  <1e-07
+
+Fixed effects:
+                          Sum Sq Mean Sq NumDF   DenDF F.value elim.num Pr(>F)
+sens2:sens1:Homesize:Age  3.5628  1.1876     3 1105.94  1.0727        1 0.3597
+sens2:Homesize:Age        1.8180  0.6060     3 1108.94  0.5472        2 0.6501
+sens2:sens1:Homesize      0.6014  0.6014     1 1111.96  0.5437        3 0.4610
+sens1:Homesize:Age        5.7040  1.9013     3 1112.95  1.7198        4 0.1612
+sens1:Homesize            0.1624  0.1624     1 1116.01  0.1466        5 0.7019
+Homesize:Age              6.2906  2.0969     3   94.85  1.8944        6 0.1358
+sens2:Homesize            3.0258  3.0258     1 1116.98  2.7336        7 0.0985
+sens2:sens1:Age           7.2492  2.4164     3 1117.99  2.1797        8 0.0888
+sens1:Age                 1.2078  0.6039     3 1121.02  0.5430        9 0.5811
+sens2:sens1               0.5842  0.5842     1 1124.01  0.5262       10 0.4684
+sens2:Age                 3.4157  1.1386     3 1124.99  1.0259       11 0.3802
+Age                       0.9190  0.3063     3   97.98  0.2760       12 0.8426
+sens1                     2.3938  2.3938     1 1128.09  2.1567       13 0.1422
+sens2                    83.3626 83.3626     1 1129.00 75.0256     kept <1e-07
+Homesize                  5.7286  5.7286     1  100.97  5.1557     kept 0.0253
+
+Least squares means:
+            Homesize Estimate Standard Error  DF  t-value Lower CI Upper CI
+Homesize  1        1   4.9063         0.0707 101  69.4200     4.77     5.05
+Homesize  3        2   4.6662         0.0787 101  59.3300     4.51     4.82
+            p-value    
+Homesize  1  <2e-16 ***
+Homesize  3  <2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+               Estimate Standard Error    DF t-value Lower CI Upper CI p-value
+Homesize 1 - 3      0.2          0.106 101.0    2.27   0.0303     0.45    0.03
+                
+Homesize 1 - 3 *
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 | Consumer), 
+    data = carrots, REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
+    devFunOnly = devFunOnly.lmerTest.private)
+> 
+> 
+> 
+> ## for TV data
+> 
+> m <- lmer(Dimglasseffect ~ TVset*Picture+
++             (1|Assessor)+(1|Assessor:TVset), data=TVbo)
+> 
+> step(m, keep.effs = "TVset:Picture")
+
+Random effects:
+               Chi.sq Chi.DF elim.num p.value
+Assessor:TVset   0.00      1        1       1
+Assessor        48.47      1     kept  <1e-07
+
+Fixed effects:
+                Sum Sq Mean Sq NumDF DenDF F.value elim.num Pr(>F)
+TVset          29.2454 14.6227     2   173  4.5838     kept 0.0115
+Picture       244.0613 81.3538     3   173 25.5020     kept <1e-07
+TVset:Picture  22.4488  3.7415     6   173  1.1728     kept 0.3230
+
+Least squares means:
+                     TVset Picture Estimate Standard Error   DF t-value
+TVset  TV1             1.0      NA    2.478          0.489  9.4    5.06
+TVset  TV2             2.0      NA    3.181          0.489  9.4    6.50
+TVset  TV3             3.0      NA    3.391          0.489  9.4    6.93
+Picture  1              NA     1.0    2.929          0.506 10.8    5.79
+Picture  2              NA     2.0    2.025          0.506 10.8    4.00
+Picture  3              NA     3.0    4.881          0.506 10.8    9.65
+Picture  4              NA     4.0    2.231          0.506 10.8    4.41
+TVset:Picture  TV1 1   1.0     1.0    2.219          0.624 24.1    3.56
+TVset:Picture  TV2 1   2.0     1.0    3.181          0.624 24.1    5.10
+TVset:Picture  TV3 1   3.0     1.0    3.388          0.624 24.1    5.43
+TVset:Picture  TV1 2   1.0     2.0    1.938          0.624 24.1    3.11
+TVset:Picture  TV2 2   2.0     2.0    1.956          0.624 24.1    3.14
+TVset:Picture  TV3 2   3.0     2.0    2.181          0.624 24.1    3.50
+TVset:Picture  TV1 3   1.0     3.0    3.750          0.624 24.1    6.01
+TVset:Picture  TV2 3   2.0     3.0    5.037          0.624 24.1    8.08
+TVset:Picture  TV3 3   3.0     3.0    5.856          0.624 24.1    9.39
+TVset:Picture  TV1 4   1.0     4.0    2.006          0.624 24.1    3.22
+TVset:Picture  TV2 4   2.0     4.0    2.550          0.624 24.1    4.09
+TVset:Picture  TV3 4   3.0     4.0    2.138          0.624 24.1    3.43
+                     Lower CI Upper CI p-value    
+TVset  TV1              1.379     3.58  0.0006 ***
+TVset  TV2              2.082     4.28  0.0001 ***
+TVset  TV3              2.291     4.49  0.0001 ***
+Picture  1              1.813     4.05  0.0001 ***
+Picture  2              0.908     3.14  0.0022 ** 
+Picture  3              3.765     6.00  <2e-16 ***
+Picture  4              1.115     3.35  0.0011 ** 
+TVset:Picture  TV1 1    0.932     3.51  0.0016 ** 
+TVset:Picture  TV2 1    1.895     4.47  <2e-16 ***
+TVset:Picture  TV3 1    2.101     4.67  <2e-16 ***
+TVset:Picture  TV1 2    0.651     3.22  0.0048 ** 
+TVset:Picture  TV2 2    0.669     3.24  0.0045 ** 
+TVset:Picture  TV3 2    0.894     3.47  0.0018 ** 
+TVset:Picture  TV1 3    2.463     5.04  <2e-16 ***
+TVset:Picture  TV2 3    3.751     6.32  <2e-16 ***
+TVset:Picture  TV3 3    4.569     7.14  <2e-16 ***
+TVset:Picture  TV1 4    0.720     3.29  0.0037 ** 
+TVset:Picture  TV2 4    1.263     3.84  0.0004 ***
+TVset:Picture  TV3 4    0.851     3.42  0.0022 ** 
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+ Differences of LSMEANS:
+                              Estimate Standard Error    DF t-value Lower CI
+TVset TV1 - TV2                   -0.7         0.3157 173.0   -2.23  -1.3263
+TVset TV1 - TV3                   -0.9         0.3157 173.0   -2.89  -1.5357
+TVset TV2 - TV3                   -0.2         0.3157 173.0   -0.66  -0.8326
+Picture 1 - 2                      0.9         0.3646 173.0    2.48   0.1846
+Picture 1 - 3                     -2.0         0.3646 173.0   -5.35  -2.6717
+Picture 1 - 4                      0.7         0.3646 173.0    1.91  -0.0217
+Picture 2 - 3                     -2.9         0.3646 173.0   -7.83  -3.5759
+Picture 2 - 4                     -0.2         0.3646 173.0   -0.57  -0.9259
+Picture 3 - 4                      2.6         0.3646 173.0    7.27   1.9304
+TVset:Picture  TV1 1 -  TV2 1     -1.0         0.6315 173.0   -1.52  -2.2089
+TVset:Picture  TV1 1 -  TV3 1     -1.2         0.6315 173.0   -1.85  -2.4151
+TVset:Picture  TV1 1 -  TV1 2      0.3         0.6315 173.0    0.45  -0.9651
+TVset:Picture  TV1 1 -  TV2 2      0.3         0.6315 173.0    0.42  -0.9839
+TVset:Picture  TV1 1 -  TV3 2      0.0         0.6315 173.0    0.06  -1.2089
+TVset:Picture  TV1 1 -  TV1 3     -1.5         0.6315 173.0   -2.42  -2.7776
+TVset:Picture  TV1 1 -  TV2 3     -2.8         0.6315 173.0   -4.46  -4.0651
+TVset:Picture  TV1 1 -  TV3 3     -3.6         0.6315 173.0   -5.76  -4.8839
+TVset:Picture  TV1 1 -  TV1 4      0.2         0.6315 173.0    0.34  -1.0339
+TVset:Picture  TV1 1 -  TV2 4     -0.3         0.6315 173.0   -0.52  -1.5776
+TVset:Picture  TV1 1 -  TV3 4      0.1         0.6315 173.0    0.13  -1.1651
+TVset:Picture  TV2 1 -  TV3 1     -0.2         0.6315 173.0   -0.33  -1.4526
+TVset:Picture  TV2 1 -  TV1 2      1.2         0.6315 173.0    1.97  -0.0026
+TVset:Picture  TV2 1 -  TV2 2      1.2         0.6315 173.0    1.94  -0.0214
+TVset:Picture  TV2 1 -  TV3 2      1.0         0.6315 173.0    1.58  -0.2464
+TVset:Picture  TV2 1 -  TV1 3     -0.6         0.6315 173.0   -0.90  -1.8151
+TVset:Picture  TV2 1 -  TV2 3     -1.9         0.6315 173.0   -2.94  -3.1026
+TVset:Picture  TV2 1 -  TV3 3     -2.7         0.6315 173.0   -4.24  -3.9214
+TVset:Picture  TV2 1 -  TV1 4      1.2         0.6315 173.0    1.86  -0.0714
+TVset:Picture  TV2 1 -  TV2 4      0.6         0.6315 173.0    1.00  -0.6151
+TVset:Picture  TV2 1 -  TV3 4      1.0         0.6315 173.0    1.65  -0.2026
+TVset:Picture  TV3 1 -  TV1 2      1.4         0.6315 173.0    2.30   0.2036
+TVset:Picture  TV3 1 -  TV2 2      1.4         0.6315 173.0    2.27   0.1849
+TVset:Picture  TV3 1 -  TV3 2      1.2         0.6315 173.0    1.91  -0.0401
+TVset:Picture  TV3 1 -  TV1 3     -0.4         0.6315 173.0   -0.57  -1.6089
+TVset:Picture  TV3 1 -  TV2 3     -1.6         0.6315 173.0   -2.61  -2.8964
+TVset:Picture  TV3 1 -  TV3 3     -2.5         0.6315 173.0   -3.91  -3.7151
+TVset:Picture  TV3 1 -  TV1 4      1.4         0.6315 173.0    2.19   0.1349
+TVset:Picture  TV3 1 -  TV2 4      0.8         0.6315 173.0    1.33  -0.4089
+TVset:Picture  TV3 1 -  TV3 4      1.2         0.6315 173.0    1.98   0.0036
+TVset:Picture  TV1 2 -  TV2 2      0.0         0.6315 173.0   -0.03  -1.2651
+TVset:Picture  TV1 2 -  TV3 2     -0.2         0.6315 173.0   -0.39  -1.4901
+TVset:Picture  TV1 2 -  TV1 3     -1.8         0.6315 173.0   -2.87  -3.0589
+TVset:Picture  TV1 2 -  TV2 3     -3.1         0.6315 173.0   -4.91  -4.3464
+TVset:Picture  TV1 2 -  TV3 3     -3.9         0.6315 173.0   -6.21  -5.1651
+TVset:Picture  TV1 2 -  TV1 4     -0.1         0.6315 173.0   -0.11  -1.3151
+TVset:Picture  TV1 2 -  TV2 4     -0.6         0.6315 173.0   -0.97  -1.8589
+TVset:Picture  TV1 2 -  TV3 4     -0.2         0.6315 173.0   -0.32  -1.4464
+TVset:Picture  TV2 2 -  TV3 2     -0.2         0.6315 173.0   -0.36  -1.4714
+TVset:Picture  TV2 2 -  TV1 3     -1.8         0.6315 173.0   -2.84  -3.0401
+TVset:Picture  TV2 2 -  TV2 3     -3.1         0.6315 173.0   -4.88  -4.3276
+TVset:Picture  TV2 2 -  TV3 3     -3.9         0.6315 173.0   -6.18  -5.1464
+TVset:Picture  TV2 2 -  TV1 4      0.0         0.6315 173.0   -0.08  -1.2964
+TVset:Picture  TV2 2 -  TV2 4     -0.6         0.6315 173.0   -0.94  -1.8401
+TVset:Picture  TV2 2 -  TV3 4     -0.2         0.6315 173.0   -0.29  -1.4276
+TVset:Picture  TV3 2 -  TV1 3     -1.6         0.6315 173.0   -2.48  -2.8151
+TVset:Picture  TV3 2 -  TV2 3     -2.9         0.6315 173.0   -4.52  -4.1026
+TVset:Picture  TV3 2 -  TV3 3     -3.7         0.6315 173.0   -5.82  -4.9214
+TVset:Picture  TV3 2 -  TV1 4      0.2         0.6315 173.0    0.28  -1.0714
+TVset:Picture  TV3 2 -  TV2 4     -0.4         0.6315 173.0   -0.58  -1.6151
+TVset:Picture  TV3 2 -  TV3 4      0.0         0.6315 173.0    0.07  -1.2026
+TVset:Picture  TV1 3 -  TV2 3     -1.3         0.6315 173.0   -2.04  -2.5339
+TVset:Picture  TV1 3 -  TV3 3     -2.1         0.6315 173.0   -3.34  -3.3526
+TVset:Picture  TV1 3 -  TV1 4      1.7         0.6315 173.0    2.76   0.4974
+TVset:Picture  TV1 3 -  TV2 4      1.2         0.6315 173.0    1.90  -0.0464
+TVset:Picture  TV1 3 -  TV3 4      1.6         0.6315 173.0    2.55   0.3661
+TVset:Picture  TV2 3 -  TV3 3     -0.8         0.6315 173.0   -1.30  -2.0651
+TVset:Picture  TV2 3 -  TV1 4      3.0         0.6315 173.0    4.80   1.7849
+TVset:Picture  TV2 3 -  TV2 4      2.5         0.6315 173.0    3.94   1.2411
+TVset:Picture  TV2 3 -  TV3 4      2.9         0.6315 173.0    4.59   1.6536
+TVset:Picture  TV3 3 -  TV1 4      3.8         0.6315 173.0    6.10   2.6036
+TVset:Picture  TV3 3 -  TV2 4      3.3         0.6315 173.0    5.24   2.0599
+TVset:Picture  TV3 3 -  TV3 4      3.7         0.6315 173.0    5.89   2.4724
+TVset:Picture  TV1 4 -  TV2 4     -0.5         0.6315 173.0   -0.86  -1.7901
+TVset:Picture  TV1 4 -  TV3 4     -0.1         0.6315 173.0   -0.21  -1.3776
+TVset:Picture  TV2 4 -  TV3 4      0.4         0.6315 173.0    0.65  -0.8339
+                              Upper CI p-value    
+TVset TV1 - TV2                -0.0799   0.027 *  
+TVset TV1 - TV3                -0.2893   0.004 ** 
+TVset TV2 - TV3                 0.4138   0.508    
+Picture 1 - 2                   1.6238   0.014 *  
+Picture 1 - 3                  -1.2325  <2e-16 ***
+Picture 1 - 4                   1.4175   0.057 .  
+Picture 2 - 3                  -2.1366  <2e-16 ***
+Picture 2 - 4                   0.5134   0.572    
+Picture 3 - 4                   3.3696  <2e-16 ***
+TVset:Picture  TV1 1 -  TV2 1   0.2839   0.129    
+TVset:Picture  TV1 1 -  TV3 1   0.0776   0.066 .  
+TVset:Picture  TV1 1 -  TV1 2   1.5276   0.657    
+TVset:Picture  TV1 1 -  TV2 2   1.5089   0.678    
+TVset:Picture  TV1 1 -  TV3 2   1.2839   0.953    
+TVset:Picture  TV1 1 -  TV1 3  -0.2849   0.016 *  
+TVset:Picture  TV1 1 -  TV2 3  -1.5724  <2e-16 ***
+TVset:Picture  TV1 1 -  TV3 3  -2.3911  <2e-16 ***
+TVset:Picture  TV1 1 -  TV1 4   1.4589   0.737    
+TVset:Picture  TV1 1 -  TV2 4   0.9151   0.601    
+TVset:Picture  TV1 1 -  TV3 4   1.3276   0.898    
+TVset:Picture  TV2 1 -  TV3 1   1.0401   0.744    
+TVset:Picture  TV2 1 -  TV1 2   2.4901   0.050 .  
+TVset:Picture  TV2 1 -  TV2 2   2.4714   0.054 .  
+TVset:Picture  TV2 1 -  TV3 2   2.2464   0.115    
+TVset:Picture  TV2 1 -  TV1 3   0.6776   0.369    
+TVset:Picture  TV2 1 -  TV2 3  -0.6099   0.004 ** 
+TVset:Picture  TV2 1 -  TV3 3  -1.4286  <2e-16 ***
+TVset:Picture  TV2 1 -  TV1 4   2.4214   0.064 .  
+TVset:Picture  TV2 1 -  TV2 4   1.8776   0.319    
+TVset:Picture  TV2 1 -  TV3 4   2.2901   0.100    
+TVset:Picture  TV3 1 -  TV1 2   2.6964   0.023 *  
+TVset:Picture  TV3 1 -  TV2 2   2.6776   0.025 *  
+TVset:Picture  TV3 1 -  TV3 2   2.4526   0.058 .  
+TVset:Picture  TV3 1 -  TV1 3   0.8839   0.567    
+TVset:Picture  TV3 1 -  TV2 3  -0.4036   0.010 ** 
+TVset:Picture  TV3 1 -  TV3 3  -1.2224   1e-04 ***
+TVset:Picture  TV3 1 -  TV1 4   2.6276   0.030 *  
+TVset:Picture  TV3 1 -  TV2 4   2.0839   0.186    
+TVset:Picture  TV3 1 -  TV3 4   2.4964   0.049 *  
+TVset:Picture  TV1 2 -  TV2 2   1.2276   0.976    
+TVset:Picture  TV1 2 -  TV3 2   1.0026   0.700    
+TVset:Picture  TV1 2 -  TV1 3  -0.5661   0.005 ** 
+TVset:Picture  TV1 2 -  TV2 3  -1.8536  <2e-16 ***
+TVset:Picture  TV1 2 -  TV3 3  -2.6724  <2e-16 ***
+TVset:Picture  TV1 2 -  TV1 4   1.1776   0.913    
+TVset:Picture  TV1 2 -  TV2 4   0.6339   0.333    
+TVset:Picture  TV1 2 -  TV3 4   1.0464   0.752    
+TVset:Picture  TV2 2 -  TV3 2   1.0214   0.722    
+TVset:Picture  TV2 2 -  TV1 3  -0.5474   0.005 ** 
+TVset:Picture  TV2 2 -  TV2 3  -1.8349  <2e-16 ***
+TVset:Picture  TV2 2 -  TV3 3  -2.6536  <2e-16 ***
+TVset:Picture  TV2 2 -  TV1 4   1.1964   0.937    
+TVset:Picture  TV2 2 -  TV2 4   0.6526   0.348    
+TVset:Picture  TV2 2 -  TV3 4   1.0651   0.774    
+TVset:Picture  TV3 2 -  TV1 3  -0.3224   0.014 *  
+TVset:Picture  TV3 2 -  TV2 3  -1.6099  <2e-16 ***
+TVset:Picture  TV3 2 -  TV3 3  -2.4286  <2e-16 ***
+TVset:Picture  TV3 2 -  TV1 4   1.4214   0.782    
+TVset:Picture  TV3 2 -  TV2 4   0.8776   0.560    
+TVset:Picture  TV3 2 -  TV3 4   1.2901   0.945    
+TVset:Picture  TV1 3 -  TV2 3  -0.0411   0.043 *  
+TVset:Picture  TV1 3 -  TV3 3  -0.8599   0.001 ***
+TVset:Picture  TV1 3 -  TV1 4   2.9901   0.006 ** 
+TVset:Picture  TV1 3 -  TV2 4   2.4464   0.059 .  
+TVset:Picture  TV1 3 -  TV3 4   2.8589   0.011 *  
+TVset:Picture  TV2 3 -  TV3 3   0.4276   0.197    
+TVset:Picture  TV2 3 -  TV1 4   4.2776  <2e-16 ***
+TVset:Picture  TV2 3 -  TV2 4   3.7339   1e-04 ***
+TVset:Picture  TV2 3 -  TV3 4   4.1464  <2e-16 ***
+TVset:Picture  TV3 3 -  TV1 4   5.0964  <2e-16 ***
+TVset:Picture  TV3 3 -  TV2 4   4.5526  <2e-16 ***
+TVset:Picture  TV3 3 -  TV3 4   4.9651  <2e-16 ***
+TVset:Picture  TV1 4 -  TV2 4   0.7026   0.390    
+TVset:Picture  TV1 4 -  TV3 4   1.1151   0.836    
+TVset:Picture  TV2 4 -  TV3 4   1.6589   0.514    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Final model:
+lme4::lmer(formula = Dimglasseffect ~ TVset + Picture + (1 | 
+    Assessor) + TVset:Picture, data = TVbo, REML = reml.lmerTest.private, 
+    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+> 
+> proc.time()
+   user  system elapsed 
+  57.11    0.20   57.36 
