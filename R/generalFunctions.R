@@ -94,13 +94,19 @@ print.step <- function(x, ...)
 }
 
 
-plot.step <- function(x, main = NULL, cex = 1.4, ...)
+plot.step <- function(x, main = NULL, cex = 1.4, 
+                      which.plot = c("LSMEANS", "DIFF of LSMEANS"),
+                      effs = NULL, mult = TRUE, ...)
 {
-  if(!is.null(x$lsmeans.table) && nrow(x$lsmeans.table)>0)
-    plotLSMEANS(x$lsmeans.table, x$response, "LSMEANS", main = main, cex = cex)     
-  if(!is.null(x$diffs.lsmeans.table) && nrow(x$diffs.lsmeans.table)>0)
+  if(!is.null(x$lsmeans.table) && nrow(x$lsmeans.table)>0 && ("LSMEANS" %in% which.plot)){
+    if(length(which.plot) == 1 && which.plot == "LSMEANS")
+      return(plotLSMEANS(x$lsmeans.table, x$response, "LSMEANS", main = main, cex = cex,
+                         effs = effs, mult = mult))
+  }         
+  if(!is.null(x$diffs.lsmeans.table) && nrow(x$diffs.lsmeans.table)>0 
+     && ("DIFF of LSMEANS" %in% which.plot))
     plotLSMEANS(x$diffs.lsmeans.table, x$response, "DIFF of LSMEANS", 
-                main = main, cex = cex)
+                main = main, cex = cex, effs = effs, mult = mult)
 }
 
 
@@ -160,7 +166,7 @@ setMethod("anova", signature(object="merModLmerTest"),
                     table <- an.table
                     
                     attr(table, "heading") <- 
-                      paste("Analysis of Variance Table of type", type ,
+                      paste("Analysis of Variance Table of type", as.roman(type) ,
                             " with ", ddf, 
                             "\napproximation for degrees of freedom")
                   }
@@ -262,12 +268,13 @@ print.lsmeans <- function(x, ...)
                P.values=TRUE, has.Pvalue=TRUE)       
 }
 
-plot.lsmeans <- function(x, main = NULL, cex = 1.4, ...)
+plot.lsmeans <- function(x, main = NULL, cex = 1.4, effs = NULL, mult = TRUE, ...)
 {
   
   #plots for LSMEANS
   if(!is.null(x$lsmeans.table) && nrow(x$lsmeans.table)>0)
-    plotLSMEANS(x$lsmeans.table, x$response, "LSMEANS", main = main, cex = cex)     
+    plotLSMEANS(x$lsmeans.table, x$response, "LSMEANS", main = main, cex = cex,
+                effs = effs,  mult = mult)     
 }
 
 difflsmeans <- function(model, test.effs=NULL, ...)
@@ -294,11 +301,12 @@ print.difflsmeans <- function(x, ...)
   
 }
 
-plot.difflsmeans <- function(x, main = NULL, cex = 1.4, ...)
+plot.difflsmeans <- function(x, main = NULL, cex = 1.4, effs = NULL, 
+                             mult = TRUE, ...)
 {
   
   #plots for DIFF of LSMEANS
   if(!is.null(x$diffs.lsmeans.table) && nrow(x$diffs.lsmeans.table)>0)
     plotLSMEANS(x$diffs.lsmeans.table, x$response, "DIFF of LSMEANS", 
-                main = main, cex = cex)   
+                main = main, cex = cex, effs = effs, mult = mult)   
 }

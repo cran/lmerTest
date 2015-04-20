@@ -8,7 +8,7 @@
  Produces a data frame which resembles to what SAS software gives in proc mixed statement. The approximation of degrees of freedom is Satterthwate's.
 }
 \usage{
-lsmeans(model, test.effs=NULL,  ...)
+lsmeans(model, test.effs = NULL,  ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

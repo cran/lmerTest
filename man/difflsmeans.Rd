@@ -7,6 +7,7 @@
 \description{
  Produces a data frame which resembles to what SAS software gives in proc mixed statement. The approximation for degrees of freedom is Satterthwaite's.
 }
+
 \usage{
 difflsmeans(model, test.effs=NULL,  ...)
 }

@@ -7,7 +7,8 @@ load(system.file("testdata","potdata.RData", package="lmerTest"))
 lmerout <- lmer(biomass ~ CO2*nutrients + (1|chamber),data=potdata)
 
 an.sat <- anova(lmerout)
-an.kr <- anova(lmerout, ddf="Kenward-Roger")
+if(require(pbkrtest))
+  an.kr <- anova(lmerout, ddf="Kenward-Roger")
 
 TOL <- 1e-7
 stopifnot(all.equal(an.kr[,"Pr(>F)"], c(0.0224955602, 1e-11, 0.020905569) , 

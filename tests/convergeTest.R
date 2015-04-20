@@ -1,5 +1,7 @@
 require(lmerTest)
 
+###ASSERT ERROR
+
 m.carrots <- lmer(Preference ~ sens1*sens2*Homesize*Age +
                      (1 + sens1 + sens2|Consumer) + (1|product), data = carrots)
 

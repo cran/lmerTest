@@ -66,7 +66,7 @@ tools::assertError(stopifnot(ncol(an1) == 6))
 
 ## anova works in the following case
 d2 <- lmer(form, data=LC2)
-anova(d2)
-stopifnot(ncol(d2) == 6)
+an2 <- anova(d2)
+stopifnot(ncol(an2) == 6)
 
 

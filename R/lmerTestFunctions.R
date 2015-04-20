@@ -9,8 +9,10 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
                                   test.effs = NULL, keep.effs = NULL)
 {
   
+  change.contr <- TRUE
+  
   ## check type of hypothesis
-  if(!isRand && !(type %in% c(1,3)))  
+  if(!isRand && !(type %in% c(1,2,3)))  
     stop('Parameter type is wrongly specified') 
   
   ## check keep.effs 
@@ -34,30 +36,10 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
   l.lmerTest.private.contrast<- attr(mm,"contrasts")
   contr <- l.lmerTest.private.contrast
   
-  ## THE FOLLOWING UPDATE CONTRASTS CODE IS TRANSFERRED AFTER THE REDUCTION
+  ## THE  CONTRASTS CODE IS TRANSFERRED AFTER THE REDUCTION
   ## OF THE RAND EFFECTS - THE CHANGE OF THE CONTRASTS INFLUENCED 
   ## THE LRT FOR RANDOM EFFECTS - EXAMPLE IN testContrasts.R
-#   ### change contrasts for F tests calculations
-#   #list of contrasts for factors
-#   if( isAnova || isTotal )
-#   {    
-#     if( length(which(unlist(contr)!="contr.SAS")) > 0 )
-#     {
-#       names.facs <- names(contr)
-#       l.lmerTest.private.contrast <- as.list(rep("contr.SAS",length(names.facs)))
-#       names(l.lmerTest.private.contrast) <- names(contr)
-# 	    model <- updateModel(model, .~., getREML(model), l.lmerTest.private.contrast) 
-#     }    
-#   }
-#   else
-#   {
-#     #update model to mer class
-# 	model <- updateModel(model, .~., getREML(model), l.lmerTest.private.contrast)
-#   }
-#   
-  
-  
-  
+
   #not to show the warnings  
   #options(warn=-1) 
   
@@ -67,8 +49,7 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
   result$response <- rownames(attr(terms(model),"factors"))[1]
   
   
-  #model<-update(model, REML=TRUE)
-  ## deleted because use ML for anova(m1, m2) for random effects
+   ## deleted because use ML for anova(m1, m2) for random effects
   if( isRand || isTotal || (ddf=="Kenward-Roger" && (isTotal || isAnova)) )
   {
     
@@ -87,12 +68,6 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
   
   mf.final <- update.formula(formula(model),formula(model)) 
   
-  
-  
-  ##data <- data[complete.cases(data),]
-  
-  
-
   # save the call of the model              
   result$call <- model@call
   
@@ -111,7 +86,7 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
   
   
   
- 
+
   #analysis of the random part  
   if(isRand || isTotal)
   {
@@ -140,6 +115,8 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
     return(saveResultsFixModel(result, model, type))
 
 
+## remove update the contrasts
+if(change.contr){
   ### change contrasts for F tests calculations
   #list of contrasts for factors
   if( isAnova || isTotal )
@@ -157,7 +134,7 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
     #update model to mer class
     model <- updateModel(model, .~., getREML(model), l.lmerTest.private.contrast)
   }
-
+}
   
   
   #perform reduction of fixed effects for model with mixed effects
@@ -194,10 +171,9 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
           
           # calculate asymptotic covariance matrix A
           dd <- devfun5(model,  getME(model, "is_REML"))
-          h <- hessian(dd, c(rho$thopt, sigma = rho$sigma))
+          h <- myhess(dd, c(rho$thopt, sigma = rho$sigma))
           
           rho$A <- 2*solve(h)
-          #rho$A <- 2*ginv(h)
           
                     
           tsummary <- calculateTtestJSS(rho, diag(rep(1,length(rho$fixEffs))), 
@@ -222,37 +198,14 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
     # calculate asymptotic covariance matrix A??
     if(!(ddf == "Kenward-Roger" && isAnova)){
   
-        ## based on var cor parameters
-        ## quite frequently A is not positiv definite
-        ## because of VV_to_CV function probably
-        #dd <- devfun3(model, useSc = TRUE, signames = FALSE, getME(model, "is_REML"))
-        #h <- hessian(dd, rho$opt)
-        
-      ## based on theta pars
-      #dd <- devfun4(model, useSc = TRUE, signames = FALSE, getME(model, "is_REML"))
-      
-      ##1515.9964  960.4566 
-      
+    
+    
       ## based on theta parameters and sigma
       # also correct
       dd <- devfun5(model,  getME(model, "is_REML"))
-      h <- hessian(dd, c(rho$thopt, sigma = rho$sigma))
+      h <- myhess(dd, c(rho$thopt, sigma = rho$sigma))  
       
-      
-      ## based on var cor parameters
-      #dd <- devfun5.vars(model,  getME(model, "is_REML"))
-      #h <- hessian(dd, rho$vars)
-      
-#       devFun.1 <- update(model, devFunOnly=TRUE)
-#       devFun.2 <- function(param, devFun, vlist) {
-#         do.call(devFun, list(Sv_to_Cv(param, n = vlist, s = param[length(param)])))
-#       }
-#       devFun.2(rho$param, devFun.1, vlist = rho$vlist)
-#       h <- hessian(devFun.2, rho$param, devFun = devFun.1, vlist = rho$vlist)
-# 
-#       dd2 <- devFunRune(model)
-#       h <- hessian(dd, rho$opt)
-      
+           
       
       ch <- try(chol(h), silent=TRUE)
       if(inherits(ch, "try-error")) {
@@ -265,11 +218,7 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
       if(min(eigval) < sqrt(.Machine$double.eps)) ## tol ~ sqrt(.Machine$double.eps)
         isposA <- FALSE
       
-      #rho$A  <-  2*solve(h)
-      
-      
-      #Check if A is positive-definite
-      #isposA <- all(eigen(rho$A)$values>0)      
+       
       if(!isposA)
       {
         print("Asymptotic covariance matrix A is not positive!")
@@ -348,12 +297,12 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
     }
     
     # calculate general set matrix for type 3 hypothesis
-    if( type==3 )
+    if(type == 3)
       L <- calcGeneralSetForHypothesis(X.design, rho)  
     
     
     # calculate type 1 hypothesis matrices for each term   
-    if( type==1 )
+    if(type == 1 || type == 2)
     {
       X <- X.design
       p <- ncol(X)
@@ -363,13 +312,12 @@ totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3,
       for(i in 1:nrow(U))
         if(d[i] > 0) U[i, ] <- U[i, ] / d[i]
       L <- U
-
     }
- 
   
-      resultFpvalueSS <- llply(test.terms, calcFpvalueMAIN, L=L, X.design=X.design,
-                               fullCoefs=fullCoefs, model=model, rho=rho, ddf=ddf,
-                               type=type)
+      resultFpvalueSS <- llply(test.terms, calcFpvalueMAIN, L = L, 
+                               X.design = X.design,
+                               fullCoefs = fullCoefs, model = model, rho = rho, 
+                               ddf = ddf, type = type)
 
        
     #fill anova table

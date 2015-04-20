@@ -1,22 +1,5 @@
 
 ##########################################################################
-# Check if the data is balanced with respect to factors in it ############ 
-##########################################################################
-isbalanced <- function(data)
-{
-   nvar <- dim(data)[2]
-   data.fac <- data
-   var.quant <- NULL
-   for(i in 1:nvar)
-   {
-      if(!is.factor(data[,i]))
-         var.quant <- c(var.quant,i)
-   }
-   data.fac <- data[,-var.quant]
-   return(!is.list(replications(~ . , data.fac)))
-}
-
-##########################################################################
 getY <- function(model)
 {
     return(getME(model, "y"))
@@ -64,8 +47,8 @@ rhoInitJSS <- function(model)
   #rho$opt <- opt
   rho$thopt <- getME(model, "theta")
   rho$param <- as.data.frame(VarCorr(model))[, "sdcor"]
-  rho$vars <- Cv_to_Vv(rho$thopt, n = rho$vlist, 
-                       s = rho$sigma)
+#   rho$vars <- Cv_to_Vv(rho$thopt, n = rho$vlist, 
+#                        s = rho$sigma)
   return(rho)  
 }
 
@@ -77,11 +60,11 @@ rhoInitJSS <- function(model)
 calcSatterthJSS  <-  function(Lc, rho)
 {
   # F statistics for tested term
+  vcov.final <- as.matrix(vcov(rho$model))
   if(is.vector(Lc))
-    C.theta.optim <- as.matrix(t(Lc) %*% as.matrix(vcov(rho$model)) %*% Lc)    
+    C.theta.optim <- as.matrix(t(Lc) %*% vcov.final %*% Lc)    
   else
-    C.theta.optim <- as.matrix(Lc %*% as.matrix(vcov(rho$model)) %*% t(Lc))    
-  #invC.theta<-ginv(C.theta.optim)
+    C.theta.optim <- as.matrix(Lc %*% vcov.final %*% t(Lc))    
   
   invC.theta <- tryCatch({solve(C.theta.optim)}, error = function(e) { NULL })
   if(is.null(invC.theta))
@@ -99,16 +82,28 @@ calcSatterthJSS  <-  function(Lc, rho)
   
   ## based on theta parameters and sigma
   ## also correct
-  vss <- vcovJSStheta2(rho$model)
-  ## based on var cor parameters
-  #vss <- vcovJSStheta2.var(rho$model)
+  vss2 <- vcovJSStheta2.temp(rho$model)
+  # based on var cor parameters
+  # vss <- vcovJSStheta2.var(rho$model)
+  theopt <- c(rho$thopt, rho$sigma)
+  g <- mygrad(function(x)  vss2(x), theopt)
 
+  if(class(g) == "numeric")
+    mat.grad <- llply(1:length(theopt), function(x) matrix(g[x], 
+                                                           ncol = ncol(vcov.final), 
+                                                           nrow = nrow(vcov.final)))
+  else
+    mat.grad <- llply(1:length(theopt), function(x) matrix(g[, x], 
+                                                         ncol = ncol(vcov.final), 
+                                                        nrow = nrow(vcov.final)))
+  
   nu.m.fun <- function(m){    
-    g <- grad(function(x)  vss(t(PL[m,]), x), c(rho$thopt, rho$sigma))  
-    ## based on var cor parameters
-    #g <- grad(function(x)  vss(t(PL[m,]), x), rho$vars) 
-    2*(svdec$values[m])^2/(t(g) %*% rho$A %*% g)
+    den.nu <- unlist(llply(1:length(mat.grad), function(x) 
+      as.matrix(t(PL[m,]) %*% mat.grad[[x]] %*% PL[m,])))   
+    2*(svdec$values[m])^2/(t(den.nu) %*% rho$A %*% den.nu)
   }
+
+
   nu.m <- unlist(llply(1:length(svdec$values), .fun = nu.m.fun))
 
   nu.m[which(abs(2 - nu.m) < 1e-5)] <- 2.00001
@@ -128,9 +123,9 @@ calcSatterthJSS  <-  function(Lc, rho)
   }
   
   ## calculate ss from camp method proc glm
-  #ss <- getSS(Lc, rho$fixEffs ,ginv(rho$XtX)) 
+  ## ss <- getSS(Lc, rho$fixEffs ,ginv(rho$XtX)) 
   return( list(ss = ss, ms = ms, denom = nu.F, Fstat = F.stat, 
-               pvalue = pvalueF, ndf=q) )  
+               pvalue = pvalueF, ndf=q))  
 }
 
 
@@ -175,7 +170,7 @@ calcFpvalueSS <- function(term, Lc, fullCoefs, X.design, model, rho, ddf,
    
   if( ddf=="Kenward-Roger" )
   {
-    if (!require(pbkrtest)) 
+    if (!requireNamespace("pbkrtest", quitly = TRUE)) 
       stop("pbkrtest package required for Kenward-Roger's approximations")
     if(is.vector(Lc))
       res.KR <- pbkrtest::KRmodcomp( model, t(as.matrix(Lc)) )
@@ -185,7 +180,7 @@ calcFpvalueSS <- function(term, Lc, fullCoefs, X.design, model, rho, ddf,
     ## calculate ms and ss
     ms <- res.KR$test[1,"stat"] * rho$sigma^2
     ss <- ms * res.KR$test[1,"ndf"]
-    #ss <- getSS(Lc, rho$fixEffs ,ginv(rho$XtX)) 
+    ## ss <- getSS(Lc, rho$fixEffs ,ginv(rho$XtX)) 
  
     return( list(denom = res.KR$test[1,"ddf"], Fstat = res.KR$test[1,"stat"], 
                  pvalue =  res.KR$test[1,"p.value"], ndf = res.KR$test[1,"ndf"], 
@@ -211,7 +206,8 @@ calcFpvalueMAIN <- function(term, L, X.design, fullCoefs, model, rho, ddf,
       Lc <- makeContrastType3SAS(model, term, L)    
       #non identifiable because of rank deficiency
       if(!length(Lc))
-        result.fstat <- list(denom=0, Fstat=NA, pvalue=NA, ndf=NA, ss = NA, ms = NA)
+        result.fstat <- list(denom=0, Fstat=NA, pvalue=NA, ndf=NA, ss = NA, 
+                             ms = NA)
       else
         result.fstat <- calcFpvalueSS(term, Lc, fullCoefs, X.design, model, rho, 
                                       ddf, type)           
@@ -225,6 +221,12 @@ calcFpvalueMAIN <- function(term, L, X.design, fullCoefs, model, rho, ddf,
       result.fstat <- calcFpvalueSS(term, Lc, fullCoefs, X.design, model, rho, 
                                     ddf, type)      
     } 
+    if(type == 2){
+      Lc <- makeContrastType2(model, term, L, X.design, rho, fullCoefs) 
+      result.fstat <- calcFpvalueSS(term, Lc, fullCoefs, X.design, model, rho, 
+                                    ddf, type)
+    }
+      
    
 
    c(result.fstat,list(name=term)) 
@@ -241,7 +243,7 @@ calculateTtestJSS <- function(rho, Lc, nrow.res, ddf="Satterthwaite")
   colnames(resultTtest) <- c("df", "t value", "p-value", "sqrt.varcor")
   
   if(ddf == "Kenward-Roger"){
-    if (!require(pbkrtest)) 
+    if (!requireNamespace("pbkrtest", quitly = TRUE)) 
       stop("pbkrtest package required for Kenward-Roger's approximations")
     Va <- pbkrtest::vcovAdj(rho$model)
   }
@@ -270,7 +272,7 @@ calculateTtestJSS <- function(rho, Lc, nrow.res, ddf="Satterthwaite")
     }
     else{
       ## based on theta parameters
-      g <- grad(function(x)  vss(t(Lc[,i]), x), c(rho$thopt, rho$sigma))
+      g <- mygrad(function(x)  vss(t(Lc[,i]), x), c(rho$thopt, rho$sigma))
       ## based on var cor parameters
       #g <- grad(function(x)  vss(t(Lc[,i]), x), rho$vars)
       
@@ -556,10 +558,10 @@ makeContrastType3SAS <- function(model, term, L)
   model.term <- terms(model)
   fac <- attr(model.term,"factors")
   names <- attr(model.term,"term.labels")
-  classes.term <- attr(model.term,"dataClasses")
+  classes.term <- attr(terms(model, FALSE), "dataClasses")#attr(model.term,"dataClasses")
   
   cols.eff <- which(colnames(L)==term)
-  num.relate <- relatives(classes.term,term,names,fac)
+  num.relate <- relatives(classes.term, term, names, fac)
   if( length(num.relate)==0 )
     colnums <- setdiff(1:ncol(L),cols.eff)
   if( length(num.relate)>0 )
@@ -621,30 +623,44 @@ makeContrastType3SAS <- function(model, term, L)
   return(L)
 }
 
+makeContrastType2 <- function(model, term, L, X.design, rho, fullCoefs){
+  #find all effects that contain term effect
+  model.term <- terms(model)
+  fac <- attr(model.term,"factors")
+  names <- attr(model.term,"term.labels")
+  classes.term <- attr(terms(model, FALSE), "dataClasses")
+  
+  find.term <- which(colnames(X.design) == term)
+  num.relate <- relatives(classes.term, term, names, fac)
+  contain <- names[num.relate]
+  if(length(contain) == 0 && (which(names == term) == length(names))){
+    Lc <- L[find.term[which(find.term %in% rho$nums.Coefs)],]            
+  }
+  else{
+    ind.indep <- which(colnames(X.design) != term & !(colnames(X.design) %in% contain))
+    new.X <- cbind(X.design[,ind.indep], X.design[,-ind.indep])
+    XtX <- crossprod(new.X)
+    U <- doolittle(XtX)$U
+    d <- diag(U)
+    for(i in 1:nrow(U))
+      if(d[i] > 0) U[i, ] <- U[i, ] / d[i]
+    L <- U
+    colnames(L) <- rownames(L) <-  
+      c(names(fullCoefs)[ind.indep], names(fullCoefs)[-ind.indep])
+    Lc <- L[which(colnames(new.X) == term), , drop = FALSE]
+    Lc <- Lc[which(rownames(Lc) %in% names(rho$nums.Coefs)), , drop = FALSE]
+    Lc <- Lc[, names(fullCoefs), drop = FALSE]
+  }  
+  return(Lc)
+}
+
 ############################################################################
 #get formula for model 
 ############################################################################
 getFormula <- function(model, withRand=TRUE)
 {
-  fmodel <- formula(model)
-  
-  ## OLD VERSION
-#   terms.fm <- attr(terms.formula(fmodel),"term.labels")
-#   ind.rand.terms <- which(unlist(lapply(terms.fm,function(x) 
-#     substring.location(x, "|")$first))!=0)
-#   terms.fm[ind.rand.terms] <- unlist(lapply(terms.fm[ind.rand.terms],
-#                                             function(x) paste("(",x,")",sep="")))
-#   fm <- paste(fmodel)
-#   if(withRand)
-#     fm[3] <- paste(terms.fm,collapse=" + ")
-#   else
-#     fm[3] <- paste(terms.fm[-ind.rand.terms],collapse=" + ")
-#   
-#   if(fm[3]=="")
-#     fo <- as.formula(paste(fm[2],fm[1],1, sep=""))
-#   else
-#     fo <- as.formula(paste(fm[2],fm[1],fm[3], sep=""))
-#   return(fo)
+  fmodel <- formula(model)  
+ 
   if(withRand)
     return(fmodel)
   
@@ -711,17 +727,13 @@ compareMixVSFix <- function(model, mf.final, data, name.term)
   model.red <- refitLM(model)
   
   l.fix <- -2*logLik(model, REML=TRUE)[1]
-  #l.red <- -2*logLik(model.red, REML=TRUE)[1]
   l.red <- -2*logLik(model.red, REML=TRUE)[1]
   
   p.chisq <- 1 - pchisq (l.red -l.fix ,1)
   infoForTerm <- saveInfoForTerm(name.term, l.red -l.fix, 1, p.chisq, 
                                  model.red = model.red)
-  #detach(package:nlme)
   
   return(infoForTerm)
-  
-
 }
 
 
@@ -734,7 +746,6 @@ createModelRedSlopes <- function(x, term, fm, model, l.lmerTest.private.contrast
   mf.final <- update.formula(mf.final,mf.final)
   model.red <- updateModel(model, mf.final, getME(model, "is_REML"), 
                            l.lmerTest.private.contrast)
-  #anova.red <- anova(model, model.red)
   return(model.red)
 }
 
@@ -772,10 +783,6 @@ saveResultsFixModel <- function(result, model, type = 3)
 
 getREML <- function(model)
 {
-#   if(class(model)=="lmerMod" || class(model)=="merModLmerTest")
-#      return(getME(model, "is_REML"))
-#   else if(class(model)=="mer" || class(model)=="merLmerTest")
-#     return(model@dims[["REML"]])
   if(inherits(model,"merMod"))
     return(getME(model, "is_REML"))
 
@@ -786,10 +793,8 @@ updateModel <- function(model, mf.final, reml.lmerTest.private,
                         l.lmerTest.private.contrast, 
                         devFunOnly.lmerTest.private = FALSE)
 {
-  #if(!mf.final == as.formula(.~.))
   if(!mf.final == as.formula(paste(".~.")))
   {
-     #inds <-  names(l) %in% attr(terms(mf.final), "term.labels")
     inds <-  names(l.lmerTest.private.contrast) %in% attr(terms(as.formula(mf.final)), 
                                                           "term.labels")
      #update contrast l.lmerTest.private.contrast
@@ -838,11 +843,6 @@ doolittle <- function(x, eps = 1e-6) {
             L[j,i] <- L[j,i] - L[j,k] * U[k,i]
           }
         }
-        ## if ( U[i,i] == 0 )
-        ##     ## stop( "argument x is a singular matrix" )
-        ##     L[j,i] <- 0
-        ## else
-        ##     L[j,i] <- L[j,i] / U[i,i]
         L[j, i] <- if(abs(U[i, i]) < eps) 0 else L[j,i] / U[i,i]
       }
     }
@@ -852,19 +852,9 @@ doolittle <- function(x, eps = 1e-6) {
   list( L=L, U=U )
 }
 
-## UNUSED FUNCTION
-model.frame.fixed <- function(model) {
-  fo.fixed <- getFormula(model, withRand=FALSE)
-  fo.rand <- getFormula(model, withRand=TRUE)
-  varsFixed <- all.vars(fo.fixed)
-  varsAll <- all.vars(fo.rand)
-  model.frame(model)[varsAll %in% varsFixed]
-}
 
 refitLM <- function(obj, l.lmerTest.private.contrast="contr.SAS") {
 
-  
-  #mm <- model.frame.fixed(obj)
   mm <- model.frame(obj)
   colnames(mm)[1] <- "y"
   fo <- getFormula(obj, withRand=FALSE)# formula(obj,fixed.only=TRUE)
@@ -925,13 +915,6 @@ updateAnovaTable <- function(resNSelim){
   anova.table
 }
 
-## UNUSED function
-## check if keep.effs is part of the model
-# .checkKeepEffs <- function(keep.effs, modelEffs){
-#   if(keep.effs %in% unlist(modelEffs))
-#     return(TRUE)
-#   FALSE
-# }
 
 .getKeepInter <- function(model.eff, split.keep.eff){
   if(setequal(unlist(strsplit(model.eff, ":")), split.keep.eff))
@@ -975,8 +958,10 @@ updateAnovaTable <- function(resNSelim){
 
 .getKeepEffs <- function(keep.effs, model.effs){
   #rand.terms.table <- getRandTermsTable(rand.terms)
-  randeffs <- unlist(lapply(keep.effs, .findKeepRandEff, unlist(model.effs$randeffs)))
-  fixedeffs <- unlist(lapply(keep.effs, .findKeepEff, unlist(model.effs$fixedeffs)))
+  randeffs <- unlist(lapply(keep.effs, .findKeepRandEff, 
+                            unlist(model.effs$randeffs)))
+  fixedeffs <- unlist(lapply(keep.effs, .findKeepEff, 
+                             unlist(model.effs$fixedeffs)))
   return(list(randeffs = randeffs, fixedeffs = fixedeffs))
 }
 

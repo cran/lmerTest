@@ -47,7 +47,7 @@ anova(m, type=1)
 # type3 anova table with additional F statistics and denominator degrees of freedom
 # calculated based on Kenward-Roger's approximation
 \dontrun{
-if(require(pbkrtest))
+if(requireNamespace("pbkrtest", quitly = TRUE))
 anova(m, ddf="Kenward-Roger")
 }
 

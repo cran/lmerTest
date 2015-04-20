@@ -150,6 +150,10 @@ popMatrix <- function(object, effect=NULL, at=NULL, only.at=TRUE){
   res 
 }
 
+################################################################################
+################################################################################
+
+
 ###################################################################
 #get the combinatoion of the fixed factors for the lsmeans
 ###################################################################
@@ -291,6 +295,17 @@ calc.cols <- function(x)
   return("grey")
 }
 
+calc.cols2 <- function(x)
+{
+  if(x<0.001) 
+    return("p-value < 0.001")#return("red")# 
+  if(x<0.01) 
+    return("p-value < 0.01")#return("orange")# 
+  if(x<0.05) 
+    return("p-value < 0.05")#return("yellow")# 
+  return("NS")#return("grey")#
+}
+
 #get names for ploting barplots for the effects
 getNamesForPlot <- function(names, ind)
 {
@@ -308,67 +323,75 @@ getNamesForPlot <- function(names, ind)
 #plots for LSMEANS or DIFF of LSMEANS
 plotLSMEANS <- function(table, response, 
                         which.plot=c("LSMEANS", "DIFF of LSMEANS"), 
-                        main = NULL, cex = 1.4)
+                        main = NULL, cex = 1.4, effs = NULL, mult = TRUE)
 {
+  
+  if(!is.null(effs)){
+    rnames <- rownames(table)
+    diffs.facs <- sapply(rnames, 
+                         function(x) substring(x, 1, 
+                                               substring.location(x, " ")$first[1]-1), 
+                         USE.NAMES = FALSE)    
+    find.fac <- diffs.facs %in% effs
+    table <- table[find.fac,]
+  }
+  
   if(which.plot=="LSMEANS")
     names <- getNamesForPlot(rownames(table),2)
   else
     names <- getNamesForPlot(rownames(table),1)   
   
+  
+    
   namesForPlot <- names$namesForPlot
   namesForLevels <- names$namesForLevels
   un.names <- unique(namesForPlot)
   
   
-  for(i in 1:length(un.names))
-  {
-    inds.eff <- namesForPlot %in% un.names[i]
-    split.eff  <-  unlist(strsplit(un.names[i],":"))
-    col.bars <-  lapply(table[inds.eff,][,"p-value"], calc.cols)
-      
-    layout(matrix(c(rep(2,2),3,rep(2,2),3,rep(2,2),3, rep(1,2),3), 4, 3, 
-                  byrow = TRUE), 
-           heights=c(0.2, 1 , 1.2), widths = c(3, 3, 2.5))
-    plot.new()
-    if(which.plot == "LSMEANS")
-      barplot2(table[inds.eff,"Estimate"],col=unlist(col.bars), 
-               ci.l=table[inds.eff,ncol(table)-2], 
-               ci.u=table[inds.eff,ncol(table)-1], plot.ci=TRUE, 
-               names.arg=namesForLevels[inds.eff], 
-               ylab=response, 
-               main = ifelse(!is.null(main), main, 
-                             paste("Least squares means with 95% confidence intervals for \n", 
-                                   un.names[i])), las=2, cex.names = cex,
-               cex.axis = cex, cex.main = cex, cex.lab = cex, font.lab = 2)
-    else
-      barplot2(table[inds.eff,"Estimate"],col=unlist(col.bars), 
-               ci.l=table[inds.eff,ncol(table)-2], 
-               ci.u=table[inds.eff,ncol(table)-1], plot.ci=TRUE, 
-               names.arg=namesForLevels[inds.eff], 
-               ylab=response, 
-               main = ifelse(!is.null(main), main, 
-                             paste("Differences of least squares means \n with 95% confidence intervals for \n", un.names[i])), las=2, cex.names = cex,
-               cex.axis = cex, cex.main = cex, cex.lab = cex, font.lab = 2)
-    
-    plot.new()
-    legend("topright", c("ns","p < 0.05", "p < 0.01", "p < 0.001"), pch=15, 
-           col=c("grey","yellow","orange","red"), title="Significance", 
-           bty="n", cex=cex)
-    if(which.plot=="LSMEANS")
-    {
-      if(length(split.eff)==2)
-      {
-        par(mfrow=c(1,1))
-        #windows()
-        interaction.plot(table[inds.eff,split.eff[1]], 
-                         table[inds.eff,split.eff[2]], 
-                         table[inds.eff,"Estimate"], 
-                         xlab=split.eff[1], ylab=response, 
-                         trace.label=paste(split.eff[2]), 
-                         main="2-way Interaction plot", 
-                         col=1:nlevels(table[inds.eff,split.eff[2]]))
-      }
-    }             
+  ### changed code to transfer to ggplot
+  ttplot <- table
+  ttplot$namesforplots <- namesForPlot
+  ttplot$levels <- as.factor(namesForLevels)
+  colnames(ttplot)[which(colnames(ttplot)=="p-value")] <- "pvalue"
+  colnames(ttplot)[which(colnames(ttplot)=="Lower CI")] <- "lci"
+  colnames(ttplot)[which(colnames(ttplot)=="Upper CI")] <- "uci"
+  ttplot$col.bars <-  unlist(lapply(ttplot[,"pvalue"], calc.cols2))
+  ttplot <- ttplot[,c("levels", "Estimate", "col.bars", "lci", "uci", 
+                      "namesforplots")]
+  uci <- lci <- col.bars <- Estimate <- NULL
+  
+  if(mult)
+    ggplot(ttplot, aes(x=levels, y = Estimate, fill = col.bars)) + 
+    geom_bar(position = "dodge", stat = "identity") +  
+    geom_errorbar(aes(ymin = lci, ymax = uci ), colour="black", width=.1) + 
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4), 
+          axis.title.y = element_text(size = rel(1.4)), 
+          axis.text = element_text(size = rel(1)), 
+          legend.text = element_text(size = rel(1)), 
+          legend.title = element_text(size = rel(1)))  + 
+    scale_fill_manual(values  = 
+                        c(  "NS" = "grey", "p-value < 0.01" = "orange", 
+                            "p-value < 0.05" = "yellow", 
+                            "p-value < 0.001" = "red"), name="Significance")  +
+    ylab(response) + facet_wrap( ~ namesforplots, scales = "free")
+  else{
+    for(i in 1:length(un.names)){
+      names.plot <- un.names[i]
+      subplot <- ttplot[ttplot$namesforplots == names.plot,]
+      ggplot(subplot, aes(x=levels, y = Estimate, fill = col.bars)) + 
+        geom_bar(position = "dodge", stat = "identity") +  
+        geom_errorbar(aes(ymin = lci, ymax = uci ), colour="black", width=.1) + 
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.4), 
+              axis.title.y = element_text(size = rel(1.4)), 
+              axis.text = element_text(size = rel(1)), 
+              legend.text = element_text(size = rel(1)), 
+              legend.title = element_text(size = rel(1)))  + 
+        scale_fill_manual(values  = 
+                            c(  "NS" = "grey", "p-value < 0.01" = "orange", 
+                                "p-value < 0.05" = "yellow", 
+                                "p-value < 0.001" = "red"), name="Significance")  +
+        ylab(response) + xlab(names.plot)
+    }
   }
 }
 

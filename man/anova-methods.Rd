@@ -22,7 +22,8 @@ type=3)}
 \item{object}{object of class "merModLmerTest"}
 \item{\dots}{object of class "merModLmerTest". Then the model comparison statistisc will be calculated}
 \item{ddf}{By default the Satterthwaite's approximation to degrees of freedom is calculated. If ddf="Kenward-Roger", then the Kenward-Roger's approximation is calculated using \code{KRmodcomp} function from \pkg{pbkrtest} package. If ddf="lme4" then the anova table that comes from \pkg{lme4} package is returned.}
-\item{type}{type of hypothesis to be tested. Could be type=3 or type=1 (The definition comes from SAS theory) }
+\item{type}{type of hypothesis to be tested. Could be type=3 or type=2 or type = 1 
+(The definition comes from SAS theory) }
 }
 
 

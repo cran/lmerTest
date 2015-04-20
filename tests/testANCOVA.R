@@ -1,5 +1,8 @@
 require(lmerTest)
 
+testType1 <- TRUE
+
+if(testType1){
 load(system.file("testdata", "tree.RData", package="lmerTest"))
 
 
@@ -90,3 +93,4 @@ stopifnot(all.equal(lsm$lsmeans.table[, "Estimate"],
                     as.numeric(tapply(tree$increase, tree$treat, mean)), 
                     check.names = FALSE, check.attributes = FALSE,tol = TOL))
 
+}

@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2014-11-18 r66997) -- "Unsuffered Consequences"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R Under development (unstable) (2015-04-08 r68161) -- "Unsuffered Consequences"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -20,7 +20,6 @@ Type 'q()' to quit R.
 > pkgname <- "lmerTest"
 > source(file.path(R.home("share"), "R", "examples-header.R"))
 > options(warn = 1)
-> options(pager = "console")
 > library('lmerTest')
 Loading required package: Matrix
 Loading required package: lme4
@@ -134,7 +133,7 @@ lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture +
 > # type 3 anova table with  denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m.ham)
-Analysis of Variance Table of type 3  with  Satterthwaite 
+Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
                            Sum Sq Mean Sq NumDF DenDF F.value   Pr(>F)    
 Product                    92.322 30.7741     3   553  6.9865 0.000128 ***
@@ -158,7 +157,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > if(require(pbkrtest))
 + anova(m.ham, ddf = "Kenward-Roger")
 Loading required package: pbkrtest
-Analysis of Variance Table of type 3  with  Kenward-Roger 
+Analysis of Variance Table of type III  with  Kenward-Roger 
 approximation for degrees of freedom
                            Sum Sq Mean Sq NumDF DenDF F.value   Pr(>F)    
 Product                    92.322 30.7741     3   553  6.9865 0.000128 ***
@@ -318,7 +317,7 @@ Gender:Information  1 2 -  2 2    0.949     0.3
 > #anova table with p-values with Satterthwaite's approximation for denominator 
 > #degrees of freedom
 > anova(m)
-Analysis of Variance Table of type 3  with  Satterthwaite 
+Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
                             Sum Sq Mean Sq NumDF DenDF F.value  Pr(>F)  
 Product                    17.4846  5.8282     3   316  3.5001 0.01584 *
@@ -421,7 +420,7 @@ lme4::lmer(formula = Informed.liking ~ Product + Information +
 > # anova table the same as of class merMod but with additional F statistics and  
 > # p-values calculated based on Satterthwaite's approximations
 > anova(fm1)
-Analysis of Variance Table of type 3  with  Satterthwaite 
+Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
      Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
 Days  30031   30031     1    17  45.853 3.264e-06 ***
@@ -431,7 +430,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # anova table the same as of class merMod but with additional F statistics and  
 > # p-values calculated based on Kenward-Roger's approximations
 > ## Not run: 
-> ##D if(require(pbkrtest))
+> ##D if(requireNamespace("pbkrtest", quitly = TRUE))
 > ##D anova(fm1, ddf="Kenward-Roger")
 > ##D 
 > ##D # anova table the same as of class merMod
@@ -485,7 +484,7 @@ Days -0.138
 > 
 > ### Name: lmerTest-package
 > ### Title: The package performs different kinds of tests on lmer objects,
-> ###   such as F tests of type 3/type 1 hypotheses for the fixed part,
+> ###   such as F tests of types I - III hypotheses for the fixed part,
 > ###   likelihood ratio tests for the random part, least squares means
 > ###   (population means) and differences of least squares means for the
 > ###   factors of the fixed part with corresponding plots. The package also
@@ -545,7 +544,7 @@ Product4    -0.472  0.000  0.000  0.500  0.500
 > #  and denominator degrees of freedom and 
 > # p-values calculated based on Satterthwaite's approximations
 > anova(m)
-Analysis of Variance Table of type 3  with  Satterthwaite 
+Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
             Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
 Gender       3.844  3.8437     1    79  0.8789 0.3513501    
@@ -558,7 +557,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # denominator degrees of freedom and 
 > # p-values calculated based on Kenward-Roger's approximations
 > ## Not run: 
-> ##D if(require(pbkrtest))
+> ##D if(requireNamespace("pbkrtest", quitly = TRUE))
 > ##D anova(m, ddf = "Kenward-Roger")
 > ## End(Not run)
 > 
@@ -668,7 +667,7 @@ Fixed Effects:
 > # type 3 anova table with  denominator degrees of freedom
 > # calculated based on Satterthwaite's approximation
 > anova(m)
-Analysis of Variance Table of type 3  with  Satterthwaite 
+Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
      Sum Sq Mean Sq NumDF  DenDF F.value    Pr(>F)    
 Days  29442   29442     1 18.156  45.046 2.594e-06 ***
@@ -684,7 +683,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > # type3 anova table with additional F statistics and denominator degrees of freedom
 > # calculated based on Kenward-Roger's approximation
 > ## Not run: 
-> ##D if(require(pbkrtest))
+> ##D if(requireNamespace("pbkrtest", quitly = TRUE))
 > ##D anova(m, ddf="Kenward-Roger")
 > ## End(Not run)
 > 
@@ -929,7 +928,7 @@ Days -0.138
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  9.39 0.19 9.64 NA NA 
+Time elapsed:  10.37 0.17 10.7 NA NA 
 > grDevices::dev.off()
 null device 
           1 

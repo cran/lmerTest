@@ -12,13 +12,13 @@ tools::assertError(lsmeans(gm1))
 tools::assertError(difflsmeans(gm1))
 
 ## should not work with nlmer models
-startvec <- c(Asym = 200, xmid = 725, scal = 350)
-nm1 <- nlmer(circumference ~ SSlogis(age, Asym, xmid, scal) ~ Asym|Tree,
-              Orange, start = startvec)
-tools::assertError(rand(nm1))
-tools::assertError(step(nm1))
-tools::assertError(lsmeans(nm1))
-tools::assertError(difflsmeans(nm1))
+# startvec <- c(Asym = 200, xmid = 725, scal = 350)
+# nm1 <- nlmer(circumference ~ SSlogis(age, Asym, xmid, scal) ~ Asym|Tree,
+#               Orange, start = startvec)
+# tools::assertError(rand(nm1))
+# tools::assertError(step(nm1))
+# tools::assertError(lsmeans(nm1))
+# tools::assertError(difflsmeans(nm1))
 
 
 ## should wotk with lmer from lme4 package (class lmerMod)

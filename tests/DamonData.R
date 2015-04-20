@@ -23,7 +23,8 @@ if(testSat){
     , TRUE)
   
   if(testKen){
-    an.kenw <- anova(testFirstR02.test, ddf="kenw")
+    if(require(pbkrtest))
+      an.kenw <- anova(testFirstR02.test, ddf="kenw")
     stopifnot(ncol(an.kenw) == 6)
   }  
     

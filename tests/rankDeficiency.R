@@ -1,8 +1,12 @@
 require(lmerTest)
+
+testType1 <- TRUE
 ##
 ## compare output with SAS for rank deficient models
 ##
 load(system.file("testdata","cltlike.RData", package="lmerTest"))
+
+if(testType1){
 
 fm2 <- lmer(liking ~ pig.type + group + landro.male + lskatol.male +
               sens1 + sens2 + gender + agegroup +
@@ -39,3 +43,4 @@ stopifnot(
 ##
 ## compare output with SAS for rank deficient models
 ##
+}
