@@ -1,7 +1,7 @@
 
-R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
-Copyright (C) 2014 The R Foundation for Statistical Computing
-Platform: x86_64-w64-mingw32/x64 (64-bit)
+R version 3.2.1 (2015-06-18) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,7 +19,6 @@ Type 'q()' to quit R.
 Loading required package: lmerTest
 Loading required package: Matrix
 Loading required package: lme4
-Loading required package: Rcpp
 
 Attaching package: 'lmerTest'
 
@@ -551,4 +550,4 @@ lme4::lmer(formula = Dimglasseffect ~ TVset + Picture + (1 |
 > 
 > proc.time()
    user  system elapsed 
-  57.11    0.20   57.36 
+  37.34    0.34   37.70 

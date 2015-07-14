@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.1 Patched (2015-07-02 r68627) -- "World-Famous Astronaut"
+Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -23,7 +23,6 @@ Type 'q()' to quit R.
 Loading required package: lmerTest
 Loading required package: Matrix
 Loading required package: lme4
-Loading required package: Rcpp
 
 Attaching package: 'lmerTest'
 
@@ -132,4 +131,4 @@ lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 | product) +
 > 
 > proc.time()
    user  system elapsed 
-  34.56    0.21   34.81 
+  23.64    0.23   24.05 

@@ -8,16 +8,11 @@ devfun5 <- function (fm,  reml = TRUE)
 {
   stopifnot(is(fm, "merMod"))
   
-  vlist <- sapply(fm@cnms, length)
-  
-  pp <- fm@pp$copy()
-  
-  resp <- fm@resp$copy()
-  np <- length(pp$theta)
+  np <- length(fm@pp$theta)
   nf <- length(fixef(fm)) 
   if (!isGLMM(fm)) 
     np <- np + 1L
-  n <- nrow(pp$V)
+  n <- nrow(fm@pp$V)
   
 
   
@@ -46,7 +41,7 @@ devfun5 <- function (fm,  reml = TRUE)
     }
   }
   
-  attr(ans, "thopt") <- pp$theta
+  attr(ans, "thopt") <- fm@pp$theta
   class(ans) <- "devfun5"
   ans
 }
@@ -58,13 +53,7 @@ vcovJSStheta2 <- function(fm)
 {
   stopifnot(is(fm, "merMod"))
   
-  vlist <- sapply(fm@cnms, length)
-  
-  pp <- fm@pp$copy()
-  
-  
-  resp <- fm@resp$copy()
-  np <- length(pp$theta)
+  np <- length(fm@pp$theta)
   nf <- length(fixef(fm))
   if (!isGLMM(fm)) 
     np <- np + 1L
@@ -102,13 +91,13 @@ vcovJSStheta2.temp <- function(fm)
 {
   stopifnot(is(fm, "merMod"))
   
-  vlist <- sapply(fm@cnms, length)
+  #vlist <- sapply(fm@cnms, length)
   
-  pp <- fm@pp$copy()
+  #pp <- fm@pp$copy()
   
   
-  resp <- fm@resp$copy()
-  np <- length(pp$theta)
+  #resp <- fm@resp$copy()
+  np <- length(fm@pp$theta)
   nf <- length(fixef(fm))
   if (!isGLMM(fm)) 
     np <- np + 1L

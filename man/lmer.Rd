@@ -31,7 +31,7 @@ anova(fm1)
 # anova table the same as of class merMod but with additional F statistics and  
 # p-values calculated based on Kenward-Roger's approximations
 \dontrun{
-if(requireNamespace("pbkrtest", quitly = TRUE))
+if(requireNamespace("pbkrtest", quietly = TRUE))
 anova(fm1, ddf="Kenward-Roger")
 
 # anova table the same as of class merMod

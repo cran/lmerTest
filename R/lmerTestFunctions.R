@@ -1,3 +1,6 @@
+## all functions (step, anova, rand, lsmeans, difflsmeans) 
+## call first this function
+## so everything starts from here
 totalAnovaRandLsmeans <- function(model, ddf = "Satterthwaite", type = 3, 
                                   alpha.random = 0.1, alpha.fixed = 0.05, 
                                   reduce.fixed = TRUE, reduce.random = TRUE, 

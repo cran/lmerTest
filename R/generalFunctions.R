@@ -186,11 +186,17 @@ setMethod("anova", signature(object="merModLmerTest"),
 setMethod("summary", signature(object = "merModLmerTest"),
           function(object, ddf="Satterthwaite", ...)
           {
-            
-            cl <- callNextMethod()
-            if(!is.null(ddf) && ddf=="lme4") return(cl)
-            else
-            {
+                      
+            if(!is.null(ddf) && ddf=="lme4"){
+              if(class(object) == "merModLmerTest")
+                return(summary(as(object, "lmerMod")))
+              #return(cl)
+            }else{
+              ## commented callNextMethod
+              ## since it produces warning, summary cannot have multiple arguments
+              ##cl <- callNextMethod()
+              if(class(object) == "merModLmerTest")
+                cl <- summary(as(object, "lmerMod"))
               #errors in specifying the parameters
               ddfs <- c("Satterthwaite", "Kenward-Roger")
               ind.ddf <- pmatch(tolower(ddf), tolower(ddfs))
@@ -207,7 +213,7 @@ setMethod("summary", signature(object = "merModLmerTest"),
                 message("summary from lme4 is returned\nsome computational error has occurred in lmerTest")
                 return(cl)
               }
-              coefs.satt <- cbind(cl$coefficients[,1:2, drop=FALSE], tsum$df, 
+              coefs.satt <- cbind(cl$coefficients[,1:2, drop = FALSE], tsum$df, 
                                   tsum$tvalue, tsum$tpvalue)               
               cl$coefficients <- coefs.satt
               colnames(cl$coefficients)[3:5] <- c("df","t value","Pr(>|t|)")              
