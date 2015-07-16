@@ -13,10 +13,9 @@ importFrom("stats", "terms", "as.formula", "complete.cases", "delete.response",
            "update.formula", "vcov")
 importFrom("utils", "as.roman", "combn", "data")
 
+
 if(getRversion() >= "3.3.0") {
     importFrom("stats", sigma)
-} else {
-    importFrom("lme4", sigma)
 }
 
 
