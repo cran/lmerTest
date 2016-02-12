@@ -1,6 +1,6 @@
 
-R version 3.2.1 Patched (2015-07-02 r68627) -- "World-Famous Astronaut"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R Under development (unstable) (2016-02-11 r70149) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -74,7 +74,7 @@ Analysis of Variance Table of type III  with  Satterthwaite
 approximation for degrees of freedom
               Sum Sq Mean Sq NumDF DenDF F.value   Pr(>F)   
 TVset         24.351 12.1753     2    14  5.8277 0.014410 * 
-Picture        8.686  2.8953     3    21  1.3858 0.274657   
+Picture        8.686  2.8953     3    21  1.3858 0.274658   
 TVset:Picture 51.550  8.5917     6    42  4.1124 0.002464 **
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -93,7 +93,7 @@ $Depth
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
               Sum Sq Mean Sq NumDF DenDF F.value   Pr(>F)    
-TVset         50.093 25.0463     2    14 14.0887 0.000444 ***
+TVset         50.092 25.0462     2    14 14.0887 0.000444 ***
 Picture       14.263  4.7543     3    21  2.6743 0.073536 .  
 TVset:Picture 32.322  5.3869     6    42  3.0302 0.014904 *  
 ---
@@ -133,7 +133,7 @@ $Sharpnessofmovement
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
               Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
-TVset          1.765  0.8825     2    14  0.2437 0.7869819    
+TVset          1.765  0.8825     2    14  0.2437 0.7869818    
 Picture       51.857 17.2857     3    21  4.7735 0.0108785 *  
 TVset:Picture 90.767 15.1279     6   138  4.1777 0.0006845 ***
 ---
@@ -213,4 +213,4 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > proc.time()
    user  system elapsed 
-   7.83    0.14    8.03 
+   9.18    0.24    9.57 

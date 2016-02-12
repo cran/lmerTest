@@ -14,18 +14,19 @@ get_models2 <- function(variables, data1) {
     form2 <- as.formula(paste(form, v, sep=" + "))
     print(form2)
     print(class(form2))
+    environment(data1) <- environment(form2) ## in 2.0-30  was added otherwise fail anova in updateModel
     lmerTest::lmer(form2, data=data1)
   })
 }
 
- mlist <- get_models(variables)
- ls1 <- lapply(mlist, anova)
- stopifnot("Pr(>F)" %in% colnames(ls1[[1]]))
+mlist <- get_models(variables)
+ls1 <- lapply(mlist, anova)
+stopifnot("Pr(>F)" %in% colnames(ls1[[1]]))
 
 
 
 mlist <- get_models2(variables, data=cltlike)
-ls2 <- lapply(mlist, anova, type=1)
+ls2 <- lapply(mlist, anova, type = 1)
 stopifnot("Pr(>F)" %in% colnames(ls2[[1]]))
 
 # 

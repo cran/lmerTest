@@ -800,14 +800,18 @@ updateModel <- function(model, mf.final, reml.lmerTest.private,
      #update contrast l.lmerTest.private.contrast
     l.lmerTest.private.contrast <- l.lmerTest.private.contrast[inds]
   }
-  
+ 
+ #data.update.lmerTest.private <- model.frame(model)  
  nfit <- update(object=model, formula.=mf.final, REML=reml.lmerTest.private ,
                 contrasts=l.lmerTest.private.contrast, 
-                devFunOnly = devFunOnly.lmerTest.private, evaluate=FALSE)
+                devFunOnly = devFunOnly.lmerTest.private, 
+ #               data = data.update.lmerTest.private,
+                evaluate=FALSE)
  env <- environment(formula(model))
  assign("l.lmerTest.private.contrast", l.lmerTest.private.contrast, envir=env)
  assign("reml.lmerTest.private", reml.lmerTest.private, envir=env)
  assign("devFunOnly.lmerTest.private", devFunOnly.lmerTest.private, envir=env)
+ #assign("data.update.lmerTest.private", data.update.lmerTest.private, envir=env)
  nfit <- eval(nfit, envir = env) 
  return(nfit)   
 }

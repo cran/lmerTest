@@ -1,5 +1,5 @@
 
-R version 3.2.1 Patched (2015-07-02 r68627) -- "World-Famous Astronaut"
+R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
 Copyright (C) 2015 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -67,14 +67,14 @@ sens2:sens1:Homesize      0.5873  0.5873     1 1006.10  0.5671        3 0.4516
 sens2:Homesize            2.0757  2.0757     1   97.99  2.0051        4 0.1599
 sens1:Homesize:Age        5.6623  1.8874     3 1007.10  1.8233        5 0.1412
 sens1:Homesize            0.1513  0.1513     1 1010.17  0.1458        6 0.7027
-Homesize:Age              5.9012  1.9671     3   94.85  1.8972        7 0.1353
+Homesize:Age              5.9012  1.9671     3   94.85  1.8971        7 0.1353
 sens2:sens1:Age           7.2292  2.4097     3 1011.14  2.3242        8 0.0734
 sens2:sens1               0.1181  0.1181     1    7.98  0.1134        9 0.7450
 sens1:Age                 1.4003  0.4668     3 1014.18  0.4484       10 0.7185
 sens2:Age                 2.3193  0.7731     3   99.01  0.7440       11 0.5284
 Age                       0.6683  0.2228     3   97.99  0.2144       12 0.8862
 sens1                     0.5423  0.5423     1    8.98  0.5219       13 0.4884
-sens2                    18.1647 18.1647     1   12.19 17.4799     kept 0.0012
+sens2                    18.1648 18.1648     1   12.19 17.4799     kept 0.0012
 Homesize                  5.8511  5.8511     1  100.97  5.6305     kept 0.0195
 
 Least squares means:
@@ -131,4 +131,4 @@ lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 | product) +
 > 
 > proc.time()
    user  system elapsed 
-  23.64    0.23   24.05 
+  27.62    0.26   28.23 
