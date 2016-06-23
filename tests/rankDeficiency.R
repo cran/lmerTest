@@ -24,7 +24,7 @@ TOL <- 1e-3 # for the check
 stopifnot(
   all.equal(anType3[,"Pr(>F)"], c(NA, 0.28047, NA, NA, 0.14458, 0.06193, 0.31344,
                                   0.07603, 0.14608, 0.07304, 0.90075, 0.04722), tol = TOL), 
-  all.equal(round(anType3$DenDF), c(0, 55, 0, 0, 61, 66, 170, 169, 477, 192, 709, 692))
+  all.equal(round(anType3$DenDF), c(NA, 55, NA, NA, 61, 66, 170, 169, 477, 192, 709, 692))
   , TRUE)
 
 ## for type 1 hypothesis matrix

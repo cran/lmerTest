@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2014-11-05 r66942) -- "Unsuffered Consequences"
-Copyright (C) 2014 The R Foundation for Statistical Computing
+R version 3.2.5 (2016-04-14) -- "Very, Very Secure Dishes"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -19,7 +19,6 @@ Type 'q()' to quit R.
 Loading required package: lmerTest
 Loading required package: Matrix
 Loading required package: lme4
-Loading required package: Rcpp
 
 Attaching package: 'lmerTest'
 
@@ -263,8 +262,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 Final model:
 lme4::lmer(formula = Colourbalance ~ TVset + Picture + (1 | Assessor:TVset) + 
     (1 | Assessor:Picture) + (1 | Repeat:TVset) + TVset:Picture, 
-    data = TVbo, REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
-    devFunOnly = devFunOnly.lmerTest.private)
+    data = TVbo, contrasts = list(TVset = "contr.SAS", Picture = "contr.SAS"))
 > 
 > modelTVbo_red <- lmer(Colourbalance ~ TVset*Picture
 +                         + (1 | Assessor:TVset)
@@ -407,8 +405,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Final model:
 lme4::lmer(formula = Informed.liking ~ Product + Information + 
-    (1 | Consumer) + (1 | Product:Consumer), data = ham, REML = reml.lmerTest.private, 
-    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+    (1 | Consumer) + (1 | Product:Consumer), data = ham, contrasts = list(
+    Product = "contr.SAS", Information = "contr.SAS"))
 > 
 > TOL <- 1e-5
 > stopifnot(all.equal(as.vector(stHam$lsmeans.table[1:4, "Estimate"]), 
@@ -421,4 +419,4 @@ lme4::lmer(formula = Informed.liking ~ Product + Information +
 > 
 > proc.time()
    user  system elapsed 
-  21.21    0.12   21.37 
+  18.22    0.09   18.56 

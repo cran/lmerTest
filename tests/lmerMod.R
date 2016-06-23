@@ -26,7 +26,7 @@ if(ifTest){
   # tools::assertError(difflsmeans(nm1))
   
   
-  ## should wotk with lmer from lme4 package (class lmerMod)
+  ## should work with lmer from lme4 package (class lmerMod)
   m <- lme4::lmer(Coloursaturation ~ TVset*Picture+
                     (1|Assessor), data=TVbo)
   rand(m)

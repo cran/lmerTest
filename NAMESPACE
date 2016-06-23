@@ -1,7 +1,7 @@
 #useDynLib(lmerTest, .registration=TRUE)
 import(lme4)
 #importFrom(numDeriv, hessian, grad)
-importFrom(plyr, llply)
+importFrom(plyr, llply, aaply)
 import(Matrix)
 import(methods)
 importFrom(MASS, ginv)
@@ -10,7 +10,7 @@ import(ggplot2)
 importFrom("stats", "terms", "as.formula", "complete.cases", "delete.response", 
            "drop1", "formula", "lm", "logLik", "model.frame", "model.matrix", 
            "pchisq", "pf", "printCoefmat", "pt", "qt", "setNames", 
-           "update.formula", "vcov")
+           "update.formula", "vcov", "getCall")
 importFrom("utils", "as.roman", "combn", "data")
 
 
@@ -18,20 +18,14 @@ if(getRversion() >= "3.3.0") {
     importFrom("stats", sigma)
 }
 
-
-
 exportClasses(merModLmerTest)
-
 
 export(rand)
 export(lsmeans)
 export(difflsmeans)
 export(step)
 export(lmer)
-
-
-
-
+export(calcSatterth)
 
 exportMethods("anova", "summary")
 

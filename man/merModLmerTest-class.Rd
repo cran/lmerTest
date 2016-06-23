@@ -34,28 +34,28 @@
 (m <- lmer(Reaction ~ Days + (1|Subject) + (0+Days|Subject),
              data = sleepstudy))
 
-# type 3 anova table with  denominator degrees of freedom
-# calculated based on Satterthwaite's approximation
+## type 3 anova table with  denominator degrees of freedom
+## calculated based on Satterthwaite's approximation
 anova(m)
 
-# type 1 anova table with denominator degrees of freedom
-# calculated based on Satterthwaite's approximation
+## type 1 anova table with denominator degrees of freedom
+## calculated based on Satterthwaite's approximation
 \dontrun{
 anova(m, type=1)
 }
 
-# type3 anova table with additional F statistics and denominator degrees of freedom
-# calculated based on Kenward-Roger's approximation
+## type3 anova table with additional F statistics and denominator degrees of freedom
+## calculated based on Kenward-Roger's approximation
 \dontrun{
 if(requireNamespace("pbkrtest", quietly = TRUE))
 anova(m, ddf="Kenward-Roger")
 }
 
-# anova table, that is returned by lme4 package
+## anova table, that is returned by lme4 package
 anova(m, ddf="lme4")
 
-# summary of merModLmerTest object. Returns the same as merMod object but with an 
-#additional column of p values for the t test. 
+## summary of merModLmerTest object. Returns the same as merMod object but with an 
+## additional column of p values for the t test. 
 summary(m)
 
 }

@@ -57,33 +57,33 @@ Schaalje G.B., McBride J.B., Fellingham G.W. 2002 Adequacy of approximations to 
 %%~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 %%}
 \examples{
-#import lmerTest package
+## import lmerTest package
 library(lmerTest)
 
-# an object of class merModLmerTest
+## an object of class merModLmerTest
 m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
 
-# gives summary of lmer object. The same as of class merMod but with 
-# additional p-values calculated based on Satterthwate's approximations
+## gives summary of lmer object. The same as of class merMod but with 
+## additional p-values calculated based on Satterthwate's approximations
 summary(m)
 
-# anova table the same as of class merMod but with additional F statistics and 
-#  and denominator degrees of freedom and 
-# p-values calculated based on Satterthwaite's approximations
+## anova table the same as of class merMod but with additional F statistics and 
+##  and denominator degrees of freedom and 
+## p-values calculated based on Satterthwaite's approximations
 anova(m)
 
-# anova table the same as of class merMod but with additional F statistics and  
-# denominator degrees of freedom and 
-# p-values calculated based on Kenward-Roger's approximations
+## anova table the same as of class merMod but with additional F statistics and  
+## denominator degrees of freedom and 
+## p-values calculated based on Kenward-Roger's approximations
 \dontrun{
 if(requireNamespace("pbkrtest", quietly = TRUE))
 anova(m, ddf = "Kenward-Roger")
 }
 
-# anova table of class merMod 
+## anova table of class merMod 
 anova(m, ddf="lme4")
 
-# backward elimination of non-significant effects of model m
+## backward elimination of non-significant effects of model m
 st <- step(m)
 
 plot(st)

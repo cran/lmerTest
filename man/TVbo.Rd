@@ -5,7 +5,6 @@
 }
 \description{
   The \code{TVbo} dataset comes from Bang and Olufsen company. The main purpose was to test products, specified by two attributes Picture and TVset. 15 different response variables (characteristics of the product) were assessed by trained panel list.
-  
 }
 \usage{
 TVbo
@@ -34,7 +33,7 @@ TVbo
 \examples{
 
 
-#import lme4 package and lmerTest package
+## import lme4 package and lmerTest package
 library(lmerTest)
 
 \dontshow{

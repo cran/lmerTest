@@ -7,14 +7,7 @@
 \description{
 Methods for Function \code{anova} in Package \pkg{lmerTest}
 }
-%\section{Methods}{
-%\describe{
 
-%\item{\code{signature(object = "merModLmerTest")}}{
-%   returns the data frame with F test of type 3 hypothesis for each term in formula and corresponding p-values. For multiple arguments, model comparison statistics. The definition of type 3 hypothesis comes from SAS theory proc mixed. The approximations for degrees of freedom by default are Satterthwaite's (ddf="Satterthwaite"). If ddf="Kenward-Roger", then the Kenward-Roger's approximations are calculated using \code{KRmodcomp} function from \code{pbkrtest} package. If ddf="lme4" then the anova table that comes from \code{lme4} package is returned. 
-%method.grad  is an argument for the approximation method for the grad function, which is used in calculation of denominator degrees of freedom. method.grad could be "simple" or "Richardson". method.grad="simple" is the default one and the fastest one, method.grad="Richardson" gives more accurate results.
-%\code{\link{anova}}
-%}
 
 \usage{\S4method{anova}{merModLmerTest}(object, \dots , ddf="Satterthwaite", 
 type=3)}
@@ -28,6 +21,10 @@ type=3)}
 
 
 %}}
+
+\details{
+ According to (Goodnight, J.H. 1976) the behaviour of the type 3 hypothesis is not fully studied for the situations with missing cells (where observations are missing at some factor-level combination). A warning is returned in such cases.
+ }
 
 \references{
 SAS Technical Report R-101 1978 Tests of Hypotheses in Fixed-Effects Linear Models \emph{Copyright (C)}  (SAS Institute Inc., Cary, NC, USA)
@@ -69,6 +66,7 @@ anova(m.ham, ddf = "lme4")
 \dontrun{
 fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
                            (1+sens2|Consumer), data=carrots)
+anova(fm2)
 }
 }
 }

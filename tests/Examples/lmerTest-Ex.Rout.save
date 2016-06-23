@@ -1,6 +1,6 @@
 
-R version 3.2.3 (2015-12-10) -- "Wooden Christmas-Tree"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R Under development (unstable) (2016-06-18 r70798) -- "Unsuffered Consequences"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -52,7 +52,7 @@ The following object is masked from 'package:stats':
 > 
 > 
 > 
-> #import lme4 package and lmerTest package
+> ## import lme4 package and lmerTest package
 > library(lmerTest)
 > 
 > ## Don't show: 
@@ -97,8 +97,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Final model:
 lme4::lmer(formula = log(Coloursaturation) ~ TVset + Picture + 
-    (1 | Assessor:TVset) + TVset:Picture, data = TVbo, REML = reml.lmerTest.private, 
-    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+    (1 | Assessor:TVset) + TVset:Picture, data = TVbo, contrasts = list(
+    TVset = "contr.SAS", Picture = "contr.SAS"))
 > ## End(Don't show)
 > 
 > ## Not run: 
@@ -179,6 +179,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > ## Not run: 
 > ##D fm2 <- lmer(Preference ~ sens2 + I(sens1^2)  +
 > ##D                            (1+sens2|Consumer), data=carrots)
+> ##D anova(fm2)
 > ## End(Not run)
 > ## End(Don't show)
 > 
@@ -188,6 +189,77 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 detaching 'package:pbkrtest'
 
+> nameEx("calcSatterth")
+> ### * calcSatterth
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: calcSatterth
+> ### Title: F-test based on the Satterthwaite's approximation for
+> ###   denominator degrees of freedom.
+> ### Aliases: calcSatterth
+> ### Keywords: function
+> 
+> ### ** Examples
+> 
+> ## import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> ## specify lmer model for the sleepstudy data from the lme4 package
+> m <- lmer(Reaction ~ Days + (1 + Days|Subject), sleepstudy)
+> 
+> 
+> L <- cbind(0,1) ## specify contrast vector
+> calcSatterth(m, L) ## calculate F test
+$denom
+[1] 17
+
+$Fstat
+       [,1]
+[1,] 45.853
+
+$pvalue
+             [,1]
+[1,] 3.263789e-06
+
+$ndf
+[1] 1
+
+> 
+> ## specify model for the ham data
+> m.ham <- lmer(Informed.liking ~ Product + (1|Consumer), data = ham)
+> 
+> ## specify contrast vector for testing product effect
+> L <- matrix(0, ncol = 4, nrow = 3)
+> L[1,2] <- L[2,3] <- L[3,4] <- 1
+> calcSatterth(m.ham, L)
+$denom
+[1] 563.9999
+
+$Fstat
+         [,1]
+[1,] 6.991801
+
+$pvalue
+             [,1]
+[1,] 0.0001266711
+
+$ndf
+[1] 3
+
+> 
+> ## by using anova function we get the same result
+> anova(m.ham)
+Analysis of Variance Table of type III  with  Satterthwaite 
+approximation for degrees of freedom
+        Sum Sq Mean Sq NumDF DenDF F.value    Pr(>F)    
+Product 91.807  30.602     3   564  6.9918 0.0001267 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> 
+> 
+> cleanEx()
 > nameEx("carrots")
 > ### * carrots
 > 
@@ -240,8 +312,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Final model:
 lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 + sens2 | 
-    Consumer), data = carrots, REML = reml.lmerTest.private, 
-    contrasts = l.lmerTest.private.contrast, devFunOnly = devFunOnly.lmerTest.private)
+    Consumer), data = carrots, contrasts = list(Homesize = "contr.SAS"))
 > 
 > 
 > 
@@ -261,13 +332,13 @@ lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 + sens2 |
 > 
 > 
 > 
-> #import lme4 package and lmerTest package
+> ## import lme4 package and lmerTest package
 > library(lmerTest)
 > 
-> #specify lmer model
+> ## specify lmer model
 > m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 > 
-> #calculate least squares means for interaction Gender:Information
+> ## calculate least squares means for interaction Gender:Information
 > difflsmeans(m1, test.effs="Gender:Information")
 Differences of LSMEANS:
                                Estimate Standard Error    DF t-value Lower CI
@@ -285,8 +356,6 @@ Gender:Information  2 1 -  1 2    0.168     0.2
 Gender:Information  2 1 -  2 2    0.360     0.7
 Gender:Information  1 2 -  2 2    0.949     0.3
 > 
-> #import TVbo data from lmerTest package
-> data(TVbo) 
 > 
 > m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
 > plot(difflsmeans(m, test.effs="TVset"))
@@ -388,11 +457,9 @@ Information 1 - 2   0.050 *
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Final model:
-lme4::lmer(formula = Informed.liking ~ Product + Information + 
-    Gender + (1 | Product:Consumer) + Product:Information + Product:Gender + 
-    Information:Gender + Product:Information:Gender, data = ham, 
-    REML = reml.lmerTest.private, contrasts = l.lmerTest.private.contrast, 
-    devFunOnly = devFunOnly.lmerTest.private)
+lme4::lmer(formula = Informed.liking ~ Product * Information * 
+    Gender + (1 | Product:Consumer), data = ham, contrasts = list(
+    Product = "contr.SAS", Information = "contr.SAS", Gender = "contr.SAS"))
 > 
 > 
 > 
@@ -495,14 +562,14 @@ Days -0.138
 > 
 > ### ** Examples
 > 
-> #import lmerTest package
+> ## import lmerTest package
 > library(lmerTest)
 > 
-> # an object of class merModLmerTest
+> ## an object of class merModLmerTest
 > m <- lmer(Informed.liking ~ Gender+Information+Product +(1|Consumer), data=ham)
 > 
-> # gives summary of lmer object. The same as of class merMod but with 
-> # additional p-values calculated based on Satterthwate's approximations
+> ## gives summary of lmer object. The same as of class merMod but with 
+> ## additional p-values calculated based on Satterthwate's approximations
 > summary(m)
 Linear mixed model fit by REML t-tests use Satterthwaite approximations to
   degrees of freedom [lmerMod]
@@ -540,9 +607,9 @@ Product2    -0.472  0.000  0.000
 Product3    -0.472  0.000  0.000  0.500       
 Product4    -0.472  0.000  0.000  0.500  0.500
 > 
-> # anova table the same as of class merMod but with additional F statistics and 
-> #  and denominator degrees of freedom and 
-> # p-values calculated based on Satterthwaite's approximations
+> ## anova table the same as of class merMod but with additional F statistics and 
+> ##  and denominator degrees of freedom and 
+> ## p-values calculated based on Satterthwaite's approximations
 > anova(m)
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
@@ -553,15 +620,15 @@ Product     91.807 30.6024     3   563  6.9979 0.0001256 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
-> # anova table the same as of class merMod but with additional F statistics and  
-> # denominator degrees of freedom and 
-> # p-values calculated based on Kenward-Roger's approximations
+> ## anova table the same as of class merMod but with additional F statistics and  
+> ## denominator degrees of freedom and 
+> ## p-values calculated based on Kenward-Roger's approximations
 > ## Not run: 
 > ##D if(requireNamespace("pbkrtest", quietly = TRUE))
 > ##D anova(m, ddf = "Kenward-Roger")
 > ## End(Not run)
 > 
-> # anova table of class merMod 
+> ## anova table of class merMod 
 > anova(m, ddf="lme4")
 Analysis of Variance Table
             Df Sum Sq Mean Sq F value
@@ -569,7 +636,7 @@ Gender       1  3.844  3.8437  0.8789
 Information  1  6.520  6.5201  1.4910
 Product      3 91.807 30.6024  6.9979
 > 
-> # backward elimination of non-significant effects of model m
+> ## backward elimination of non-significant effects of model m
 > st <- step(m)
 > 
 > plot(st)
@@ -592,13 +659,13 @@ Product      3 91.807 30.6024  6.9979
 > 
 > 
 > 
-> #import lme4 package and lmerTest package
+> ## import lme4 package and lmerTest package
 > library(lmerTest)
 > 
-> #specify lmer model
+> ## specify lmer model
 > m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 > 
-> #calculate least squares means for interaction Gender:Information
+> ## calculate least squares means for interaction Gender:Information
 > lsmeans(m1, test.effs="Gender:Information")
 Least Squares Means table:
                         Gender Information Estimate Standard Error  DF t-value
@@ -614,8 +681,6 @@ Gender:Information  2 2     5.23     6.10  <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
-> #import TVbo data from lmerTest package
-> data(TVbo) 
 > 
 > m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
 > plot(lsmeans(m))
@@ -664,8 +729,8 @@ Fixed Effects:
 (Intercept)         Days  
      251.41        10.47  
 > 
-> # type 3 anova table with  denominator degrees of freedom
-> # calculated based on Satterthwaite's approximation
+> ## type 3 anova table with  denominator degrees of freedom
+> ## calculated based on Satterthwaite's approximation
 > anova(m)
 Analysis of Variance Table of type III  with  Satterthwaite 
 approximation for degrees of freedom
@@ -674,27 +739,27 @@ Days  29442   29442     1 18.156  45.046 2.594e-06 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
-> # type 1 anova table with denominator degrees of freedom
-> # calculated based on Satterthwaite's approximation
+> ## type 1 anova table with denominator degrees of freedom
+> ## calculated based on Satterthwaite's approximation
 > ## Not run: 
 > ##D anova(m, type=1)
 > ## End(Not run)
 > 
-> # type3 anova table with additional F statistics and denominator degrees of freedom
-> # calculated based on Kenward-Roger's approximation
+> ## type3 anova table with additional F statistics and denominator degrees of freedom
+> ## calculated based on Kenward-Roger's approximation
 > ## Not run: 
 > ##D if(requireNamespace("pbkrtest", quietly = TRUE))
 > ##D anova(m, ddf="Kenward-Roger")
 > ## End(Not run)
 > 
-> # anova table, that is returned by lme4 package
+> ## anova table, that is returned by lme4 package
 > anova(m, ddf="lme4")
 Analysis of Variance Table
      Df Sum Sq Mean Sq F value
 Days  1  29442   29442  45.047
 > 
-> # summary of merModLmerTest object. Returns the same as merMod object but with an 
-> #additional column of p values for the t test. 
+> ## summary of merModLmerTest object. Returns the same as merMod object but with an 
+> ## additional column of p values for the t test. 
 > summary(m)
 Linear mixed model fit by REML t-tests use Satterthwaite approximations to
   degrees of freedom [lmerMod]
@@ -928,7 +993,7 @@ Days -0.138
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  8.75 0.25 9.03 NA NA 
+Time elapsed:  7.99 0.08 8.1 NA NA 
 > grDevices::dev.off()
 null device 
           1 

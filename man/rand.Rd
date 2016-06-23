@@ -5,7 +5,8 @@
 Performs likelihood ratio test on random effects of linear mixed effects model. 
 }
 \description{
-Returns a data frame with  values of Chi square statistics and corresponding p-values of likelihood ratio tests. 
+Returns a data frame with  values of Chi square statistics and corresponding 
+p-values of likelihood ratio tests. 
 }
 \usage{
 rand(model, \dots)

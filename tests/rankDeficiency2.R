@@ -13,8 +13,8 @@ TOL <- 1e-4 # for the check
 #with 4 decimals should agree with SAS output
 #numbers vefore decimals should agree with SAS output
 stopifnot(
-  all.equal(an.carrots[,"Pr(>F)"], c(0.3541, 0.0838, 0.2879, 0.3263, 0.6173, 0.2652, NA), tol = TOL), 
-  all.equal(round(an.carrots$DenDF), c(77, 77, 77, 77, 77, 77, 0))
+  all.equal(an.carrots[,"Pr(>F)"], c(0.3541, 0.0838, 0.2879, 0.3263, 0.6173, 0.2652), tol = TOL), 
+  all.equal(round(an.carrots$DenDF), c(77, 77, 77, 77, 77, 77))
   , TRUE)
 
 
@@ -31,7 +31,7 @@ an.bread <- anova(m.bread) ## OK with SAS
 
 stopifnot(
   all.equal(an.bread[,"Pr(>F)"], c(NA, 1e-7, 0.5864, 0.2783), tol = TOL), 
-  all.equal(round(an.bread$DenDF), c(0, 1798, 1796, 1796))
+  all.equal(round(an.bread$DenDF), c(NA, 1798, 1796, 1796))
   , TRUE)
 
 s.bread <- step(m.bread) ## returns lsmeans and difflsmeans, in SAS -non-est, why?!! compare with lsmeans/ doby packages

@@ -9,7 +9,7 @@
 }
 
 \usage{
-difflsmeans(model, test.effs=NULL,  ...)
+difflsmeans(model, test.effs=NULL, ddf="Satterthwaite",...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -20,10 +20,10 @@ difflsmeans(model, test.effs=NULL,  ...)
 
 
 \item{test.effs}{
-    
-     charachter vector specyfying the names of terms to be tested. If NULL all the terms are tested.
+     charachter vector specifying  names of terms to be tested. If NULL all the terms are tested.
 }
 
+\item{ddf}{By default the Satterthwaite's approximation to degrees of freedom is calculated. If ddf="Kenward-Roger", then the Kenward-Roger's approximation is calculated using \code{KRmodcomp} function from \pkg{pbkrtest} package. If ddf="lme4" then the anova table that comes from \pkg{lme4} package is returned}
 
 
   \item{\dots}{
@@ -50,17 +50,15 @@ Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 \examples{
 
 
-#import lme4 package and lmerTest package
+## import lme4 package and lmerTest package
 library(lmerTest)
 
-#specify lmer model
+## specify lmer model
 m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 
-#calculate least squares means for interaction Gender:Information
+## calculate least squares means for interaction Gender:Information
 difflsmeans(m1, test.effs="Gender:Information")
 
-#import TVbo data from lmerTest package
-data(TVbo) 
 
 m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
 plot(difflsmeans(m, test.effs="TVset"))

@@ -1,3 +1,10 @@
+2.0-32
+- changed the message of identifiability to the more appropriate one
+- 
+
+2.0-31
+- removed lmerTestFunctions.R and restructured the package. added calcSatterth(model, L) for  calculating Satterthwaite's approximation for a specified L matrix 
+
 2.0-30
 - envir.R failed with the newest version of lme4. Changed the code to pass the check. TODO: remove updating the model
 

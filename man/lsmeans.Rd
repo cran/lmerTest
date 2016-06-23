@@ -8,7 +8,7 @@
  Produces a data frame which resembles to what SAS software gives in proc mixed statement. The approximation of degrees of freedom is Satterthwate's.
 }
 \usage{
-lsmeans(model, test.effs = NULL,  ...)
+lsmeans(model, test.effs = NULL, ddf="Satterthwaite",  ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,6 +22,7 @@ lsmeans(model, test.effs = NULL,  ...)
      charachter vector specyfying the names of terms to be tested. If NULL all the terms are tested.
 }
 
+\item{ddf}{By default the Satterthwaite's approximation to degrees of freedom is calculated. If ddf="Kenward-Roger", then the Kenward-Roger's approximation is calculated using \code{KRmodcomp} function from \pkg{pbkrtest} package. If ddf="lme4" then the anova table that comes from \pkg{lme4} package is returned}
 
   \item{\dots}{
      other potential arguments.
@@ -50,17 +51,15 @@ Alexandra Kuznetsova, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen
 \examples{
 
 
-#import lme4 package and lmerTest package
+## import lme4 package and lmerTest package
 library(lmerTest)
 
-#specify lmer model
+## specify lmer model
 m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 
-#calculate least squares means for interaction Gender:Information
+## calculate least squares means for interaction Gender:Information
 lsmeans(m1, test.effs="Gender:Information")
 
-#import TVbo data from lmerTest package
-data(TVbo) 
 
 m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
 plot(lsmeans(m))

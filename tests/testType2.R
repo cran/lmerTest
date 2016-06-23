@@ -12,7 +12,8 @@ model <- lmer(y ~ a*b + (1|f), data=dd)
 model2 <- lmer(y ~ b*a + (1|f), data=dd)
 an <- anova(model, type=2)
 an2 <- anova(model2, type=2)
-stopifnot(all.equal(an,an2[c(2,1,3),], check.names = FALSE, check.attributes = FALSE))
+TOL <- 1e-5
+stopifnot(all.equal(an,an2[c(2,1,3),], check.names = FALSE, check.attributes = FALSE, tol=TOL))
 
 ## check the results are the same as from SAS proc mixed
 stopifnot(all.equal(an[,"F.value"], c(3.90131, 1.32753, 0.99565), tol = 1e-5))
