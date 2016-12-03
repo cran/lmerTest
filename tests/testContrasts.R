@@ -59,5 +59,5 @@ lmer4 <- lmer(increase ~ treat + (1|block), data = tree,
 lmer5 <- lmer(increase ~ treat+ (1|block), data = tree,  
               contrasts = list(treat = "contr.SAS"))
 
-all.equal(lsmeans(lmer4), lsmeans(lmer5), tol = 1e-3)
+all.equal(lsmeansLT(lmer4), lsmeansLT(lmer5), tol = 1e-3)
 

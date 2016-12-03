@@ -84,9 +84,9 @@ tools::assertError(stopifnot(all.equal(an.lme4[, "F value"], an.1, tol = TOL)))
 ## checking lsmeans
 lmer4.noint <- lmer(increase ~ treat - 1 + (1|block), data = tree)
 lmer4 <- lmer(increase ~ treat + (1|block), data = tree)
-stopifnot(all.equal(lsmeans(lmer4), lsmeans(lmer4.noint)))
+stopifnot(all.equal(lsmeansLT(lmer4), lsmeansLT(lmer4.noint)))
 
-lsm <- lsmeans(lmer4)
+lsm <- lsmeansLT(lmer4)
 
 TOL <- 1e-5
 stopifnot(all.equal(lsm$lsmeans.table[, "Estimate"], 

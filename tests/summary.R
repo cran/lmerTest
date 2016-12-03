@@ -42,6 +42,7 @@ stopifnot(
                                             0.681434, 0.106180, 0.149122, 0.390870, 0.273686), tol=TOL,
             check.attributes = FALSE), TRUE)
 
+if(require(pbkrtest))
 sm.kr <- summary(m.carrots, ddf = "Kenward-Roger")
 
 ## coefficients for Sat and KR agree in this example
@@ -54,7 +55,7 @@ m <- lmer(Informed.liking ~ Product*Information*Gender
           + (1|Product:Consumer) + (1|Consumer) , data=ham)
 
 
-lsm <- lsmeans(m, test.effs = "Product")
+lsm <- lsmeansLT(m, test.effs = "Product")
 
 TOL <- 1e-7
 stopifnot(

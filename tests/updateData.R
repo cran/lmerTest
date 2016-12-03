@@ -17,8 +17,8 @@ randSub.lmer <- as(randSub.lmer, "merModLmerTest")
 randSub.lmer2 = update(Oats.lmer, subset = ss)
 randSub.lmer2 <- as(randSub.lmer2, "merModLmerTest")
 
-lsm1 <- lmerTest::lsmeans(randSub.lmer, "Variety")
-lsm2 <- lmerTest::lsmeans(randSub.lmer, "Variety")
+lsm1 <- lmerTest::lsmeansLT(randSub.lmer, "Variety")
+lsm2 <- lmerTest::lsmeansLT(randSub.lmer, "Variety")
 
 stopifnot(all.equal(lsm1$lsmeans.table, lsm2$lsmeans.table))
 

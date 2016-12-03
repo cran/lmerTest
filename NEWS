@@ -1,3 +1,8 @@
+2.0-33
+- lsmeans and difflsmeans are now deprecated functions. Changed the names to lsmeansLT and dlsmeansLT
+- changed the maintainer field
+
+
 2.0-32
 - changed the message of identifiability to the more appropriate one
 - 

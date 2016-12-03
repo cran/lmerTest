@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2016-06-18 r70798) -- "Unsuffered Consequences"
+R Under development (unstable) (2016-11-29 r71708) -- "Unsuffered Consequences"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 
@@ -331,7 +331,6 @@ lme4::lmer(formula = Preference ~ sens2 + Homesize + (1 + sens2 |
 > ### ** Examples
 > 
 > 
-> 
 > ## import lme4 package and lmerTest package
 > library(lmerTest)
 > 
@@ -355,8 +354,6 @@ Gender:Information  1 1 -  2 2    0.656     0.9
 Gender:Information  2 1 -  1 2    0.168     0.2
 Gender:Information  2 1 -  2 2    0.360     0.7
 Gender:Information  1 2 -  2 2    0.949     0.3
-> 
-> 
 > m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
 > plot(difflsmeans(m, test.effs="TVset"))
 > 
@@ -665,8 +662,39 @@ Product      3 91.807 30.6024  6.9979
 > ## specify lmer model
 > m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
 > 
+> ## Not run: 
+> ##D ## calculate least squares means for interaction Gender:Information
+> ##D lsmeans(m1, test.effs="Gender:Information")
+> ##D m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
+> ##D plot(lsmeans(m))
+> ##D lsmeans(m, test.effs="TVset")
+> ## End(Not run)
+> 
+> 
+> 
+> cleanEx()
+> nameEx("lsmeansLT")
+> ### * lsmeansLT
+> 
+> flush(stderr()); flush(stdout())
+> 
+> ### Name: lsmeansLT
+> ### Title: Calculates Least Squares Means and Confidence Intervals for the
+> ###   factors of a fixed part of mixed effects model of lmer object.
+> ### Aliases: lsmeansLT
+> 
+> ### ** Examples
+> 
+> 
+> 
+> ## import lme4 package and lmerTest package
+> library(lmerTest)
+> 
+> ## specify lmer model
+> m1 <- lmer(Informed.liking ~ Gender*Information +(1|Consumer), data=ham)
+> 
 > ## calculate least squares means for interaction Gender:Information
-> lsmeans(m1, test.effs="Gender:Information")
+> lsmeansLT(m1, test.effs="Gender:Information")
 Least Squares Means table:
                         Gender Information Estimate Standard Error  DF t-value
 Gender:Information  1 1      1           1    5.707          0.218 154    26.2
@@ -683,8 +711,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 > 
 > 
 > m <- lmer(Coloursaturation ~ TVset*Picture + (1|Assessor), data=TVbo)
-> plot(lsmeans(m))
-> lsmeans(m, test.effs="TVset")
+> plot(lsmeansLT(m))
+> lsmeansLT(m, test.effs="TVset")
 Least Squares Means table:
            TVset Picture Estimate Standard Error   DF t-value Lower CI Upper CI
 TVset  TV1   1.0      NA    7.525          0.233 12.4    32.3     7.02     8.03
@@ -696,6 +724,8 @@ TVset  TV2  <2e-16 ***
 TVset  TV3  <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+> 
+> 
 > 
 > 
 > 
@@ -993,7 +1023,7 @@ Days -0.138
 > ###
 > options(digits = 7L)
 > base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  7.99 0.08 8.1 NA NA 
+Time elapsed:  21.22 0.34 22.45 NA NA 
 > grDevices::dev.off()
 null device 
           1 

@@ -22,6 +22,7 @@ exportClasses(merModLmerTest)
 
 export(rand)
 export(lsmeans)
+export(lsmeansLT)
 export(difflsmeans)
 export(step)
 export(lmer)
@@ -32,10 +33,13 @@ exportMethods("anova", "summary")
 S3method(print, step)
 S3method(plot, step)
 S3method(print, rand)
-S3method(print, lsmeans)
-S3method(plot, lsmeans)
+#S3method(print, lsmeans)
+S3method(print, lsmeansLT)
+#S3method(plot, lsmeans)
+S3method(plot, lsmeansLT)
 S3method(print, difflsmeans)
 S3method(plot, difflsmeans)
+
 
 
 

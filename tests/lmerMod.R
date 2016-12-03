@@ -31,7 +31,7 @@ if(ifTest){
                     (1|Assessor), data=TVbo)
   rand(m)
   step(m)
-  lsmeans(m)
+  lsmeansLT(m)
   difflsmeans(m)
 }
 

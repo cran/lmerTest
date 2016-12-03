@@ -230,8 +230,13 @@ print.rand <- function(x, ...)
                  P.values=TRUE, has.Pvalue=TRUE)        
 }
 
+lsmeans <- function(model, test.effs=NULL, ddf = "Satterthwaite", ...){
+  .Deprecated("lsmeansLT", package = "lmerTest") 
+  lsmeansLT(model, test.effs=test.effs, ddf = ddf)
+}
 
-lsmeans <- function(model, test.effs=NULL, ddf = "Satterthwaite", ...)
+
+lsmeansLT <- function(model, test.effs=NULL, ddf = "Satterthwaite", ...)
 {
   if(!inherits(model, "lmerMod"))
     stop("The model is not linear mixed effects model")
@@ -240,11 +245,11 @@ lsmeans <- function(model, test.effs=NULL, ddf = "Satterthwaite", ...)
   result <- lsmeans.calc(model, 0.05, test.effs = test.effs, 
                            lsmeansORdiff = TRUE, ddf)
   res <- list(lsmeans.table=result$summ.data, response=result$response)
-  class(res) <- "lsmeans"
+  class(res) <- "lsmeansLT"
   res 
 }
 
-print.lsmeans <- function(x, ...)
+print.lsmeansLT <- function(x, ...)
 {
   
   cat("Least Squares Means table:\n")
@@ -254,7 +259,12 @@ print.lsmeans <- function(x, ...)
                P.values=TRUE, has.Pvalue=TRUE)       
 }
 
-plot.lsmeans <- function(x, main = NULL, cex = 1.4, effs = NULL, mult = TRUE, ...)
+# plot.lsmeans <- function(x, main = NULL, cex = 1.4, effs = NULL, mult = TRUE, ...){
+#   .Deprecated("plot.lsmeansLT", package = "lmerTest") 
+#   plot.lsmeansLT(x, main = main, cex = cex, effs = effs, mult = mult)
+# }
+
+plot.lsmeansLT <- function(x, main = NULL, cex = 1.4, effs = NULL, mult = TRUE, ...)
 {
   
   #plots for LSMEANS
@@ -277,6 +287,7 @@ difflsmeans <- function(model, test.effs=NULL, ddf = "Satterthwaite", ...)
   res 
 }
 
+
 print.difflsmeans <- function(x, ...)
 {
   
@@ -287,6 +298,8 @@ print.difflsmeans <- function(x, ...)
                P.values=TRUE, has.Pvalue=TRUE)
   
 }
+
+
 
 plot.difflsmeans <- function(x, main = NULL, cex = 1.4, effs = NULL, 
                              mult = TRUE, ...)
