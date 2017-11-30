@@ -43,6 +43,12 @@ The calculation of statistics for the fixed part was developed according to SAS 
 Alexandra Kuznetsova <alku@dtu.dk>, Per Bruun Brockhoff, Rune Haubo Bojesen Christensen 
 }
 \references{
+
+Alexandra Kuznetsova, Per B. Brockhoff and Rune H.B. Christensen (2017)
+lmerTest Package: Tests in Linear Mixed Effects Models.
+\emph{Journal of Statistical Software}, 82(13), 1--26. doi:10.18637/jss.v082.i13
+
+
 SAS Technical Report R-101 1978 Tests of Hypotheses in Fixed-Effects Linear Models \emph{Copyright (C)}  (SAS Institute Inc., Cary, NC, USA)
 
 Goodnight, J.H. 1976 General Linear Models Procedure (S.A.S. Institute, Inc.)

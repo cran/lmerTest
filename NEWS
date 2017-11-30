@@ -1,3 +1,6 @@
+2.0-34
+- included citation info for JSS
+
 2.0-33
 - lsmeans and difflsmeans are now deprecated functions. Changed the names to lsmeansLT and dlsmeansLT
 - changed the maintainer field

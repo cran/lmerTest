@@ -40,7 +40,7 @@ calcSatterth1DF <- function(rho, L, isF = TRUE){
 ## from pbkrtest package
 calcKR1DF <- function(rho, L){
   
-  if (!requireNamespace("pbkrtest", quitely = TRUE)) 
+  if (!requireNamespace("pbkrtest", quietly = TRUE)) 
     stop("pbkrtest package required for Kenward-Roger's approximations")
   result <- matrix(0, nrow = 1, ncol = 4)
   colnames(result) <- c("df", "t value", "p-value", "sqrt.varcor")
