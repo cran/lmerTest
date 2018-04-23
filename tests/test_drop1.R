@@ -9,6 +9,11 @@ assertError <- function(expr, ...)
 assertWarning <- function(expr, ...)
   if(requireNamespace("tools")) tools::assertWarning(expr, ...) else invisible()
 
+TOL <- 1e-4
+# Kenward-Roger only available with pbkrtest and only then validated in R >= 3.3.3
+# (faulty results for R < 3.3.3 may be due to unstated dependencies in pbkrtest)
+has_pbkrtest <- requireNamespace("pbkrtest", quietly = TRUE) && getRversion() >= "3.3.3"
+
 data("sleepstudy", package="lme4")
 
 ######### Basic usage
@@ -19,23 +24,25 @@ cake2$temperature <- factor(cake2$temperature, ordered = FALSE)
 fm <- lmer(angle ~ recipe + temperature + (1|recipe:replicate), cake2)
 (an1 <- drop1(fm))
 (an2 <- drop1(fm, force_get_contrasts = TRUE))
-drop1(fm, ddf="Kenward-Roger")
 drop1(fm, ddf="lme4", test="Chi")
+if(has_pbkrtest)
+  drop1(fm, ddf="Kenward-Roger")
 
 tests1 <- show_tests(an1)
 tests2 <- show_tests(an2)
 
 stopifnot(
   # Tests are the same:
-  isTRUE(all.equal(an1, an2, check.attributes = FALSE)),
+  isTRUE(all.equal(an1, an2, check.attributes = FALSE, tolerance=TOL)),
   # But contrast matrices are not:
   all(!mapply(function(x, y) isTRUE(all.equal(x, y)), tests1, tests2))
 )
 
 fm <- lmer(angle ~ recipe * temperature + (1|recipe:replicate), cake2)
 drop1(fm)
-drop1(fm, ddf="Kenward-Roger")
 drop1(fm, ddf="lme4")
+if(has_pbkrtest)
+  drop1(fm, ddf="Kenward-Roger")
 
 # Incorrect arguments:
 assertError(drop1(fm, scope="recipe")) # Correct Error

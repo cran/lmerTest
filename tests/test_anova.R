@@ -8,7 +8,12 @@ assertError <- function(expr, ...)
 assertWarning <- function(expr, ...)
   if(requireNamespace("tools")) tools::assertWarning(expr, ...) else invisible()
 
+# Kenward-Roger only available with pbkrtest and only then validated in R >= 3.3.3
+# (faulty results for R < 3.3.3 may be due to unstated dependencies in pbkrtest)
+has_pbkrtest <- requireNamespace("pbkrtest", quietly = TRUE) && getRversion() >= "3.3.3"
+
 data("sleepstudy", package="lme4")
+TOL <- 1e-4
 
 ####################################
 ## Basic anova tests
@@ -22,18 +27,20 @@ m <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 (an2b <- anova(m, ddf="Satterthwaite", type=3))
 (an2c <- anova(m, ddf="Satterthwaite", type=2))
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 (an3 <- anova(m, ddf="Sat")) ## Abbreviated argument
 stopifnot(isTRUE(
-  all.equal(an1, an3)
+  all.equal(an1, an3, tolerance=TOL)
 ))
-(anova(m, ddf="Kenward-Roger"))
-(anova(m, ddf="Kenward-Roger", type=3))
+if(has_pbkrtest) {
+  (anova(m, ddf="Kenward-Roger"))
+  (anova(m, ddf="Kenward-Roger", type=3))
+}
 (an1 <- anova(m, ddf="lme4"))
 (an2 <- anova(m, ddf="lme4", type=3)) # 'type' is ignored with ddf="lme4"
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 res <- assertError(anova(m, ddf="KR")) ## Error on incorrect arg.
 stopifnot(
@@ -44,38 +51,38 @@ stopifnot(
 an1 <- anova(m, ddf="lme4")
 an2 <- anova(as(m, "lmerMod"))
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 
 ###### type argument:
 (an1 <- anova(m, type="1")) # valid type arg.
 (an2 <- anova(m, type="I")) # same
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 (an3 <- anova(m, type=1)) # Not strictly valid, but accepted
 stopifnot(isTRUE(
-  all.equal(an1, an3)
+  all.equal(an1, an3, tolerance=TOL)
 ))
 
 (an1 <- anova(m, type="2")) # valid type arg.
 (an2 <- anova(m, type="II")) # same
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 (an3 <- anova(m, type=3)) # Not strictly valid, but accepted
 stopifnot(isTRUE(
-  all.equal(an1, an3, check.attributes=FALSE)
+  all.equal(an1, an3, check.attributes=FALSE, tolerance=TOL)
 ))
 
 (an1 <- anova(m, type="3")) # valid type arg.
 (an2 <- anova(m, type="III")) # same
 stopifnot(isTRUE(
-  all.equal(an1, an2)
+  all.equal(an1, an2, tolerance=TOL)
 ))
 (an3 <- anova(m, type=3)) # Not strictly valid, but accepted
 stopifnot(isTRUE(
-  all.equal(an1, an3)
+  all.equal(an1, an3, tolerance=TOL)
 ))
 assertError(anova(m, type=0)) # Not valid arg.
 assertError(anova(m, type="i")) # Not valid arg.
@@ -104,17 +111,19 @@ stopifnot(
 data("cake", package="lme4")
 m <- lmer(angle ~ recipe * temp + (1|recipe:replicate), cake)
 (an <- anova(m))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
-# res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-#                  an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
-# stopifnot(isTRUE(res))
-res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_KR[, c("Sum Sq", "Mean Sq", "F value")])
-stopifnot(isTRUE(res))
 
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  # res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
+  #                  an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+  # stopifnot(isTRUE(res))
+  res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
+                   an_KR[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
+  stopifnot(isTRUE(res))
+}
 stopifnot(all.equal(c(2, 1, 2), an$NumDF, tol=1e-6),
-          all.equal(c(254.0157612, 222, 222), an$DenDF, tol=1e-6))
+          all.equal(c(254.0157612, 222, 222), an$DenDF, tol=TOL))
 
 an3 <- anova(m, type=3)
 an2 <- anova(m, type=2)
@@ -123,8 +132,8 @@ an1 <- anova(m, type=1)
 ## Data is balanced, so Type II and III should be identical:
 ## One variable is continuous, so Type I and II/III are different:
 stopifnot(
-  isTRUE(all.equal(an3, an2, check.attributes=FALSE)),
-  !isTRUE(all.equal(an1, an2, check.attributes=FALSE))
+  isTRUE(all.equal(an3, an2, check.attributes=FALSE, tolerance=TOL)),
+  !isTRUE(all.equal(an1, an2, check.attributes=FALSE, tolerance=1e-8))
 )
 
 # Using an ordered factor:
@@ -135,21 +144,23 @@ m <- lmer(angle ~ recipe * temperature + (1|recipe:replicate), cake)
 (an3 <- anova(m, type=3))
 ## Balanced data and only factors: Type I, II and III should be the same:
 stopifnot(
-  isTRUE(all.equal(an1, an2, check.attributes=FALSE, tol=1e-6)),
-  isTRUE(all.equal(an1, an3, check.attributes=FALSE, tol=1e-6))
+  isTRUE(all.equal(an1, an2, check.attributes=FALSE, tolerance=TOL)),
+  isTRUE(all.equal(an1, an3, check.attributes=FALSE, tolerance=TOL))
 )
 
 (an <- anova(m, type=1))
-(an_KR <- anova(m, type=1, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, type=1, ddf="lme4"))
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
-res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_KR[, c("Sum Sq", "Mean Sq", "F value")])
-stopifnot(isTRUE(res))
-stopifnot(all.equal(c(2, 5, 10), an$NumDF),
-          all.equal(c(42, 210, 210), an$DenDF))
+if(has_pbkrtest) {
+  (an_KR <- anova(m, type=1, ddf="Kenward-Roger"))
+  res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
+                   an_KR[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
+  stopifnot(isTRUE(res))
+}
+stopifnot(all.equal(c(2, 5, 10), an$NumDF, tolerance=TOL),
+          all.equal(c(42, 210, 210), an$DenDF, tolerance=TOL))
 
 ########
 ## Make case with balanced unordered factors:
@@ -165,8 +176,8 @@ m <- lmer(angle ~ recipe * temperature + (1|recipe:replicate), cake2)
 (an3 <- anova(m, type=3))
 ## Balanced data and only factors: Type I, II, and III should be the same:
 stopifnot(
-  isTRUE(all.equal(an1, an2, check.attributes=FALSE)),
-  isTRUE(all.equal(an3, an2, check.attributes=FALSE))
+  isTRUE(all.equal(an1, an2, check.attributes=FALSE, tolerance=TOL)),
+  isTRUE(all.equal(an3, an2, check.attributes=FALSE, tolerance=TOL))
 )
 ########
 
@@ -175,19 +186,21 @@ m <- lmer(angle ~ 0 + recipe * temp + (1|recipe:replicate), cake)
 (an <- anova(m, type=1))
 (an2 <- anova(m, type=2))
 (an2 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
+if(has_pbkrtest)
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
 
 # ML-fit:
 m <- lmer(angle ~ recipe * temp + (1|recipe:replicate), cake, REML=FALSE)
 (an <- anova(m, type=1))
-assertError(an <- anova(m, ddf="Kenward-Roger")) # KR fits should be REML
+if(has_pbkrtest)
+  assertError(an <- anova(m, ddf="Kenward-Roger")) # KR fits should be REML
 (an_lme4 <- anova(m, ddf="lme4"))
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
 
 ####################################
@@ -200,12 +213,13 @@ m <- lmer(angle ~ recipe * temp + (1|recipe:replicate), cake,
 (an2 <- anova(m, type=2))
 (an3 <- anova(m, type=3))
 stopifnot(
-  isTRUE(all.equal(an2, an3, check.attributes=FALSE, tol=1e-6))
+  isTRUE(all.equal(an2, an3, check.attributes=FALSE, tolerance=TOL))
 )
-(an_KR <- anova(m, type=1, ddf="Kenward-Roger"))
+if(has_pbkrtest)
+  (an_KR <- anova(m, type=1, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
 
 
@@ -220,12 +234,16 @@ stopifnot(length(fixef(m)) == 0L)
 (an <- anova(m, type=1))
 (an_2 <- anova(m, type=2))
 (an_3 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 stopifnot(nrow(an) == 0L,
           nrow(an_2) == 0L,
-          nrow(an_3) == 0L,
-          nrow(an_KR) == 0L)
+          nrow(an_3) == 0L)
 # anova(m, ddf="lme4") # Bug in lme4 it seems
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  stopifnot(
+    nrow(an_KR) == 0L
+  )
+}
 
 # Example with intercept only:
 m <- lmer(Reaction ~ (Days | Subject), sleepstudy)
@@ -235,13 +253,17 @@ stopifnot(length(fixef(m)) == 1L,
 (an <- anova(m))
 (an_2 <- anova(m, type=2))
 (an_3 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
 stopifnot(nrow(an) == 0L,
           nrow(an_2) == 0L,
           nrow(an_3) == 0L,
-          nrow(an_lme4) == 0L,
-          nrow(an_KR) == 0L)
+          nrow(an_lme4) == 0L)
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  stopifnot(
+    nrow(an_KR) == 0L
+  )
+}
 
 # Example with 1 fixef without intercept:
 m <- lmer(Reaction ~ Days - 1 + (Days | Subject), sleepstudy)
@@ -251,20 +273,23 @@ stopifnot(length(fixef(m)) == 1L,
 (an <- anova(m))
 (an_2 <- anova(m, type=2))
 (an_3 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
-
 stopifnot(nrow(an) == 1L,
           nrow(an_2) == 1L,
           nrow(an_3) == 1L,
-          nrow(an_KR) == 1L,
           nrow(an_lme4) == 1L)
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  stopifnot(
+    nrow(an_KR) == 1L
+  )
+}
+
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
 stopifnot(isTRUE(all.equal(
-  c(1, 17), unname(unlist(an[, c("NumDF", "DenDF")])),
-  tolerance=1e-4
+  c(1, 17), unname(unlist(an[, c("NumDF", "DenDF")])), tolerance=TOL
 )))
 
 # Example with >1 fixef without intercept:
@@ -274,12 +299,16 @@ stopifnot(length(fixef(m)) == 2L,
 (an <- anova(m))
 (an_2 <- anova(m, type=2))
 (an_3 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
 stopifnot(nrow(an) == 2L,
           nrow(an_3) == 2L,
-          nrow(an_KR) == 2L,
           nrow(an_lme4) == 2L)
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  stopifnot(
+    nrow(an_KR) == 2L
+  )
+}
 # Here is a diff in SSQ which doesn't seem well-defined anyway...
 # SSQ for I(Days^2) agree though.
 # t-statistics also agree:
@@ -293,15 +322,17 @@ stopifnot(length(fixef(m)) == 3L)
 (an <- anova(m, type=1))
 (an_2 <- anova(m, type=2))
 (an_3 <- anova(m, type=3))
-(an_KR <- anova(m, ddf="Kenward-Roger"))
 (an_lme4 <- anova(m, ddf="lme4"))
 res <- all.equal(an[, c("Sum Sq", "Mean Sq", "F value")],
-                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")])
+                 an_lme4[, c("Sum Sq", "Mean Sq", "F value")], tolerance=TOL)
 stopifnot(isTRUE(res))
 
-res <- all.equal(an_3[, c("Sum Sq", "Mean Sq", "DenDF", "F value")],
-                 an_KR[, c("Sum Sq", "Mean Sq", "DenDF", "F value")], tol=1e-6)
-stopifnot(isTRUE(res))
+if(has_pbkrtest) {
+  (an_KR <- anova(m, ddf="Kenward-Roger"))
+  res <- all.equal(an_3[, c("Sum Sq", "Mean Sq", "DenDF", "F value")],
+                   an_KR[, c("Sum Sq", "Mean Sq", "DenDF", "F value")], tolerance=TOL)
+  stopifnot(isTRUE(res))
+}
 
 ## FIXME: Test the use of refit arg to lme4:::anova.merMod
 
@@ -337,8 +368,8 @@ fm5 <- lmer(angle ~ recipe * temperature + (1|recipe:replicate), cake4)
 options(contrasts = c("contr.treatment", "contr.poly"))
 options("contrasts")
 stopifnot(
-  isTRUE(all.equal(an1, an2, check.attributes=FALSE, tol=1e-6)),
-  isTRUE(all.equal(an1, an3, check.attributes=FALSE, tol=1e-6)),
-  isTRUE(all.equal(an1, an4, check.attributes=FALSE, tol=1e-6)),
-  isTRUE(all.equal(an1, an5, check.attributes=FALSE, tol=1e-6))
+  isTRUE(all.equal(an1, an2, check.attributes=FALSE, tolerance=TOL)),
+  isTRUE(all.equal(an1, an3, check.attributes=FALSE, tolerance=TOL)),
+  isTRUE(all.equal(an1, an4, check.attributes=FALSE, tolerance=TOL)),
+  isTRUE(all.equal(an1, an5, check.attributes=FALSE, tolerance=TOL))
 )
