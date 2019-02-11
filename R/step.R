@@ -54,7 +54,7 @@
 #' Generic Step Function
 #'
 #' Generic step function with default method \code{stats::step}. This
-#' contruction ensures that \code{stats::step} still works on \code{lm}
+#' construction ensures that \code{stats::step} still works on \code{lm}
 #' objects etc. after loading the \pkg{lmerTest} package.
 #'
 #' @param object a model object.
@@ -160,9 +160,15 @@ step.lmerModLmerTest <- function(object, ddf=c("Satterthwaite", "Kenward-Roger")
   # reduce random and fixed parts?
   if(!reduce.random) alpha.random <- 1
   if(!reduce.fixed) alpha.fixed <- 1
+  if(missing(keep)) keep <- character(0L)
   # Reduce random and fixed parts:
   red_random <- eval.parent(reduce_random(object, alpha=alpha.random))
-  red_fixed <- eval.parent(reduce_fixed(attr(red_random, "model"), ddf=ddf,
+  model <- attr(red_random, "model")
+  # 'model' may be 'lmerMod' rather than 'lmerModLmerTest', so we coerce to
+  # 'lmerModLmerTest' if required:
+  if(!inherits(model, "lmerModLmerTest"))
+    model <- as_lmerModLmerTest(model)
+  red_fixed <- eval.parent(reduce_fixed(model, ddf=ddf,
                                         alpha=alpha.fixed, keep=keep))
   # get 'reduction' tables:
   step_random <- ran_redTable(red_random)
@@ -322,7 +328,7 @@ reduce_random <- function(model, alpha=0.1) {
       ran <- ranova_lm(newfit, REML=reml)
       break
     }
-    newfit <- eval.parent(update(newfit, formula = newform))
+    newfit <- eval.parent(update(newfit, formula. = newform))
     # newfit <- update(newfit, formula = newform)
     ran <- ranova(newfit)
     forms <- attr(ran, "formulae")
@@ -360,7 +366,7 @@ reduce_fixed <- function(model, ddf=c("Satterthwaite", "Kenward-Roger"), alpha=0
     warning(paste(txt1, txt2, sep="\n"), call. = FALSE)
   }
   ddf <- match.arg(ddf)
-  aov <- if(inherits(model, "lmerMod")) drop1(model, ddf=ddf) else
+  aov <- if(inherits(model, "lmerMod")) drop1.lmerModLmerTest(model, ddf=ddf) else
     drop1(model, test="F")[-1L, , drop=FALSE]
   reduced <- aov[0L, ]
   newfit <- model
@@ -380,7 +386,7 @@ reduce_fixed <- function(model, ddf=c("Satterthwaite", "Kenward-Roger"), alpha=0
     if(all(is.finite(c(nobs_model, nobs_newfit))) && nobs_newfit != nobs_model)
       stop("number of rows in use has changed: remove missing values?",
            call.=FALSE)
-    aov <- if(inherits(newfit, "lmerMod")) drop1(newfit, ddf=ddf) else
+    aov <- if(inherits(newfit, "lmerMod")) drop1.lmerModLmerTest(newfit, ddf=ddf) else
       drop1(newfit, test="F")[-1L, , drop=FALSE]
     # aov <- drop1(newfit)
     orig_form <- formula(newfit)

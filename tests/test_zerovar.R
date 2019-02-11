@@ -4,14 +4,17 @@ library(lmerTest)
 data("sleepstudy", package="lme4")
 
 # Baseline fit:
-m0 <- lmer(Reaction ~ Days +  (Days | Subject), sleepstudy)
+m0 <- lmer(Reaction ~ Days +  (Days | Subject), sleepstudy,
+           control=lmerControl(optimizer="bobyqa"))
+## default optimizer does not converge proporly
 m0
 (an0 <- anova(m0))
 
 # Make a fit with a zero variance estimate:
 n <- nrow(sleepstudy)
 g <- factor(rep(1:2, c(n - 10, 10)))
-m <- lmer(Reaction ~ Days +  (Days | Subject) + (1|g), sleepstudy)
+m <- lmer(Reaction ~ Days +  (Days | Subject) + (1|g), sleepstudy,
+          control=lmerControl(optimizer="bobyqa"))
 m
 (an <- anova(m))
 

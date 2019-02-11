@@ -4,8 +4,8 @@
 \alias{anova.lmerModLmerTest}
 \title{ANOVA Tables for Linear Mixed Models}
 \usage{
-\method{anova}{lmerModLmerTest}(object, ..., type = c("III", "II", "I", "3",
-  "2", "1"), ddf = c("Satterthwaite", "Kenward-Roger", "lme4"))
+\method{anova}{lmerModLmerTest}(object, ..., type = c("III", "II", "I",
+  "3", "2", "1"), ddf = c("Satterthwaite", "Kenward-Roger", "lme4"))
 }
 \arguments{
 \item{object}{an \code{lmerModLmerTest} object; the result of \code{lmer()}
@@ -47,7 +47,7 @@ anova(m, ddf="lme4") # no p-values
 
 # Use the Kenward-Roger method
 if(requireNamespace("pbkrtest", quietly = TRUE))
-  summary(m, ddf="Kenward-Roger")
+  anova(m, ddf="Kenward-Roger")
 
 \dontshow{
   an1 <- anova(m) # with p-values from F-tests using Satterthwaite's denominator df
