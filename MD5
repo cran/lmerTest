@@ -1,6 +1,6 @@
-960c10e7a2118dedefa34d08ce808ba8 *DESCRIPTION
+ce0b4ab7fbce0d0e77f36e00e1988a3b *DESCRIPTION
 52b6d9050650f3655b1479abf244f833 *NAMESPACE
-0467726c7d25c0ac8185042ce3c72a9a *NEWS.md
+144ed50d83c1b0f65a47e32daf5b77bb *NEWS.md
 40d6a66234c96d4dd251743eb97b1812 *R/anova_contrasts.R
 6af2efa9be0b2e7b2771abd064497b55 *R/contest.R
 73c9cb9019cc7d6f4413b1a85b523946 *R/contrast_utils.R
@@ -76,7 +76,7 @@ f84f566591b90a31db81722a328b86c6 *tests/test_a_utils.R
 edc042ecb75d6d37b0a458e668b7126c *tests/test_contestMD.R
 61b56963b69bb0a918d6f0068a31c960 *tests/test_drop1.R
 871dc95c5780e4fe63ddf44d9fb586a6 *tests/test_legacy.R
-681983b8f834729a12fdb9674e7f386a *tests/test_lmer.R
+d3d543f80be58ec7797f69ea2528e6a0 *tests/test_lmer.R
 bc49940e3c950e447dc3a5a8ec7eddab *tests/test_lmerTest_paper.R
 26d8f42e8cc43a44bc5355e4f650977e *tests/test_ls_means.R
 fbd8c681c0dfaa72b5163a1bf7533d50 *tests/test_ranova_step.R
