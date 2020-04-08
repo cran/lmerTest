@@ -1,5 +1,5 @@
 #############################################################################
-#    Copyright (c) 2013-2018 Alexandra Kuznetsova, Per Bruun Brockhoff, and
+#    Copyright (c) 2013-2020 Alexandra Kuznetsova, Per Bruun Brockhoff, and
 #    Rune Haubo Bojesen Christensen
 #
 #    This file is part of the lmerTest package for R (*lmerTest*)
@@ -116,7 +116,7 @@ lmerModLmerTest <-
 lmer <- function(formula, data = NULL, REML = TRUE,
                  control = lmerControl(), start = NULL, verbose = 0L,
                  subset, weights, na.action, offset, contrasts = NULL,
-                 devFunOnly = FALSE, ...) {
+                 devFunOnly = FALSE) {
   orig_call <- mc <- match.call()
   mc[[1L]] <- quote(lme4::lmer)
   model <- eval.parent(mc)
