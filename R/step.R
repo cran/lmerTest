@@ -166,8 +166,9 @@ step.lmerModLmerTest <- function(object, ddf=c("Satterthwaite", "Kenward-Roger")
   model <- attr(red_random, "model")
   # 'model' may be 'lmerMod' rather than 'lmerModLmerTest', so we coerce to
   # 'lmerModLmerTest' if required:
-  if(!inherits(model, "lmerModLmerTest"))
+  if(inherits(model, "lmerMod") && !inherits(model, "lmerModLmerTest"))
     model <- as_lmerModLmerTest(model)
+  stopifnot(inherits(model, "lmerModLmerTest") || inherits(model, "lm"))
   red_fixed <- eval.parent(reduce_fixed(model, ddf=ddf,
                                         alpha=alpha.fixed, keep=keep))
   # get 'reduction' tables:
@@ -219,7 +220,7 @@ print.step_list <- function(x, digits = max(getOption("digits") - 2L, 3L),
   print(x[["random"]])
   cat("\n")
   print(x[["fixed"]])
-  cat("\nModel found:", deparse(formula(attr(x, "model"))), sep="\n")
+  cat("\nModel found:", deparse2(formula(attr(x, "model"))), sep="\n")
   invisible(x)
 }
 
@@ -347,7 +348,7 @@ ranova_lm <- function(model, REML=TRUE) {
   aov <- mk_LRtab(get_logLik(model, REML=REML))
   rownames(aov) <- "<none>"
   head <- c("ANOVA-like table for random-effects: Single term deletions",
-            "\nModel:", deparse(formula(model)))
+            "\nModel:", deparse2(formula(model)))
   # attr(aov, "formulae") <- new_forms
   structure(aov, heading = head, class = c("anova", "data.frame"))
 }

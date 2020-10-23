@@ -112,7 +112,8 @@ fm0 <- lmer(Reaction ~ Days + (1|Subject), sleepstudy)
 step(fm0)
 (an2 <- anova(fm1, fm0, refit=FALSE))
 stopifnot(
-  an2[2L, "Pr(>Chisq)"] == 1
+  (packageVersion("lme4")<="1.1.23" && an2[2L, "Pr(>Chisq)"] == 1) ||
+    is.na(an2[2L, "Pr(>Chisq)"])
 )
 ranova(fm1, reduce.terms = FALSE)
 
@@ -311,4 +312,20 @@ m <- lmer(Informed.liking ~ Product*Information+
 
 (step_res <- step(m, reduce.random = FALSE, keep="Information"))
 (step_res <- step(m, reduce.random = FALSE, keep="Product:Information"))
+
+
+###########################
+## Test that `step` works even if all random terms are reduced away:
+set.seed(101)
+test <- data.frame(TM = factor(rep(rep(c("org","min"),each=3),3)),
+                   dep = runif(18,0,20),
+                   ind = runif(18,0,7),
+                   dorp = factor(rep(1:3,each=6)))
+full.model <- lmer(dep ~ TM + ind + (1 | dorp),  data=test)
+res <- step(full.model)
+# res$random
+# res$fixed
+# attr(res, "model")
+# attr(res, "drop1")
+
 

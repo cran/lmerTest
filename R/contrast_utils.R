@@ -271,7 +271,7 @@ get_rdX <- function(model, do.warn=TRUE) {
   }
   colnames(rdX) <- param_names
   # Warn/message if there are cells without data:
-  is_zero <- which(colSums(rdX) == 0)
+  is_zero <- which(apply(rdX, 2, function(x) all(x == 0)))
   if(do.warn && length(is_zero)) {
     txt <- sprintf("Missing cells for: %s. ",
                    paste(param_names[is_zero], collapse = ", "))
@@ -347,7 +347,7 @@ get_yates_contrast <- function(model, which=NULL) {
   # Compute LS-means contrast:
   Llist <- lapply(which, function(term) {
     Lt <- model.matrix(formula(paste0("~ 0 + ", term)), data=grid)
-    wts <- 1/colSums(Lt)
+    wts <- 1/colSums(Lt) # Yates' weights
     # Lt * c(Lt %*% wts)
     # L <- diag(wts) %*% t(Lt)
     L <- t(sweep(Lt, 2, wts, "*"))
